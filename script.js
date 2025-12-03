@@ -1,519 +1,692 @@
-// Telegram Nodes - Interactive Prototype
-
+// Telegram Nodes REVOLUTION - Script with Chameleon Mode
 document.addEventListener('DOMContentLoaded', function() {
-    // Элементы
-    const body = document.body;
-    const themeButtons = document.querySelectorAll('.theme-btn');
-    const nodeItems = document.querySelectorAll('.node-item');
-    const switchItems = document.querySelectorAll('.switch-item');
-    const chatItems = document.querySelectorAll('.chat-item');
-    const addNodeBtn = document.querySelector('.add-node');
-    const createNodePanel = document.querySelector('.create-node-panel');
-    const cancelCreateBtn = document.querySelector('.btn-secondary');
-    const confirmCreateBtn = document.querySelector('.btn-primary');
-    const colorOptions = document.querySelectorAll('.color-option');
-    const screenshotBtn = document.querySelector('.screenshot-btn');
-    const adminPanel = document.querySelector('.node-admin-panel');
-    const backBtn = document.querySelector('.back-btn');
-    const bgPreviews = document.querySelectorAll('.bg-preview');
-    const dragonContainer = document.querySelector('.dragon-container');
-    const fireDragon = document.querySelector('.fire-dragon');
-
-    // Текущее состояние
-    let currentTheme = 'day';
+    // Глобальные переменные
     let currentNode = 'alpha';
-    let selectedColor = 'blue';
-    let currentBackground = 'default';
+    let chameleonMode = true;
+    let currentTimeMode = 'day';
+    let currentMood = 'focus';
+    let aiNotifications = [];
+    
+    // Элементы интерфейса
+    const elements = {
+        // Управление хамелеоном
+        chameleonToggle: document.getElementById('chameleonToggle'),
+        chameleonStatus: document.getElementById('chameleonStatus'),
+        toggleChameleonBtn: document.getElementById('toggleChameleon'),
+        
+        // Время и адаптация
+        currentTime: document.getElementById('currentTime'),
+        timePeriod: document.getElementById('timePeriod'),
+        timeSimulator: document.getElementById('timeSimulator'),
+        currentMode: document.getElementById('currentMode'),
+        
+        // AI элементы
+        aiNotification: document.getElementById('aiNotification'),
+        closeAiNotification: document.getElementById('closeAiNotification'),
+        aiQuickBtn: document.getElementById('aiQuickBtn'),
+        
+        // Узлы
+        livingNodes: document.querySelectorAll('.living-node'),
+        chameleonNodes: document.querySelectorAll('.chameleon-node'),
+        
+        // Контролы
+        adaptationButtons: document.querySelectorAll('.adapt-btn'),
+        timeButtons: document.querySelectorAll('.time-btn'),
+        moodButtons: document.querySelectorAll('.mood-btn')
+    };
 
-    // Инициализация
-    init();
-
+    // ===== ИНИЦИАЛИЗАЦИЯ =====
     function init() {
-        // Установка обработчиков событий
+        // Обновляем время
+        updateTime();
+        
+        // Загружаем сохраненные настройки
+        loadSettings();
+        
+        // Инициализируем AI помощника
+        initAI();
+        
+        // Настраиваем события
         setupEventListeners();
         
-        // Показать начальное состояние
-        updateUI();
+        // Первоначальная адаптация узлов
+        adaptNodesToTime();
         
-        // Анимация появления
+        // Показываем приветственное сообщение AI
         setTimeout(() => {
-            document.querySelector('.container').classList.add('fade-in');
-        }, 100);
+            showAINotification('Добро пожаловать в живые пространства! Режим "Хамелеон" адаптирует узлы под вашу активность.');
+        }, 1000);
         
-        // Инициализируем взаимодействие с драконом
-        setTimeout(setupDragonInteraction, 1000);
+        // Консольные команды для демо
+        setupConsoleCommands();
     }
 
-    function setupEventListeners() {
-        // Переключение тем
-        themeButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const theme = this.dataset.theme;
-                switchTheme(theme);
-                
-                // Обновление активной кнопки
-                themeButtons.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // Выбор фона
-        bgPreviews.forEach(preview => {
-            preview.addEventListener('click', function() {
-                const bgType = this.dataset.bg;
-                selectBackground(bgType);
-                
-                // Обновление активного превью
-                bgPreviews.forEach(p => p.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // Выбор узла в боковом меню
-        nodeItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const node = this.dataset.node;
-                selectNode(node);
-                
-                // Обновление индикаторов
-                nodeItems.forEach(i => {
-                    i.classList.remove('active');
-                    const indicator = i.querySelector('.node-indicator');
-                    if (indicator) indicator.style.display = 'none';
-                });
-                
-                this.classList.add('active');
-                const indicator = this.querySelector('.node-indicator');
-                if (indicator) indicator.style.display = 'block';
-                
-                // Показать админ-панель для AlphaTeam
-                if (node === 'alpha') {
-                    adminPanel.style.display = 'block';
-                } else {
-                    adminPanel.style.display = 'none';
-                }
-            });
-        });
-
-        // Quick Switch фильтры
-        switchItems.forEach(item => {
-            item.addEventListener('click', function() {
-                if (this.classList.contains('add')) {
-                    toggleCreateNodePanel();
-                    return;
-                }
-                
-                const filter = this.textContent.toLowerCase();
-                filterChats(filter);
-                
-                // Обновление активного фильтра
-                switchItems.forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // Создание узла
-        addNodeBtn.addEventListener('click', toggleCreateNodePanel);
-        cancelCreateBtn.addEventListener('click', toggleCreateNodePanel);
+    // ===== ВРЕМЯ И АДАПТАЦИЯ =====
+    function updateTime() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
         
-        confirmCreateBtn.addEventListener('click', function() {
-            const nodeName = document.querySelector('input[type="text"]').value;
-            createNewNode(nodeName, selectedColor);
-            toggleCreateNodePanel();
-        });
-
-        // Выбор цвета
-        colorOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                colorOptions.forEach(o => o.classList.remove('active'));
-                this.classList.add('active');
-                selectedColor = this.dataset.color;
-            });
-        });
-
-        // Клик по чату
-        chatItems.forEach(item => {
-            item.addEventListener('click', function() {
-                // Анимация клика
-                this.style.transform = 'scale(0.98)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 200);
-                
-                // Показать уведомление
-                showNotification('Чат открыт', 'success');
-            });
-        });
-
-        // Скриншот
-        screenshotBtn.addEventListener('click', takeScreenshot);
-
-        // Кнопка назад
-        backBtn.addEventListener('click', function() {
-            showNotification('Возврат к общему списку', 'info');
-        });
-
-        // Анимация при наведении на элементы
-        setupHoverEffects();
+        // Определяем период дня
+        let period = '';
+        let timeMode = '';
+        
+        if (hours >= 5 && hours < 12) {
+            period = 'Утро';
+            timeMode = 'morning';
+        } else if (hours >= 12 && hours < 17) {
+            period = 'День';
+            timeMode = 'day';
+        } else if (hours >= 17 && hours < 22) {
+            period = 'Вечер';
+            timeMode = 'evening';
+        } else {
+            period = 'Ночь';
+            timeMode = 'night';
+        }
+        
+        // Обновляем время в интерфейсе
+        if (elements.currentTime) {
+            elements.currentTime.textContent = `${hours}:${minutes}`;
+        }
+        
+        if (elements.timePeriod) {
+            elements.timePeriod.textContent = period;
+        }
+        
+        // Обновляем режим времени
+        currentTimeMode = timeMode;
+        
+        // Адаптируем интерфейс
+        updateTimeClasses();
+        
+        // Обновляем статус
+        updateChameleonStatus();
+        
+        // Адаптируем узлы
+        if (chameleonMode) {
+            adaptNodesToTime();
+        }
     }
 
-    function switchTheme(theme) {
-        currentTheme = theme;
-        body.classList.remove('day-theme', 'night-theme');
-        body.classList.add(theme + '-theme');
+    function updateTimeClasses() {
+        // Удаляем старые классы времени
+        document.body.classList.remove('time-morning', 'time-day', 'time-evening', 'time-night');
         
-        // Анимация перехода
-        body.style.transition = 'background-color 0.5s ease, color 0.5s ease';
+        // Добавляем новый класс времени
+        document.body.classList.add(`time-${currentTimeMode}`);
+    }
+
+    function updateMoodClasses() {
+        // Удаляем старые классы настроения
+        document.body.classList.remove('mood-focus', 'mood-creative', 'mood-relax', 'mood-energy');
+        
+        // Добавляем новый класс настроения
+        document.body.classList.add(`mood-${currentMood}`);
+    }
+
+    // ===== АДАПТАЦИЯ УЗЛОВ =====
+    function adaptNodesToTime() {
+        if (!chameleonMode) return;
+        
+        const nodeConfigs = {
+            'alpha': {
+                morning: { icon: 'fa-sun', color: 'linear-gradient(135deg, #0088cc, #40b7e8)', label: 'Утро • Планирование' },
+                day: { icon: 'fa-briefcase', color: 'linear-gradient(135deg, #006699, #1a8ccc)', label: 'День • Фокус' },
+                evening: { icon: 'fa-chart-line', color: 'linear-gradient(135deg, #005580, #0d6da8)', label: 'Вечер • Анализ' },
+                night: { icon: 'fa-moon', color: 'linear-gradient(135deg, #00334d, #004d73)', label: 'Ночь • Отдых' }
+            },
+            'game': {
+                morning: { icon: 'fa-coffee', color: 'linear-gradient(135deg, #af52de, #bf5af2)', label: 'Утро • Разминка' },
+                day: { icon: 'fa-gamepad', color: 'linear-gradient(135deg, #8a2be2, #9b30ff)', label: 'День • Энергия' },
+                evening: { icon: 'fa-trophy', color: 'linear-gradient(135deg, #6a1b9a, #7b1fa2)', label: 'Вечер • Турниры' },
+                night: { icon: 'fa-moon', color: 'linear-gradient(135deg, #4a148c, #5c1b9e)', label: 'Ночь • Расслабление' }
+            },
+            'family': {
+                morning: { icon: 'fa-coffee', color: 'linear-gradient(135deg, #34c759, #30d158)', label: 'Утро • Завтрак' },
+                day: { icon: 'fa-home', color: 'linear-gradient(135deg, #2e8b57, #32a852)', label: 'День • Связь' },
+                evening: { icon: 'fa-utensils', color: 'linear-gradient(135deg, #228b22, #2a9c2a)', label: 'Вечер • Ужин' },
+                night: { icon: 'fa-bed', color: 'linear-gradient(135deg, #1b5e20, #217a26)', label: 'Ночь • Отдых' }
+            }
+        };
+
+        // Обновляем каждый узел
+        elements.livingNodes.forEach(node => {
+            const nodeType = node.dataset.node;
+            const config = nodeConfigs[nodeType][currentTimeMode];
+            
+            if (config) {
+                // Обновляем цвет
+                const avatar = node.querySelector('.node-avatar');
+                if (avatar) {
+                    avatar.style.background = config.color;
+                }
+                
+                // Обновляем иконку времени
+                const timeIcon = node.querySelector('.node-time-indicator i');
+                if (timeIcon) {
+                    timeIcon.className = `fas ${config.icon}`;
+                }
+                
+                // Обновляем текст адаптации
+                const adaptationLabel = node.querySelector('.adaptation-label');
+                if (adaptationLabel) {
+                    adaptationLabel.textContent = config.label;
+                }
+                
+                // Обновляем дата-атрибуты
+                node.dataset.time = currentTimeMode;
+            }
+        });
+        
+        // Обновляем основной узел в хедере
+        updateCurrentNodeAdaptation();
+    }
+
+    function updateCurrentNodeAdaptation() {
+        const moodLabels = {
+            'focus': 'фокус',
+            'creative': 'креатив',
+            'relax': 'отдых',
+            'energy': 'энергия'
+        };
+        
+        const timeLabels = {
+            'morning': 'утро',
+            'day': 'день',
+            'evening': 'вечер',
+            'night': 'ночь'
+        };
+        
+        if (elements.currentMode) {
+            elements.currentMode.textContent = 
+                `Хамелеон • ${timeLabels[currentTimeMode]} • ${moodLabels[currentMood]}`;
+        }
+        
+        // Обновляем подзаголовок текущего узла
+        const adaptationValue = document.querySelector('.adaptation-value');
+        if (adaptationValue) {
+            adaptationValue.textContent = `${timeLabels[currentTimeMode]} ${moodLabels[currentMood]}`;
+        }
+    }
+
+    // ===== AI ПОМОЩНИК =====
+    function initAI() {
+        // Инициализируем AI уведомления
+        aiNotifications = [
+            {
+                id: 1,
+                type: 'suggestion',
+                message: 'Заметил, что вы часто обсуждаете дизайн. Хотите создать отдельный канал?',
+                actions: ['Создать канал', 'Отложить'],
+                priority: 'high'
+            },
+            {
+                id: 2,
+                type: 'reminder',
+                message: 'Не забудьте ответить маме в FamilyHub. Она ждёт ответа с 14:00.',
+                actions: ['Ответить сейчас', 'Напомнить позже'],
+                priority: 'medium'
+            },
+            {
+                id: 3,
+                type: 'analysis',
+                message: 'Активность в AlphaTeam выросла на 24% за неделю. Отличный результат!',
+                actions: ['Посмотреть статистику', 'Закрыть'],
+                priority: 'low'
+            }
+        ];
+    }
+
+    function showAINotification(message, type = 'info', actions = []) {
+        if (!elements.aiNotification) return;
+        
+        // Обновляем сообщение
+        const aiText = elements.aiNotification.querySelector('.ai-message p');
+        if (aiText) {
+            aiText.textContent = message;
+        }
+        
+        // Показываем уведомление
+        elements.aiNotification.style.display = 'block';
+        elements.aiNotification.style.animation = 'aiSlideIn 0.5s ease';
+        
+        // Автоматическое скрытие через 10 секунд
         setTimeout(() => {
-            body.style.transition = '';
+            if (elements.aiNotification.style.display !== 'none') {
+                hideAINotification();
+            }
+        }, 10000);
+        
+        // Логируем в консоль
+        console.log(`🤖 NOVA: ${message}`);
+    }
+
+    function hideAINotification() {
+        if (!elements.aiNotification) return;
+        
+        elements.aiNotification.style.animation = 'aiSlideOut 0.5s ease forwards';
+        setTimeout(() => {
+            elements.aiNotification.style.display = 'none';
         }, 500);
-        
-        showNotification('Тема изменена: ' + (theme === 'day' ? 'День' : 'Ночь'), 'info');
     }
 
-    function selectBackground(bgType) {
-        currentBackground = bgType;
-        const container = document.querySelector('.container');
+    function getAISuggestion() {
+        const suggestions = [
+            'Предлагаю создать тему для обсуждения новых идей в AlphaTeam',
+            'Заметил снижение активности в GameZone. Хотите организовать турнир?',
+            'FamilyHub был неактивен 2 дня. Напоминаю о звонке родителям',
+            'На основе вашей активности рекомендую настроить авто-ответы для рабочих чатов',
+            'Обнаружены похожие обсуждения в разных узлах. Предлагаю объединить темы'
+        ];
         
-        // Убираем все классы фонов
-        container.classList.remove('with-bg');
-        container.className = container.className.replace(/bg-\w+/g, '');
-        dragonContainer.style.display = 'none';
-        
-        // Добавляем оверлей фона
-        let bgOverlay = document.querySelector('.container-bg-overlay');
-        if (!bgOverlay) {
-            bgOverlay = document.createElement('div');
-            bgOverlay.className = 'container-bg-overlay';
-            container.appendChild(bgOverlay);
-        }
-        
-        // Применяем выбранный фон
-        switch(bgType) {
-            case 'default':
-                bgOverlay.style.background = '';
-                container.classList.remove('with-bg');
-                break;
-                
-            case 'gradient1':
-                container.classList.add('with-bg');
-                bgOverlay.style.background = 'linear-gradient(135deg, #0088cc, #6a11cb, #2575fc)';
-                break;
-                
-            case 'gradient2':
-                container.classList.add('with-bg');
-                bgOverlay.style.background = 'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)';
-                break;
-                
-            case 'pattern1':
-                container.classList.add('with-bg');
-                bgOverlay.style.background = 
-                    'radial-gradient(circle at 20% 80%, rgba(64, 183, 232, 0.15) 0%, transparent 50%), ' +
-                    'radial-gradient(circle at 80% 20%, rgba(175, 82, 222, 0.15) 0%, transparent 50%), ' +
-                    'var(--tg-bg)';
-                break;
-                
-            case 'pattern2':
-                container.classList.add('with-bg');
-                bgOverlay.style.background = 
-                    'linear-gradient(45deg, transparent 48%, rgba(52, 199, 89, 0.1) 50%, transparent 52%), ' +
-                    'linear-gradient(-45deg, transparent 48%, rgba(255, 59, 48, 0.1) 50%, transparent 52%), ' +
-                    'var(--tg-bg)';
-                bgOverlay.style.backgroundSize = '40px 40px';
-                break;
-                
-            case 'animated':
-                container.classList.add('with-bg');
-                bgOverlay.style.background = 'linear-gradient(135deg, var(--tg-bg), var(--tg-bg-secondary))';
-                bgOverlay.classList.add('bg-animated');
-                break;
-                
-            case 'space':
-                container.classList.add('with-bg');
-                bgOverlay.style.background = 
-                    'radial-gradient(ellipse at 20% 30%, rgba(64, 183, 232, 0.3) 0%, transparent 40%), ' +
-                    'radial-gradient(ellipse at 80% 70%, rgba(175, 82, 222, 0.3) 0%, transparent 40%), ' +
-                    'linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%)';
-                break;
-                
-            case 'watercolor':
-                container.classList.add('with-bg');
-                bgOverlay.style.background = 
-                    'radial-gradient(circle at 10% 20%, rgba(64, 183, 232, 0.4) 0%, transparent 40%), ' +
-                    'radial-gradient(circle at 90% 80%, rgba(175, 82, 222, 0.4) 0%, transparent 40%), ' +
-                    'radial-gradient(circle at 50% 50%, rgba(52, 199, 89, 0.3) 0%, transparent 50%), ' +
-                    'linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%)';
-                break;
-                
-            case 'neon':
-                container.classList.add('with-bg');
-                bgOverlay.style.background = 
-                    'linear-gradient(135deg, #0f0f1a 0%, #1a0f2a 25%, #0f1a2a 50%, #1a2a0f 75%, #0f0f1a 100%)';
-                break;
-                
-            case 'dragon':
-                container.classList.add('with-bg');
-                dragonContainer.style.display = 'block';
-                bgOverlay.style.background = 'linear-gradient(135deg, #0a0a2a, #1a1a3a)';
-                
-                // Анимация дракона при активации
-                fireDragon.style.animation = 'none';
-                setTimeout(() => {
-                    fireDragon.style.animation = 'fly-around 25s infinite linear';
-                }, 10);
-                break;
-        }
-        
-        showNotification(`Фон изменен: ${getBgName(bgType)}`, 'info');
+        return suggestions[Math.floor(Math.random() * suggestions.length)];
     }
-    
-    function getBgName(bgType) {
-        const names = {
-            'default': 'Стандартный',
-            'gradient1': 'Сине-фиолетовый градиент',
-            'gradient2': 'Темный градиент',
-            'pattern1': 'Радиальный паттерн',
-            'pattern2': 'Линейный паттерн',
-            'animated': 'Анимированный',
-            'space': 'Космос',
-            'watercolor': 'Акварель',
-            'neon': 'Неон',
-            'dragon': 'Огненный дракон!'
-        };
-        return names[bgType] || bgType;
-    }
-    
-    function selectNode(node) {
-        currentNode = node;
+
+    // ===== УПРАВЛЕНИЕ ХАМЕЛЕОНОМ =====
+    function toggleChameleonMode() {
+        chameleonMode = !chameleonMode;
         
-        // Обновление заголовка
-        const nodeTitles = {
-            'alpha': 'AlphaTeam',
-            'game': 'GameZone',
-            'family': 'FamilyHub'
-        };
-        
-        const titleElement = document.querySelector('.current-node h2');
-        const avatarElement = document.querySelector('.current-node .node-avatar');
-        
-        if (titleElement && nodeTitles[node]) {
-            titleElement.textContent = nodeTitles[node];
+        if (chameleonMode) {
+            // Включаем режим хамелеона
+            document.body.classList.add('chameleon-active');
+            elements.chameleonStatus.textContent = 'Авто-адаптация';
+            
+            // Адаптируем узлы
+            adaptNodesToTime();
+            
+            // Показываем уведомление
+            showAINotification('Режим "Хамелеон" включен. Узлы адаптируются под время суток и вашу активность.');
+        } else {
+            // Выключаем режим хамелеона
+            document.body.classList.remove('chameleon-active');
+            elements.chameleonStatus.textContent = 'Выключен';
+            
+            // Возвращаем стандартные цвета
+            resetNodesToDefault();
+            
+            showAINotification('Режим "Хамелеон" выключен. Узлы используют стандартные настройки.');
         }
         
-        // Обновление аватара
-        const gradients = {
+        // Обновляем кнопку
+        updateChameleonToggleButton();
+        
+        // Сохраняем настройки
+        saveSettings();
+    }
+
+    function updateChameleonStatus() {
+        if (!elements.chameleonStatus) return;
+        
+        if (chameleonMode) {
+            elements.chameleonStatus.textContent = 'Авто-адаптация';
+            elements.chameleonStatus.style.color = '#34c759';
+        } else {
+            elements.chameleonStatus.textContent = 'Выключен';
+            elements.chameleonStatus.style.color = '#ff3b30';
+        }
+    }
+
+    function updateChameleonToggleButton() {
+        if (!elements.toggleChameleonBtn) return;
+        
+        if (chameleonMode) {
+            elements.toggleChameleonBtn.classList.add('active');
+            elements.toggleChameleonBtn.innerHTML = `
+                <i class="fas fa-palette"></i>
+                <span>Режим Хамелеон</span>
+                <div class="toggle-indicator"></div>
+            `;
+        } else {
+            elements.toggleChameleonBtn.classList.remove('active');
+            elements.toggleChameleonBtn.innerHTML = `
+                <i class="fas fa-palette"></i>
+                <span>Включить Хамелеон</span>
+            `;
+        }
+    }
+
+    function resetNodesToDefault() {
+        const defaultColors = {
             'alpha': 'linear-gradient(135deg, #0088cc, #40b7e8)',
             'game': 'linear-gradient(135deg, #af52de, #bf5af2)',
             'family': 'linear-gradient(135deg, #34c759, #30d158)'
         };
         
-        if (avatarElement && gradients[node]) {
-            avatarElement.style.background = gradients[node];
-        }
-        
-        // Анимация
-        const container = document.querySelector('.container');
-        container.style.transform = 'scale(0.99)';
-        setTimeout(() => {
-            container.style.transform = 'scale(1)';
-        }, 300);
-        
-        showNotification('Переключено на узел: ' + nodeTitles[node], 'success');
+        elements.livingNodes.forEach(node => {
+            const nodeType = node.dataset.node;
+            const avatar = node.querySelector('.node-avatar');
+            
+            if (avatar && defaultColors[nodeType]) {
+                avatar.style.background = defaultColors[nodeType];
+                
+                // Сбрасываем иконку времени
+                const timeIcon = node.querySelector('.node-time-indicator i');
+                if (timeIcon) {
+                    timeIcon.className = 'fas fa-circle';
+                }
+                
+                // Сбрасываем текст адаптации
+                const adaptationLabel = node.querySelector('.adaptation-label');
+                if (adaptationLabel) {
+                    adaptationLabel.textContent = 'Стандартный режим';
+                }
+            }
+        });
     }
 
-    function filterChats(filter) {
-        chatItems.forEach(item => {
-            const itemNode = item.dataset.node;
-            const nodeNames = {
-                'alpha': 'alphateam',
-                'game': 'gamezone',
-                'family': 'familyhub'
-            };
-            
-            if (filter === 'все' || nodeNames[itemNode] === filter) {
-                item.style.display = 'flex';
-                item.style.animation = 'fadeIn 0.3s ease';
+    function setTimeMode(mode) {
+        currentTimeMode = mode;
+        updateTimeClasses();
+        
+        if (chameleonMode) {
+            adaptNodesToTime();
+        }
+        
+        updateChameleonStatus();
+        saveSettings();
+    }
+
+    function setMood(mood) {
+        currentMood = mood;
+        updateMoodClasses();
+        
+        // Обновляем активные кнопки настроения
+        elements.moodButtons.forEach(btn => {
+            if (btn.dataset.mood === mood) {
+                btn.classList.add('active');
             } else {
-                item.style.display = 'none';
+                btn.classList.remove('active');
             }
         });
         
-        // Анимация
-        const chatList = document.querySelector('.chat-list');
-        chatList.style.opacity = '0.5';
-        setTimeout(() => {
-            chatList.style.opacity = '1';
-        }, 300);
+        // Обновляем адаптацию
+        updateCurrentNodeAdaptation();
+        
+        // Показываем AI реакцию
+        const moodMessages = {
+            'focus': 'Отличный выбор для продуктивной работы! Фокусируюсь на задачах.',
+            'creative': 'Включаю креативный режим. Готов помогать с идеями!',
+            'relax': 'Расслабляющий режим активирован. Отдыхайте и наслаждайтесь общением.',
+            'energy': 'Заряжаю энергией! Готов к активным обсуждениям и играм!'
+        };
+        
+        showAINotification(moodMessages[mood]);
+        saveSettings();
     }
 
-    function toggleCreateNodePanel() {
-        const isVisible = createNodePanel.style.display === 'block';
-        createNodePanel.style.display = isVisible ? 'none' : 'block';
+    // ===== СОХРАНЕНИЕ И ЗАГРУЗКА НАСТРОЕК =====
+    function saveSettings() {
+        const settings = {
+            chameleonMode,
+            currentTimeMode,
+            currentMood,
+            currentNode
+        };
         
-        // Анимация
-        if (!isVisible) {
-            createNodePanel.style.transform = 'translateY(20px)';
-            createNodePanel.style.opacity = '0';
-            setTimeout(() => {
-                createNodePanel.style.transition = 'all 0.3s ease';
-                createNodePanel.style.transform = 'translateY(0)';
-                createNodePanel.style.opacity = '1';
-            }, 10);
+        localStorage.setItem('telegramNodesSettings', JSON.stringify(settings));
+    }
+
+    function loadSettings() {
+        const saved = localStorage.getItem('telegramNodesSettings');
+        
+        if (saved) {
+            try {
+                const settings = JSON.parse(saved);
+                chameleonMode = settings.chameleonMode || true;
+                currentTimeMode = settings.currentTimeMode || 'day';
+                currentMood = settings.currentMood || 'focus';
+                currentNode = settings.currentNode || 'alpha';
+                
+                // Применяем настройки
+                updateChameleonStatus();
+                updateChameleonToggleButton();
+                setTimeMode(currentTimeMode);
+                setMood(currentMood);
+                
+            } catch (e) {
+                console.log('Ошибка загрузки настроек:', e);
+            }
+        }
+    }
+
+    // ===== ОБРАБОТЧИКИ СОБЫТИЙ =====
+    function setupEventListeners() {
+        // Переключение режима хамелеона
+        if (elements.chameleonToggle) {
+            elements.chameleonToggle.addEventListener('click', toggleChameleonMode);
         }
         
-        showNotification(isVisible ? 'Создание узла отменено' : 'Начните создание нового узла', 'info');
-    }
-
-    function createNewNode(name, color) {
-        // Создание нового элемента узла
-        const nodesSection = document.querySelector('.nodes-section');
-        const newNode = document.createElement('div');
-        newNode.className = 'node-item';
-        newNode.dataset.node = name.toLowerCase().replace(/\s+/g, '_');
+        if (elements.toggleChameleonBtn) {
+            elements.toggleChameleonBtn.addEventListener('click', toggleChameleonMode);
+        }
         
-        const colorGradients = {
-            'blue': 'linear-gradient(135deg, #0088cc, #40b7e8)',
-            'purple': 'linear-gradient(135deg, #af52de, #bf5af2)',
-            'green': 'linear-gradient(135deg, #34c759, #30d158)',
-            'orange': 'linear-gradient(135deg, #ff9500, #ff9f0a)',
-            'lightblue': 'linear-gradient(135deg, #5ac8fa, #64d2ff)'
-        };
+        // Закрытие AI уведомления
+        if (elements.closeAiNotification) {
+            elements.closeAiNotification.addEventListener('click', hideAINotification);
+        }
         
-        const icons = {
-            'blue': 'fas fa-cogs',
-            'purple': 'fas fa-gamepad',
-            'green': 'fas fa-home',
-            'orange': 'fas fa-palette',
-            'lightblue': 'fas fa-graduation-cap'
-        };
-        
-        newNode.innerHTML = `
-            <div class="node-avatar" style="background: ${colorGradients[color]};">
-                <i class="${icons[color]}"></i>
-            </div>
-            <span>${name}</span>
-        `;
-        
-        // Вставка перед кнопкой "Создать узел"
-        nodesSection.insertBefore(newNode, addNodeBtn);
-        
-        // Добавление обработчика
-        newNode.addEventListener('click', function() {
-            nodeItems.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
-            selectNode(this.dataset.node);
-        });
-        
-        // Добавление в Quick Switch
-        const quickSwitch = document.querySelector('.quick-switch');
-        const newSwitch = document.createElement('div');
-        newSwitch.className = 'switch-item';
-        newSwitch.textContent = name;
-        
-        newSwitch.addEventListener('click', function() {
-            switchItems.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
-            filterChats(name.toLowerCase());
-        });
-        
-        // Вставка перед кнопкой "+"
-        const addButton = quickSwitch.querySelector('.add');
-        quickSwitch.insertBefore(newSwitch, addButton);
-        
-        // Анимация
-        newNode.style.opacity = '0';
-        newNode.style.transform = 'scale(0.8)';
-        
-        setTimeout(() => {
-            newNode.style.transition = 'all 0.3s ease';
-            newNode.style.opacity = '1';
-            newNode.style.transform = 'scale(1)';
-        }, 10);
-        
-        showNotification(`Узел "${name}" создан успешно!`, 'success');
-        
-        // Обновление списка элементов
-        const allNodeItems = document.querySelectorAll('.node-item');
-        const allSwitchItems = document.querySelectorAll('.switch-item');
-        
-        // Перепривязываем обработчики
-        allNodeItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const node = this.dataset.node;
-                selectNode(node);
+        // Кнопка AI помощи
+        if (elements.aiQuickBtn) {
+            elements.aiQuickBtn.addEventListener('click', () => {
+                showAINotification(getAISuggestion(), 'suggestion');
                 
-                allNodeItems.forEach(i => {
-                    i.classList.remove('active');
-                    const indicator = i.querySelector('.node-indicator');
-                    if (indicator) indicator.style.display = 'none';
-                });
+                // Анимация кнопки
+                elements.aiQuickBtn.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    elements.aiQuickBtn.style.transform = 'scale(1)';
+                }, 300);
+            });
+        }
+        
+        // Кнопки адаптации
+        elements.adaptationButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const adaptMode = this.dataset.adapt;
                 
+                // Обновляем активную кнопку
+                elements.adaptationButtons.forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
+                
+                if (adaptMode === 'auto') {
+                    toggleChameleonMode();
+                } else {
+                    setMood(adaptMode);
+                }
             });
         });
-    }
-
-    function takeScreenshot() {
-        const container = document.querySelector('.container');
         
-        // Эффект вспышки
-        const flash = document.createElement('div');
-        flash.style.position = 'fixed';
-        flash.style.top = '0';
-        flash.style.left = '0';
-        flash.style.width = '100%';
-        flash.style.height = '100%';
-        flash.style.background = 'white';
-        flash.style.opacity = '0';
-        flash.style.zIndex = '9999';
-        flash.style.pointerEvents = 'none';
-        document.body.appendChild(flash);
+        // Симулятор времени
+        if (elements.timeSimulator) {
+            elements.timeSimulator.addEventListener('change', function() {
+                const selectedTime = this.value;
+                setTimeMode(selectedTime);
+                
+                // Обновляем отображение времени
+                const timeMap = {
+                    'morning': '06:00',
+                    'day': '14:00',
+                    'evening': '20:00',
+                    'night': '02:00'
+                };
+                
+                if (elements.currentTime) {
+                    elements.currentTime.textContent = timeMap[selectedTime];
+                }
+                
+                if (elements.timePeriod) {
+                    elements.timePeriod.textContent = 
+                        selectedTime === 'morning' ? 'Утро' :
+                        selectedTime === 'day' ? 'День' :
+                        selectedTime === 'evening' ? 'Вечер' : 'Ночь';
+                }
+            });
+        }
         
-        // Анимация вспышки
-        flash.animate([
-            { opacity: 0 },
-            { opacity: 0.7 },
-            { opacity: 0 }
-        ], {
-            duration: 300,
-            easing: 'ease-out'
+        // Кнопки времени
+        elements.timeButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const time = this.dataset.time;
+                
+                elements.timeButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                setTimeMode(time);
+            });
         });
         
-        setTimeout(() => {
-            flash.remove();
-        }, 300);
+        // Кнопки настроения
+        elements.moodButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const mood = this.dataset.mood;
+                setMood(mood);
+            });
+        });
         
-        // Эффект на контейнере
-        container.style.boxShadow = '0 0 0 4px var(--tg-blue)';
-        setTimeout(() => {
-            container.style.boxShadow = '';
-        }, 500);
+        // Клики по живым узлам
+        elements.livingNodes.forEach(node => {
+            node.addEventListener('click', function() {
+                const nodeType = this.dataset.node;
+                currentNode = nodeType;
+                
+                // Обновляем активный узел
+                elements.livingNodes.forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Показываем информацию об узле
+                const nodeNames = {
+                    'alpha': 'AlphaTeam',
+                    'game': 'GameZone',
+                    'family': 'FamilyHub'
+                };
+                
+                showAINotification(`Переключено на ${nodeNames[nodeType]}. Адаптирую интерфейс под этот узел.`);
+                
+                // Анимация перехода
+                this.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 300);
+                
+                saveSettings();
+            });
+        });
         
-        showNotification('Скриншот сохранен! (в реальном приложении)', 'success');
+        // Анимация при ховере над узлами
+        elements.chameleonNodes.forEach(node => {
+            node.addEventListener('mouseenter', function() {
+                if (chameleonMode) {
+                    this.style.transform = 'scale(1.15)';
+                    this.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                }
+            });
+            
+            node.addEventListener('mouseleave', function() {
+                if (chameleonMode) {
+                    this.style.transform = 'scale(1)';
+                }
+            });
+        });
+        
+        // Обновление времени каждую минуту
+        setInterval(updateTime, 60000);
+        
+        // Случайные AI уведомления
+        setInterval(() => {
+            if (chameleonMode && Math.random() > 0.7) {
+                showAINotification(getAISuggestion(), 'suggestion');
+            }
+        }, 300000); // Каждые 5 минут
     }
 
-    function showNotification(message, type) {
-        // Удаляем старые уведомления
-        const oldNotifications = document.querySelectorAll('.notification');
-        oldNotifications.forEach(n => n.remove());
+    // ===== КОНСОЛЬНЫЕ КОМАНДЫ ДЛЯ ДЕМО =====
+    function setupConsoleCommands() {
+        window.demoChameleon = {
+            // Управление хамелеоном
+            toggle: function() {
+                toggleChameleonMode();
+                console.log(`🎨 Режим Хамелеон: ${chameleonMode ? 'ВКЛ' : 'ВЫКЛ'}`);
+            },
+            
+            // Смена времени
+            setTime: function(time) {
+                const validTimes = ['morning', 'day', 'evening', 'night'];
+                if (validTimes.includes(time)) {
+                    setTimeMode(time);
+                    console.log(`⏰ Установлено время: ${time}`);
+                } else {
+                    console.log('Доступные значения: morning, day, evening, night');
+                }
+            },
+            
+            // Смена настроения
+            setMood: function(mood) {
+                const validMoods = ['focus', 'creative', 'relax', 'energy'];
+                if (validMoods.includes(mood)) {
+                    setMood(mood);
+                    console.log(`😊 Установлено настроение: ${mood}`);
+                } else {
+                    console.log('Доступные значения: focus, creative, relax, energy');
+                }
+            },
+            
+            // AI уведомления
+            aiNotification: function(message) {
+                showAINotification(message || 'Тестовое сообщение от AI помощника');
+            },
+            
+            // Статистика
+            stats: function() {
+                console.log('📊 Текущая статистика:');
+                console.log('- Режим Хамелеон:', chameleonMode ? 'ВКЛ' : 'ВЫКЛ');
+                console.log('- Время суток:', currentTimeMode);
+                console.log('- Настроение:', currentMood);
+                console.log('- Активный узел:', currentNode);
+                console.log('- AI уведомлений:', aiNotifications.length);
+            },
+            
+            // Анимации узлов
+            animateNodes: function() {
+                elements.chameleonNodes.forEach((node, index) => {
+                    setTimeout(() => {
+                        node.style.transform = 'scale(1.2)';
+                        setTimeout(() => {
+                            node.style.transform = 'scale(1)';
+                        }, 500);
+                    }, index * 200);
+                });
+                console.log('✨ Запущена анимация узлов');
+            }
+        };
         
-        // Создание уведомления
+        // Выводим доступные команды
+        console.log('🚀 Telegram Nodes REVOLUTION загружен!');
+        console.log('Доступные демо-команды:');
+        console.log('- demoChameleon.toggle() - переключить режим хамелеона');
+        console.log('- demoChameleon.setTime("morning/day/evening/night") - сменить время');
+        console.log('- demoChameleon.setMood("focus/creative/relax/energy") - сменить настроение');
+        console.log('- demoChameleon.aiNotification("сообщение") - показать AI уведомление');
+        console.log('- demoChameleon.stats() - показать статистику');
+        console.log('- demoChameleon.animateNodes() - анимировать узлы');
+        console.log('\n✨ Режим "Хамелеон" делает узлы живыми и адаптивными!');
+    }
+
+    // ===== СУЩЕСТВУЮЩИЕ ФУНКЦИИ ИЗ ПРЕДЫДУЩЕЙ ВЕРСИИ =====
+    // Добавляем здесь функции из старого script.js, которые нужно сохранить
+    
+    // Функция показа уведомлений
+    function showNotification(message, type = 'info') {
+        // Старая функция показа уведомлений (оставляем для совместимости)
+        console.log(`📢 ${type.toUpperCase()}: ${message}`);
+        
+        // Можно добавить визуальное уведомление
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
-        notification.textContent = message;
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${type === 'success' ? '#34C759' : '#007AFF'};
-            color: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            z-index: 10000;
-            transform: translateX(100%);
-            opacity: 0;
-            transition: all 0.3s ease;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            </div>
         `;
         
         document.body.appendChild(notification);
@@ -529,110 +702,257 @@ document.addEventListener('DOMContentLoaded', function() {
             notification.style.transform = 'translateX(100%)';
             notification.style.opacity = '0';
             setTimeout(() => {
-                notification.remove();
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
             }, 300);
         }, 3000);
     }
 
-    function setupHoverEffects() {
-        // Парящие эффекты для интерактивных элементов
-        const hoverElements = document.querySelectorAll('.node-item, .chat-item, .switch-item, .btn-primary, .btn-secondary');
+    // Управление темами (день/ночь)
+    function setupThemeSwitcher() {
+        const themeButtons = document.querySelectorAll('.theme-btn');
         
-        hoverElements.forEach(el => {
-            el.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-2px)';
-            });
-            
-            el.addEventListener('mouseleave', function() {
-                this.style.transform = '';
+        themeButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const theme = this.dataset.theme;
+                
+                // Обновляем активную кнопку
+                themeButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Меняем тему
+                document.body.classList.remove('day-theme', 'night-theme');
+                document.body.classList.add(`${theme}-theme`);
+                
+                // Сохраняем тему
+                localStorage.setItem('telegramNodesTheme', theme);
+                
+                showNotification(`Тема изменена: ${theme === 'day' ? 'День' : 'Ночь'}`);
             });
         });
-    }
-    
-    function setupDragonInteraction() {
-        const nodeAvatars = document.querySelectorAll('.node-avatar');
         
-        nodeAvatars.forEach(avatar => {
-            avatar.addEventListener('mouseenter', function() {
-                if (currentBackground === 'dragon') {
-                    // Дракон летит к этой иконке
-                    const rect = this.getBoundingClientRect();
-                    const containerRect = document.querySelector('.container').getBoundingClientRect();
-                    
-                    const x = rect.left - containerRect.left + rect.width / 2;
-                    const y = rect.top - containerRect.top + rect.height / 2;
-                    
-                    // Сохраняем текущую анимацию
-                    const currentAnimation = fireDragon.style.animation;
-                    
-                    // Временно меняем позицию дракона
-                    fireDragon.style.left = `${x - 90}px`;
-                    fireDragon.style.top = `${y - 60}px`;
-                    fireDragon.style.animation = 'fire-pulse 0.5s infinite alternate';
-                    
-                    // Возвращаем обычную анимацию через 1 секунду
-                    setTimeout(() => {
-                        fireDragon.style.animation = currentAnimation;
-                    }, 1000);
+        // Загружаем сохраненную тему
+        const savedTheme = localStorage.getItem('telegramNodesTheme') || 'day';
+        document.body.classList.add(`${savedTheme}-theme`);
+        
+        // Активируем кнопку
+        themeButtons.forEach(btn => {
+            if (btn.dataset.theme === savedTheme) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    // Управление фонами
+    function setupBackgroundSelector() {
+        const bgPreviews = document.querySelectorAll('.bg-preview');
+        
+        bgPreviews.forEach(preview => {
+            preview.addEventListener('click', function() {
+                const bgType = this.dataset.bg;
+                
+                // Обновляем активный превью
+                bgPreviews.forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Меняем фон
+                document.body.className = document.body.className.replace(/\bbg-\S+/g, '');
+                if (bgType !== 'default') {
+                    document.body.classList.add(`bg-${bgType}`);
                 }
+                
+                // Особый случай для дракона
+                const dragonContainer = document.querySelector('.dragon-container');
+                if (bgType === 'dragon' && dragonContainer) {
+                    dragonContainer.style.display = 'block';
+                } else if (dragonContainer) {
+                    dragonContainer.style.display = 'none';
+                }
+                
+                // Сохраняем фон
+                localStorage.setItem('telegramNodesBackground', bgType);
+                
+                showNotification(`Фон изменен: ${this.title}`);
             });
         });
+        
+        // Загружаем сохраненный фон
+        const savedBg = localStorage.getItem('telegramNodesBackground') || 'default';
+        const savedPreview = document.querySelector(`.bg-preview[data-bg="${savedBg}"]`);
+        if (savedPreview) {
+            savedPreview.classList.add('active');
+            if (savedBg !== 'default') {
+                document.body.classList.add(`bg-${savedBg}`);
+            }
+            
+            // Активируем дракона если нужно
+            if (savedBg === 'dragon') {
+                const dragonContainer = document.querySelector('.dragon-container');
+                if (dragonContainer) {
+                    dragonContainer.style.display = 'block';
+                }
+            }
+        }
     }
 
-    function updateUI() {
-        // Установка начального активного узла
-        const initialNode = document.querySelector('.node-item[data-node="alpha"]');
-        if (initialNode) {
-            initialNode.classList.add('active');
-            const indicator = initialNode.querySelector('.node-indicator');
-            if (indicator) indicator.style.display = 'block';
+    // Управление профилем (оставляем старую логику)
+    function openProfilePage() {
+        const profilePage = document.querySelector('.profile-page');
+        const mainContainer = document.querySelector('.container');
+        
+        if (!profilePage || !mainContainer) return;
+        
+        // Прячем основной контейнер
+        mainContainer.style.opacity = '0';
+        mainContainer.style.transform = 'scale(0.95)';
+        mainContainer.style.pointerEvents = 'none';
+        
+        // Показываем страницу профиля
+        profilePage.style.display = 'block';
+        
+        // Анимация
+        setTimeout(() => {
+            profilePage.style.animation = 'slideInRight 0.3s ease';
+        }, 10);
+        
+        // Обновляем информацию профиля
+        updateProfileInfo();
+        
+        showNotification('Открыт профиль узла', 'info');
+    }
+    
+    function closeProfilePage() {
+        const profilePage = document.querySelector('.profile-page');
+        const mainContainer = document.querySelector('.container');
+        
+        if (!profilePage || !mainContainer) return;
+        
+        // Анимация закрытия
+        profilePage.style.animation = 'slideOutRight 0.3s ease';
+        
+        setTimeout(() => {
+            profilePage.style.display = 'none';
+            
+            // Восстанавливаем основной контейнер
+            mainContainer.style.opacity = '1';
+            mainContainer.style.transform = 'scale(1)';
+            mainContainer.style.pointerEvents = 'auto';
+        }, 300);
+    }
+    
+    function updateProfileInfo() {
+        const nodeTitles = {
+            'alpha': 'AlphaTeam',
+            'game': 'GameZone',
+            'family': 'FamilyHub'
+        };
+        
+        const currentNodeTitle = nodeTitles[currentNode] || 'AlphaTeam';
+        
+        // Обновляем название профиля если есть элемент
+        const profileName = document.querySelector('.profile-name');
+        if (profileName) {
+            profileName.textContent = currentNodeTitle;
         }
         
-        // Установка начального активного фильтра
-        const initialFilter = document.querySelector('.switch-item:first-child');
-        if (initialFilter) {
-            initialFilter.classList.add('active');
+        // Обновляем статус с учетом режима хамелеона
+        const profileStatus = document.querySelector('.profile-status');
+        if (profileStatus) {
+            const statusText = chameleonMode ? 
+                `Адаптивный режим • ${getRandomNumber(20, 50)} участника` :
+                `Стандартный режим • ${getRandomNumber(20, 50)} участника`;
+            profileStatus.textContent = statusText;
         }
-        
-        // Установка начального активного цвета
-        const initialColor = document.querySelector('.color-option[data-color="blue"]');
-        if (initialColor) {
-            initialColor.classList.add('active');
-        }
-        
-        // Показать админ-панель для AlphaTeam
-        adminPanel.style.display = 'block';
+    }
+    
+    function getRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    // Дополнительные функции для демонстрации
-    window.demoSwitchNode = function(nodeName) {
-        const node = document.querySelector(`.node-item[data-node="${nodeName}"]`);
-        if (node) node.click();
-    };
-    
-    window.demoCreateNode = function(name, color) {
-        const colorOption = document.querySelector(`.color-option[data-color="${color}"]`);
-        if (colorOption) colorOption.click();
+    // Инициализация существующих функций
+    function initExistingFeatures() {
+        // Тема
+        setupThemeSwitcher();
         
-        document.querySelector('input[type="text"]').value = name;
-        document.querySelector('.btn-primary').click();
-    };
-    
-    window.demoSwitchTheme = function(theme) {
-        const themeBtn = document.querySelector(`.theme-btn[data-theme="${theme}"]`);
-        if (themeBtn) themeBtn.click();
-    };
-    
-    window.demoSwitchBackground = function(bgType) {
-        const bgPreview = document.querySelector(`.bg-preview[data-bg="${bgType}"]`);
-        if (bgPreview) bgPreview.click();
-    };
+        // Фоны
+        setupBackgroundSelector();
+        
+        // Профиль
+        const profileLink = document.getElementById('profile-link');
+        if (profileLink) {
+            profileLink.addEventListener('click', openProfilePage);
+        }
+        
+        const profileBackBtn = document.querySelector('.profile-back-btn');
+        if (profileBackBtn) {
+            profileBackBtn.addEventListener('click', closeProfilePage);
+        }
+        
+        // Другие существующие обработчики...
+        // (Добавьте здесь другие функции из старого script.js)
+    }
 
-    // Консольные команды для демо
-    console.log('🎨 Telegram Nodes Prototype Loaded!');
-    console.log('Доступные команды:');
-    console.log('- demoSwitchNode("alpha") - переключить на узел');
-    console.log('- demoCreateNode("DesignLab", "orange") - создать узел');
-    console.log('- demoSwitchTheme("night") - переключить тему');
-    console.log('- demoSwitchBackground("dragon") - включить дракона!');
+    // ===== ЗАПУСК ВСЕГО =====
+    function startApplication() {
+        // Инициализируем новые функции хамелеона
+        init();
+        
+        // Инициализируем существующие функции
+        initExistingFeatures();
+        
+        // Финальная инициализация
+        console.log('🚀 Telegram Nodes REVOLUTION успешно запущен!');
+        console.log('🎨 Режим "Хамелеон" активирован');
+        console.log('🤖 AI помощник NOVA готов к работе');
+    }
+
+    // Запускаем приложение
+    startApplication();
 });
+
+// Добавляем CSS для уведомлений
+const notificationStyles = document.createElement('style');
+notificationStyles.textContent = `
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #34C759;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        z-index: 10000;
+        transform: translateX(100%);
+        opacity: 0;
+        transition: all 0.3s ease;
+        max-width: 300px;
+    }
+    
+    .notification-info {
+        background: #007AFF;
+    }
+    
+    .notification-success {
+        background: #34C759;
+    }
+    
+    .notification-error {
+        background: #FF3B30;
+    }
+    
+    .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    @keyframes aiSlideOut {
+        to {
+            transform: translateX(-50%) translateY(-20px);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(notificationStyles);
