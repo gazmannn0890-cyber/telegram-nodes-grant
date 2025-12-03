@@ -1,4 +1,76 @@
-/* ДОБАВЬ В КОНЕЦ ФАЙЛА style.css */
+/* Telegram Nodes - Design Concept */
+:root {
+    /* Telegram Colors - Day Theme */
+    --tg-blue: #0088cc;
+    --tg-light-blue: #40b7e8;
+    --tg-green: #34c759;
+    --tg-red: #ff3b30;
+    --tg-bg: #ffffff;
+    --tg-bg-secondary: #f7f7f7;
+    --tg-text: #000000;
+    --tg-text-secondary: #6d6d72;
+    --tg-border: #e5e5ea;
+    --tg-card: #ffffff;
+    
+    /* Discord-like gradients for Nodes */
+    --node-alpha: linear-gradient(135deg, #0088cc, #40b7e8);
+    --node-game: linear-gradient(135deg, #af52de, #bf5af2);
+    --node-family: linear-gradient(135deg, #34c759, #30d158);
+    --node-design: linear-gradient(135deg, #ff9500, #ff9f0a);
+    --node-study: linear-gradient(135deg, #5ac8fa, #64d2ff);
+    
+    /* Shadows */
+    --shadow-light: 0 2px 12px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.12);
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+}
+
+/* Night Theme */
+.night-theme {
+    --tg-bg: #0f0f0f;
+    --tg-bg-secondary: #1c1c1e;
+    --tg-text: #ffffff;
+    --tg-text-secondary: #8e8e93;
+    --tg-border: #2c2c2e;
+    --tg-card: #1c1c1e;
+    --shadow-light: 0 2px 12px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+    background: var(--tg-bg);
+    color: var(--tg-text);
+    transition: background-color var(--transition-normal);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+.container {
+    display: flex;
+    width: 1200px;
+    height: 800px;
+    background: var(--tg-card);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid var(--tg-border);
+    position: relative;
+    transition: all 0.3s ease;
+}
 
 /* === СИСТЕМА КАСТОМНЫХ ФОНОВ === */
 .background-selector {
@@ -6,6 +78,14 @@
     top: 20px;
     left: 20px;
     z-index: 1000;
+    background: var(--tg-card);
+    padding: 15px;
+    border-radius: 16px;
+    border: 1px solid var(--tg-border);
+    box-shadow: var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .bg-preview {
@@ -13,11 +93,14 @@
     height: 60px;
     border-radius: 12px;
     cursor: pointer;
-    margin-bottom: 10px;
     border: 3px solid transparent;
     transition: all 0.3s ease;
     overflow: hidden;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
 }
 
 .bg-preview:hover {
@@ -318,42 +401,562 @@
     100% { transform: rotate(360deg); }
 }
 
-/* === АДАПТИВНЫЕ ЭЛЕМЕНТЫ ДЛЯ ВСЕХ === */
-/* Для детей - более мягкие формы */
-.mode-kids .container,
-.mode-kids .node-avatar,
-.mode-kids .chat-item,
-.mode-kids .switch-item {
-    border-radius: 20px !important;
+/* Side Menu - Telegram Style */
+.side-menu {
+    width: 280px;
+    background: var(--tg-bg-secondary);
+    border-right: 1px solid var(--tg-border);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--transition-normal);
+    z-index: 1;
 }
 
-.mode-kids .node-avatar {
-    border-radius: 16px !important;
+.user-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--tg-border);
 }
 
-/* Для профессионалов - более строгий стиль */
-.mode-pro .container {
+.user-avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.user-info {
+    flex: 1;
+}
+
+.user-info strong {
+    display: block;
+    font-size: 16px;
+}
+
+.user-info span {
+    font-size: 14px;
+    color: var(--tg-text-secondary);
+}
+
+.menu-toggle {
+    background: var(--tg-border);
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.accounts-section, .nodes-section {
+    margin-bottom: 30px;
+}
+
+.accounts-section h3, .nodes-section h3 {
+    font-size: 14px;
+    text-transform: uppercase;
+    color: var(--tg-text-secondary);
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+}
+
+.account-item, .node-item, .add-node {
+    display: flex;
+    align-items: center;
+    padding: 12px;
     border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
 }
 
-.mode-pro .side-menu,
-.mode-pro .main-content {
-    background: rgba(var(--tg-card-rgb), 0.95);
+.account-item:hover, .node-item:hover, .add-node:hover {
+    background: var(--tg-border);
 }
 
-/* Универсальные улучшения */
-.chat-item {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.account-item.active {
+    background: var(--tg-border);
+}
+
+.account-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: var(--tg-blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-weight: 600;
 }
 
 .node-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    color: white;
+    font-size: 18px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .node-avatar:hover {
     transform: scale(1.1);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.node-avatar.small {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+}
+
+.add-btn {
+    background: var(--tg-border);
+    color: var(--tg-text-secondary);
+}
+
+.node-item span, .add-node span {
+    flex: 1;
+    font-size: 15px;
+}
+
+.node-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--tg-blue);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 1;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--tg-border);
+    margin-bottom: 20px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--tg-border);
+    border: none;
+    color: var(--tg-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.back-btn:hover {
+    background: var(--tg-blue);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.current-node {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.current-node h2 {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.search-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--tg-border);
+    border: none;
+    color: var(--tg-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.search-btn:hover {
+    background: var(--tg-blue);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Quick Switch - Discord-like */
+.quick-switch {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--tg-border);
+    overflow-x: auto;
+}
+
+.switch-item {
+    padding: 10px 20px;
+    background: var(--tg-border);
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+    border: 2px solid transparent;
+}
+
+.switch-item:hover {
+    background: var(--tg-blue);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.switch-item.active {
+    background: var(--tg-blue);
+    color: white;
+    border-color: var(--tg-light-blue);
+    box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);
+}
+
+.switch-item.add {
+    background: transparent;
+    border: 2px dashed var(--tg-border);
+    color: var(--tg-text-secondary);
+    min-width: 40px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Chat List */
+.chat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chat-item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background: var(--tg-card);
+    border-radius: 16px;
+    border: 1px solid var(--tg-border);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    animation: slide-up 0.5s ease backwards;
+}
+
+.chat-item:nth-child(1) { animation-delay: 0.1s; }
+.chat-item:nth-child(2) { animation-delay: 0.2s; }
+.chat-item:nth-child(3) { animation-delay: 0.3s; }
+.chat-item:nth-child(4) { animation-delay: 0.4s; }
+
+.chat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-light);
+    border-color: var(--tg-blue);
+}
+
+.chat-avatar {
+    margin-right: 16px;
+    position: relative;
+}
+
+.node-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.chat-info {
+    flex: 1;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.chat-header h4 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.chat-time {
+    font-size: 13px;
+    color: var(--tg-text-secondary);
+}
+
+.chat-info p {
+    font-size: 14px;
+    color: var(--tg-text-secondary);
+    line-height: 1.4;
+}
+
+.chat-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--tg-red);
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Create Node Panel */
+.create-node-panel {
+    background: var(--tg-card);
+    border-radius: 20px;
+    padding: 25px;
+    margin-top: 25px;
+    border: 2px solid var(--tg-border);
+    display: none;
+    animation: slide-up 0.3s ease;
+}
+
+.create-node-panel h3 {
+    margin-bottom: 25px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--tg-text-secondary);
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: 2px solid var(--tg-border);
+    background: var(--tg-bg);
+    color: var(--tg-text);
+    font-size: 16px;
+    transition: border-color var(--transition-fast);
+}
+
+.form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--tg-blue);
+}
+
+.color-picker {
+    display: flex;
+    gap: 12px;
+}
+
+.color-option {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+    border: 3px solid transparent;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+}
+
+.color-option.active {
+    border-color: var(--tg-text);
+    transform: scale(1.1);
+}
+
+.form-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 25px;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 14px 28px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-primary {
+    background: var(--tg-blue);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--tg-light-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 136, 204, 0.3);
+}
+
+.btn-secondary {
+    background: var(--tg-border);
+    color: var(--tg-text);
+}
+
+.btn-secondary:hover {
+    background: var(--tg-text-secondary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Node Admin Panel */
+.node-admin-panel {
+    width: 320px;
+    background: var(--tg-bg-secondary);
+    border-left: 1px solid var(--tg-border);
+    padding: 25px;
+    display: none;
+    z-index: 1;
+}
+
+.node-admin-panel h3 {
+    margin-bottom: 25px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-section {
+    margin-bottom: 30px;
+}
+
+.admin-section h4 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: var(--tg-text-secondary);
+}
+
+.role-item, .channel-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: var(--tg-card);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    border: 1px solid var(--tg-border);
+}
+
+.role-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.role-count, .channel-type {
+    margin-left: auto;
+    font-size: 14px;
+    color: var(--tg-text-secondary);
+    background: var(--tg-border);
+    padding: 4px 10px;
+    border-radius: 8px;
+}
+
+/* Theme Controls */
+.theme-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    background: var(--tg-card);
+    padding: 15px;
+    border-radius: 16px;
+    border: 1px solid var(--tg-border);
+    box-shadow: var(--shadow-light);
+    z-index: 1000;
+}
+
+.theme-btn, .screenshot-btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 2px solid var(--tg-border);
+    background: var(--tg-bg);
+    color: var(--tg-text);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all var(--transition-fast);
+}
+
+.theme-btn.active {
+    background: var(--tg-blue);
+    color: white;
+    border-color: var(--tg-blue);
+}
+
+.theme-btn:hover:not(.active), .screenshot-btn:hover {
+    background: var(--tg-border);
+    transform: translateY(-2px);
+}
+
+.screenshot-btn {
+    background: var(--tg-green);
+    color: white;
+    border-color: var(--tg-green);
 }
 
 /* Анимация появления элементов */
@@ -368,16 +971,69 @@
     }
 }
 
-.chat-item,
-.node-item,
-.switch-item {
+.node-item {
     animation: slide-up 0.5s ease backwards;
 }
 
-.chat-item:nth-child(1) { animation-delay: 0.1s; }
-.chat-item:nth-child(2) { animation-delay: 0.2s; }
-.chat-item:nth-child(3) { animation-delay: 0.3s; }
-.chat-item:nth-child(4) { animation-delay: 0.4s; }
 .node-item:nth-child(1) { animation-delay: 0.1s; }
 .node-item:nth-child(2) { animation-delay: 0.2s; }
 .node-item:nth-child(3) { animation-delay: 0.3s; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        width: 100%;
+        height: auto;
+    }
+    
+    .side-menu {
+        width: 100%;
+        height: auto;
+    }
+    
+    .node-admin-panel {
+        width: 100%;
+        height: auto;
+    }
+    
+    .background-selector {
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: calc(100% - 40px);
+        top: 10px;
+    }
+    
+    .bg-preview {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Уведомления */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #34C759;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    z-index: 10000;
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.notification-info {
+    background: #007AFF;
+}
+
+.notification-success {
+    background: #34C759;
+}
+
+.notification-error {
+    background: #FF3B30;
+}
