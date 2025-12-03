@@ -27,7 +27,7 @@
     <div class="container">
         <!-- Боковое меню (Telegram style) -->
         <div class="side-menu">
-            <div class="user-section">
+            <div class="user-section" id="profile-link">
                 <div class="user-avatar">
                     <img src="https://i.pravatar.cc/40" alt="User">
                 </div>
@@ -36,7 +36,7 @@
                     <span>Личный аккаунт</span>
                 </div>
                 <div class="menu-toggle">
-                    <i class="fas fa-bars"></i>
+                    <i class="fas fa-chevron-right"></i>
                 </div>
             </div>
 
@@ -226,6 +226,188 @@
                 <div class="channel-item">#design <span class="channel-type">Текстовый</span></div>
                 <div class="channel-item">#voice-chat <span class="channel-type">Голосовой</span></div>
                 <div class="channel-item">#announcements <span class="channel-type">Только чтение</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Страница профиля (скрыта по умолчанию) -->
+    <div class="profile-page" style="display: none;">
+        <div class="profile-container">
+            <!-- Шапка профиля -->
+            <div class="profile-header">
+                <button class="profile-back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2>Профиль узла</h2>
+                <button class="profile-edit-btn">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </div>
+
+            <!-- Основная информация профиля -->
+            <div class="profile-main">
+                <div class="profile-avatar-section">
+                    <div class="profile-avatar large" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">
+                        <i class="fas fa-cogs"></i>
+                        <div class="avatar-edit-overlay">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                    <h2 class="profile-name">AlphaTeam</h2>
+                    <p class="profile-status">Рабочий проект • 32 участника</p>
+                    
+                    <div class="profile-actions">
+                        <button class="profile-action-btn">
+                            <i class="fas fa-share-alt"></i>
+                            <span>Пригласить</span>
+                        </button>
+                        <button class="profile-action-btn">
+                            <i class="fas fa-qrcode"></i>
+                            <span>QR-код</span>
+                        </button>
+                        <button class="profile-action-btn">
+                            <i class="fas fa-cog"></i>
+                            <span>Настройки</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Информация о профиле узла -->
+                <div class="profile-info-section">
+                    <div class="info-card">
+                        <h3><i class="fas fa-id-card"></i> Информация профиля</h3>
+                        <div class="info-row">
+                            <span class="info-label">Имя в узле:</span>
+                            <span class="info-value">Алексей (Рабочий)</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Статус:</span>
+                            <span class="info-value">В сети • Работаю</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Био:</span>
+                            <span class="info-value">Руководитель проекта AlphaTeam. Люблю кофе и дедлайны ☕</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Номер телефона:</span>
+                            <span class="info-value">+7 *** *** ** 45 (скрыто)</span>
+                        </div>
+                    </div>
+
+                    <!-- Настройки приватности узла -->
+                    <div class="info-card">
+                        <h3><i class="fas fa-shield-alt"></i> Настройки узла</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Приватность узла</h4>
+                                <p>Только по приглашению</p>
+                            </div>
+                            <div class="setting-toggle">
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Показывать основной номер</h4>
+                                <p>Скрыть для участников узла</p>
+                            </div>
+                            <div class="setting-toggle">
+                                <label class="switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Авто-сохранение медиа</h4>
+                                <p>Сохранять фото/видео из узла</p>
+                            </div>
+                            <div class="setting-toggle">
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Участники узла -->
+                    <div class="info-card">
+                        <h3><i class="fas fa-users"></i> Участники (32)</h3>
+                        <div class="members-grid">
+                            <div class="member-item">
+                                <div class="member-avatar" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">
+                                    А
+                                </div>
+                                <span class="member-name">Алексей</span>
+                                <span class="member-role admin">Админ</span>
+                            </div>
+                            <div class="member-item">
+                                <div class="member-avatar" style="background: linear-gradient(135deg, #af52de, #bf5af2);">
+                                    М
+                                </div>
+                                <span class="member-name">Мария</span>
+                                <span class="member-role moderator">Модератор</span>
+                            </div>
+                            <div class="member-item">
+                                <div class="member-avatar" style="background: linear-gradient(135deg, #34c759, #30d158);">
+                                    Д
+                                </div>
+                                <span class="member-name">Дмитрий</span>
+                                <span class="member-role">Участник</span>
+                            </div>
+                            <div class="member-item">
+                                <div class="member-avatar" style="background: linear-gradient(135deg, #ff9500, #ff9f0a);">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <span class="member-name">Добавить</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Статистика узла -->
+                    <div class="info-card">
+                        <h3><i class="fas fa-chart-bar"></i> Статистика узла</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">156</div>
+                                <div class="stat-label">Сообщений за день</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">24ч</div>
+                                <div class="stat-label">Активность</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">83%</div>
+                                <div class="stat-label">Участников онлайн</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">7д</div>
+                                <div class="stat-label">Создан назад</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Опасная зона -->
+                    <div class="info-card danger-zone">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Опасная зона</h3>
+                        <p class="danger-warning">Эти действия нельзя отменить</p>
+                        <div class="danger-actions">
+                            <button class="danger-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Покинуть узел</span>
+                            </button>
+                            <button class="danger-btn delete">
+                                <i class="fas fa-trash"></i>
+                                <span>Удалить узел</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
