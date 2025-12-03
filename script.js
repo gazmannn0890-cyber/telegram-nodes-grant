@@ -15,11 +15,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const screenshotBtn = document.querySelector('.screenshot-btn');
     const adminPanel = document.querySelector('.node-admin-panel');
     const backBtn = document.querySelector('.back-btn');
+    const bgPreviews = document.querySelectorAll('.bg-preview');
+    const dragonContainer = document.querySelector('.dragon-container');
+    const fireDragon = document.querySelector('.fire-dragon');
 
     // Текущее состояние
     let currentTheme = 'day';
     let currentNode = 'alpha';
     let selectedColor = 'blue';
+    let currentBackground = 'default';
 
     // Инициализация
     init();
@@ -35,6 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             document.querySelector('.container').classList.add('fade-in');
         }, 100);
+        
+        // Инициализируем взаимодействие с драконом
+        setTimeout(setupDragonInteraction, 1000);
     }
 
     function setupEventListeners() {
@@ -46,6 +53,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Обновление активной кнопки
                 themeButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Выбор фона
+        bgPreviews.forEach(preview => {
+            preview.addEventListener('click', function() {
+                const bgType = this.dataset.bg;
+                selectBackground(bgType);
+                
+                // Обновление активного превью
+                bgPreviews.forEach(p => p.classList.remove('active'));
                 this.classList.add('active');
             });
         });
@@ -152,6 +171,118 @@ document.addEventListener('DOMContentLoaded', function() {
         showNotification('Тема изменена: ' + (theme === 'day' ? 'День' : 'Ночь'), 'info');
     }
 
+    function selectBackground(bgType) {
+        currentBackground = bgType;
+        const container = document.querySelector('.container');
+        
+        // Убираем все классы фонов
+        container.classList.remove('with-bg');
+        container.className = container.className.replace(/bg-\w+/g, '');
+        dragonContainer.style.display = 'none';
+        
+        // Добавляем оверлей фона
+        let bgOverlay = document.querySelector('.container-bg-overlay');
+        if (!bgOverlay) {
+            bgOverlay = document.createElement('div');
+            bgOverlay.className = 'container-bg-overlay';
+            container.appendChild(bgOverlay);
+        }
+        
+        // Применяем выбранный фон
+        switch(bgType) {
+            case 'default':
+                bgOverlay.style.background = '';
+                container.classList.remove('with-bg');
+                break;
+                
+            case 'gradient1':
+                container.classList.add('with-bg');
+                bgOverlay.style.background = 'linear-gradient(135deg, #0088cc, #6a11cb, #2575fc)';
+                break;
+                
+            case 'gradient2':
+                container.classList.add('with-bg');
+                bgOverlay.style.background = 'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)';
+                break;
+                
+            case 'pattern1':
+                container.classList.add('with-bg');
+                bgOverlay.style.background = 
+                    'radial-gradient(circle at 20% 80%, rgba(64, 183, 232, 0.15) 0%, transparent 50%), ' +
+                    'radial-gradient(circle at 80% 20%, rgba(175, 82, 222, 0.15) 0%, transparent 50%), ' +
+                    'var(--tg-bg)';
+                break;
+                
+            case 'pattern2':
+                container.classList.add('with-bg');
+                bgOverlay.style.background = 
+                    'linear-gradient(45deg, transparent 48%, rgba(52, 199, 89, 0.1) 50%, transparent 52%), ' +
+                    'linear-gradient(-45deg, transparent 48%, rgba(255, 59, 48, 0.1) 50%, transparent 52%), ' +
+                    'var(--tg-bg)';
+                bgOverlay.style.backgroundSize = '40px 40px';
+                break;
+                
+            case 'animated':
+                container.classList.add('with-bg');
+                bgOverlay.style.background = 'linear-gradient(135deg, var(--tg-bg), var(--tg-bg-secondary))';
+                bgOverlay.classList.add('bg-animated');
+                break;
+                
+            case 'space':
+                container.classList.add('with-bg');
+                bgOverlay.style.background = 
+                    'radial-gradient(ellipse at 20% 30%, rgba(64, 183, 232, 0.3) 0%, transparent 40%), ' +
+                    'radial-gradient(ellipse at 80% 70%, rgba(175, 82, 222, 0.3) 0%, transparent 40%), ' +
+                    'linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%)';
+                break;
+                
+            case 'watercolor':
+                container.classList.add('with-bg');
+                bgOverlay.style.background = 
+                    'radial-gradient(circle at 10% 20%, rgba(64, 183, 232, 0.4) 0%, transparent 40%), ' +
+                    'radial-gradient(circle at 90% 80%, rgba(175, 82, 222, 0.4) 0%, transparent 40%), ' +
+                    'radial-gradient(circle at 50% 50%, rgba(52, 199, 89, 0.3) 0%, transparent 50%), ' +
+                    'linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%)';
+                break;
+                
+            case 'neon':
+                container.classList.add('with-bg');
+                bgOverlay.style.background = 
+                    'linear-gradient(135deg, #0f0f1a 0%, #1a0f2a 25%, #0f1a2a 50%, #1a2a0f 75%, #0f0f1a 100%)';
+                break;
+                
+            case 'dragon':
+                container.classList.add('with-bg');
+                dragonContainer.style.display = 'block';
+                bgOverlay.style.background = 'linear-gradient(135deg, #0a0a2a, #1a1a3a)';
+                
+                // Анимация дракона при активации
+                fireDragon.style.animation = 'none';
+                setTimeout(() => {
+                    fireDragon.style.animation = 'fly-around 25s infinite linear';
+                }, 10);
+                break;
+        }
+        
+        showNotification(`Фон изменен: ${getBgName(bgType)}`, 'info');
+    }
+    
+    function getBgName(bgType) {
+        const names = {
+            'default': 'Стандартный',
+            'gradient1': 'Сине-фиолетовый градиент',
+            'gradient2': 'Темный градиент',
+            'pattern1': 'Радиальный паттерн',
+            'pattern2': 'Линейный паттерн',
+            'animated': 'Анимированный',
+            'space': 'Космос',
+            'watercolor': 'Акварель',
+            'neon': 'Неон',
+            'dragon': 'Огненный дракон!'
+        };
+        return names[bgType] || bgType;
+    }
+    
     function selectNode(node) {
         currentNode = node;
         
@@ -238,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const nodesSection = document.querySelector('.nodes-section');
         const newNode = document.createElement('div');
         newNode.className = 'node-item';
-        newNode.dataset.node = name.toLowerCase();
+        newNode.dataset.node = name.toLowerCase().replace(/\s+/g, '_');
         
         const colorGradients = {
             'blue': 'linear-gradient(135deg, #0088cc, #40b7e8)',
@@ -301,9 +432,25 @@ document.addEventListener('DOMContentLoaded', function() {
         
         showNotification(`Узел "${name}" создан успешно!`, 'success');
         
-        // Обновление списка nodeItems
-        nodeItems = document.querySelectorAll('.node-item');
-        switchItems = document.querySelectorAll('.switch-item');
+        // Обновление списка элементов
+        const allNodeItems = document.querySelectorAll('.node-item');
+        const allSwitchItems = document.querySelectorAll('.switch-item');
+        
+        // Перепривязываем обработчики
+        allNodeItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const node = this.dataset.node;
+                selectNode(node);
+                
+                allNodeItems.forEach(i => {
+                    i.classList.remove('active');
+                    const indicator = i.querySelector('.node-indicator');
+                    if (indicator) indicator.style.display = 'none';
+                });
+                
+                this.classList.add('active');
+            });
+        });
     }
 
     function takeScreenshot() {
@@ -342,13 +489,14 @@ document.addEventListener('DOMContentLoaded', function() {
             container.style.boxShadow = '';
         }, 500);
         
-        showNotification('Скриншот сохранен в папку screenshots/', 'success');
-        
-        // В реальном приложении здесь был бы код для actual screenshot
-        // using html2canvas или Puppeteer
+        showNotification('Скриншот сохранен! (в реальном приложении)', 'success');
     }
 
     function showNotification(message, type) {
+        // Удаляем старые уведомления
+        const oldNotifications = document.querySelectorAll('.notification');
+        oldNotifications.forEach(n => n.remove());
+        
         // Создание уведомления
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
@@ -400,6 +548,36 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    
+    function setupDragonInteraction() {
+        const nodeAvatars = document.querySelectorAll('.node-avatar');
+        
+        nodeAvatars.forEach(avatar => {
+            avatar.addEventListener('mouseenter', function() {
+                if (currentBackground === 'dragon') {
+                    // Дракон летит к этой иконке
+                    const rect = this.getBoundingClientRect();
+                    const containerRect = document.querySelector('.container').getBoundingClientRect();
+                    
+                    const x = rect.left - containerRect.left + rect.width / 2;
+                    const y = rect.top - containerRect.top + rect.height / 2;
+                    
+                    // Сохраняем текущую анимацию
+                    const currentAnimation = fireDragon.style.animation;
+                    
+                    // Временно меняем позицию дракона
+                    fireDragon.style.left = `${x - 90}px`;
+                    fireDragon.style.top = `${y - 60}px`;
+                    fireDragon.style.animation = 'fire-pulse 0.5s infinite alternate';
+                    
+                    // Возвращаем обычную анимацию через 1 секунду
+                    setTimeout(() => {
+                        fireDragon.style.animation = currentAnimation;
+                    }, 1000);
+                }
+            });
+        });
+    }
 
     function updateUI() {
         // Установка начального активного узла
@@ -444,6 +622,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const themeBtn = document.querySelector(`.theme-btn[data-theme="${theme}"]`);
         if (themeBtn) themeBtn.click();
     };
+    
+    window.demoSwitchBackground = function(bgType) {
+        const bgPreview = document.querySelector(`.bg-preview[data-bg="${bgType}"]`);
+        if (bgPreview) bgPreview.click();
+    };
 
     // Консольные команды для демо
     console.log('🎨 Telegram Nodes Prototype Loaded!');
@@ -451,4 +634,5 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('- demoSwitchNode("alpha") - переключить на узел');
     console.log('- demoCreateNode("DesignLab", "orange") - создать узел');
     console.log('- demoSwitchTheme("night") - переключить тему');
+    console.log('- demoSwitchBackground("dragon") - включить дракона!');
 });
