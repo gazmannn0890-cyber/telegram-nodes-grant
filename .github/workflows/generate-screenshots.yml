@@ -1,0 +1,170 @@
+name: Generate Screenshots
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  generate-screenshots:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Install dependencies
+      run: |
+        npm install puppeteer html2canvas jsdom
+        
+    - name: Create screenshot script
+      run: |
+        cat > generate.js << 'EOF'
+        const puppeteer = require('puppeteer');
+        const fs = require('fs');
+        const path = require('path');
+
+        // Создаем папку для скриншотов
+        const screenshotsDir = path.join(__dirname, 'screenshots');
+        if (!fs.existsSync(screenshotsDir)) {
+          fs.mkdirSync(screenshotsDir, { recursive: true });
+        }
+
+        async function takeScreenshot(page, name, options = {}) {
+          const filePath = path.join(screenshotsDir, `${name}.png`);
+          await page.screenshot({ 
+            path: filePath,
+            fullPage: true,
+            ...options
+          });
+          console.log(`✅ Создан скриншот: ${name}.png`);
+        }
+
+        async function main() {
+          console.log('🚀 Запуск генерации скриншотов...');
+          
+          const browser = await puppeteer.launch({
+            headless: 'new',
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+          });
+          
+          const page = await browser.newPage();
+          await page.setViewport({ width: 1200, height: 800 });
+          
+          // Открываем локальный файл
+          const htmlPath = path.join(__dirname, 'index.html');
+          await page.goto(`file://${htmlPath}`, { waitUntil: 'networkidle0' });
+          
+          // Ждем загрузки
+          await page.waitForSelector('.container');
+          await page.waitForTimeout(2000);
+          
+          // 1. Основной вид (день)
+          console.log('📸 Делаем скриншот: main_day.png');
+          await takeScreenshot(page, 'main_day');
+          
+          // 2. Переключаем на ночную тему
+          await page.click('.theme-btn[data-theme="night"]');
+          await page.waitForTimeout(1000);
+          console.log('🌙 Делаем скриншот: main_night.png');
+          await takeScreenshot(page, 'main_night');
+          
+          // 3. Возвращаем дневную тему
+          await page.click('.theme-btn[data-theme="day"]');
+          await page.waitForTimeout(500);
+          
+          // 4. Открываем GameZone
+          await page.click('.node-item[data-node="game"]');
+          await page.waitForTimeout(1000);
+          console.log('🎮 Делаем скриншот: gamezone.png');
+          await takeScreenshot(page, 'gamezone');
+          
+          // 5. Показываем панель создания узла
+          await page.click('.add-node');
+          await page.waitForTimeout(1000);
+          console.log('➕ Делаем скриншот: create_node.png');
+          await takeScreenshot(page, 'create_node');
+          
+          // 6. Закрываем панель создания и показываем FamilyHub
+          await page.click('.btn-secondary');
+          await page.click('.node-item[data-node="family"]');
+          await page.waitForTimeout(1000);
+          console.log('🏠 Делаем скриншот: familyhub.png');
+          await takeScreenshot(page, 'familyhub');
+          
+          // 7. Quick Switch фильтрация
+          await page.click('.switch-item:nth-child(3)'); // GameZone filter
+          await page.waitForTimeout(800);
+          console.log('🔍 Делаем скриншот: quick_switch.png');
+          await takeScreenshot(page, 'quick_switch', { clip: { x: 280, y: 100, width: 600, height: 600 } });
+          
+          await browser.close();
+          console.log('🎉 Все скриншоты созданы!');
+          
+          // Создаем HTML галерею для просмотра
+          createGallery();
+        }
+
+        function createGallery() {
+          const files = fs.readdirSync(screenshotsDir).filter(f => f.endsWith('.png'));
+          
+          const html = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Telegram Nodes - Скриншоты</title>
+            <style>
+              body { font-family: -apple-system, sans-serif; padding: 40px; background: #f5f5f7; }
+              h1 { color: #0088cc; margin-bottom: 40px; }
+              .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+              .screenshot { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+              .screenshot img { width: 100%; border-radius: 8px; margin-bottom: 15px; }
+              .screenshot h3 { margin: 0 0 10px 0; color: #1d1d1f; }
+              .screenshot p { color: #6d6d72; font-size: 14px; margin: 0; }
+              .download-btn { display: inline-block; margin-top: 15px; padding: 10px 20px; background: #0088cc; color: white; text-decoration: none; border-radius: 8px; }
+            </style>
+          </head>
+          <body>
+            <h1>📸 Telegram Nodes - Скриншоты для конкурса</h1>
+            <p>Автоматически сгенерировано: ${new Date().toLocaleString()}</p>
+            <div class="gallery">
+              ${files.map(file => `
+                <div class="screenshot">
+                  <img src="${file}" alt="${file}">
+                  <h3>${file.replace('.png', '').replace('_', ' ')}</h3>
+                  <p>Размер: ${Math.round(fs.statSync(path.join(screenshotsDir, file)).size / 1024)} KB</p>
+                  <a href="${file}" class="download-btn" download>Скачать PNG</a>
+                </div>
+              `).join('')}
+            </div>
+          </body>
+          </html>
+          `;
+          
+          fs.writeFileSync(path.join(screenshotsDir, 'index.html'), html);
+          console.log('📁 Создана галерея: screenshots/index.html');
+        }
+
+        main().catch(console.error);
+        EOF
+    
+    - name: Run screenshot generation
+      run: node generate.js
+    
+    - name: Upload screenshots as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: telegram-nodes-screenshots
+        path: screenshots/
+        
+    - name: Commit and push screenshots
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git add screenshots/
+        git commit -m "🤖 Автоматически сгенерированы скриншоты" || echo "Нет изменений для коммита"
+        git push origin main
