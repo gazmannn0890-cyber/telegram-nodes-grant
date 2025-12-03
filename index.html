@@ -3,427 +3,482 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Nodes - Design Concept</title>
+    <title>Telegram Nodes REVOLUTION</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
-<body class="day-theme">
-    <!-- Панель выбора фона -->
-    <div class="background-selector">
-        <div class="bg-preview bg-default active" data-bg="default" title="Стандартный фон"></div>
-        <div class="bg-preview bg-gradient-1" data-bg="gradient1" title="Сине-фиолетовый градиент"></div>
-        <div class="bg-preview bg-gradient-2" data-bg="gradient2" title="Темный градиент"></div>
-        <div class="bg-preview bg-pattern-1" data-bg="pattern1" title="Радиальный паттерн"></div>
-        <div class="bg-preview bg-pattern-2" data-bg="pattern2" title="Линейный паттерн"></div>
-        <div class="bg-preview bg-animated" data-bg="animated" title="Анимированный фон"></div>
-        <div class="bg-preview bg-space" data-bg="space" title="Космическая тема"></div>
-        <div class="bg-preview bg-watercolor" data-bg="watercolor" title="Акварель"></div>
-        <div class="bg-preview bg-neon" data-bg="neon" title="Неоновая сетка"></div>
-        <div class="bg-preview dragon-btn" data-bg="dragon" title="Огненный дракон!">
-            🐉
+<body class="day-theme cosmic-bg">
+    <!-- AI Assistant Voice -->
+    <div class="ai-voice-container">
+        <div class="ai-voice-message" id="aiMessage">
+            <div class="ai-avatar">
+                <div class="ai-pulse"></div>
+                <i class="fas fa-brain"></i>
+            </div>
+            <div class="ai-text">
+                <span class="ai-name">NOVA</span>
+                <p class="ai-message">Добро пожаловать в живые пространства Telegram Nodes</p>
+            </div>
         </div>
     </div>
 
-    <div class="container">
-        <!-- Боковое меню (Telegram style) -->
-        <div class="side-menu">
-            <div class="user-section" id="profile-link">
-                <div class="user-avatar">
-                    <img src="https://i.pravatar.cc/40" alt="User">
+    <!-- Quantum Portal Effect -->
+    <div class="quantum-portal" id="quantumPortal">
+        <canvas id="portalCanvas"></canvas>
+        <div class="portal-center">
+            <div class="singularity"></div>
+        </div>
+    </div>
+
+    <div class="universe-container">
+        <!-- Living Nodes Constellation -->
+        <div class="nodes-constellation">
+            <div class="constellation-line"></div>
+            
+            <!-- Living Node 1: AlphaTeam -->
+            <div class="living-node active" data-node="alpha" data-personality="professor">
+                <div class="node-aura" style="--aura-color: #0088cc;"></div>
+                <div class="node-core">
+                    <div class="node-face">
+                        <div class="node-eyes">
+                            <div class="eye left"></div>
+                            <div class="eye right"></div>
+                        </div>
+                        <div class="node-mouth"></div>
+                    </div>
+                    <div class="node-energy">
+                        <div class="energy-ring"></div>
+                        <div class="energy-spark"></div>
+                    </div>
                 </div>
-                <div class="user-info">
-                    <strong>Иван Петров</strong>
-                    <span>Личный аккаунт</span>
+                <div class="node-info">
+                    <h3 class="node-name">AlphaTeam</h3>
+                    <div class="node-status">
+                        <span class="status-pulse"></span>
+                        <span class="status-text">Готов к работе</span>
+                    </div>
+                    <div class="node-stats">
+                        <div class="stat">
+                            <i class="fas fa-bolt"></i>
+                            <span>89% энергии</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-heart"></i>
+                            <span>32 участника</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="menu-toggle">
-                    <i class="fas fa-chevron-right"></i>
-                </div>
+                <div class="node-glow"></div>
             </div>
 
-            <div class="accounts-section">
-                <h3>Аккаунты</h3>
-                <div class="account-item active">
-                    <div class="account-avatar">И</div>
-                    <span>Иван (личный)</span>
+            <!-- Living Node 2: GameZone -->
+            <div class="living-node" data-node="game" data-personality="spark">
+                <div class="node-aura" style="--aura-color: #af52de;"></div>
+                <div class="node-core">
+                    <div class="node-face">
+                        <div class="node-eyes">
+                            <div class="eye left"></div>
+                            <div class="eye right"></div>
+                        </div>
+                        <div class="node-mouth happy"></div>
+                    </div>
+                    <div class="node-energy">
+                        <div class="energy-ring"></div>
+                        <div class="energy-spark"></div>
+                    </div>
                 </div>
-                <div class="account-item">
-                    <div class="account-avatar">А</div>
-                    <span>alexey_work</span>
+                <div class="node-info">
+                    <h3 class="node-name">GameZone</h3>
+                    <div class="node-status">
+                        <span class="status-pulse"></span>
+                        <span class="status-text">Игровой режим</span>
+                    </div>
+                    <div class="node-stats">
+                        <div class="stat">
+                            <i class="fas fa-fire"></i>
+                            <span>95% энергии</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-trophy"></i>
+                            <span>5 турниров</span>
+                        </div>
+                    </div>
                 </div>
+                <div class="node-glow"></div>
             </div>
 
-            <div class="nodes-section">
-                <h3>Узлы (Nodes)</h3>
-                <div class="node-item" data-node="alpha">
-                    <div class="node-avatar" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">
-                        <i class="fas fa-cogs"></i>
+            <!-- Living Node 3: FamilyHub -->
+            <div class="living-node" data-node="family" data-personality="care">
+                <div class="node-aura" style="--aura-color: #34c759;"></div>
+                <div class="node-core">
+                    <div class="node-face">
+                        <div class="node-eyes">
+                            <div class="eye left"></div>
+                            <div class="eye right"></div>
+                        </div>
+                        <div class="node-mouth smile"></div>
                     </div>
-                    <span>AlphaTeam</span>
-                    <div class="node-indicator"></div>
-                </div>
-                <div class="node-item" data-node="game">
-                    <div class="node-avatar" style="background: linear-gradient(135deg, #af52de, #bf5af2);">
-                        <i class="fas fa-gamepad"></i>
+                    <div class="node-energy">
+                        <div class="energy-ring"></div>
+                        <div class="energy-spark"></div>
                     </div>
-                    <span>GameZone</span>
                 </div>
-                <div class="node-item" data-node="family">
-                    <div class="node-avatar" style="background: linear-gradient(135deg, #34c759, #30d158);">
-                        <i class="fas fa-home"></i>
+                <div class="node-info">
+                    <h3 class="node-name">FamilyHub</h3>
+                    <div class="node-status">
+                        <span class="status-pulse"></span>
+                        <span class="status-text">Семейный уют</span>
                     </div>
-                    <span>FamilyHub</span>
+                    <div class="node-stats">
+                        <div class="stat">
+                            <i class="fas fa-coffee"></i>
+                            <span>75% энергии</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-users"></i>
+                            <span>12 близких</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="add-node">
-                    <div class="node-avatar add-btn">
+                <div class="node-glow"></div>
+            </div>
+
+            <!-- New Node Creation Portal -->
+            <div class="node-creation-portal" id="createNodePortal">
+                <div class="portal-gate">
+                    <div class="portal-rings">
+                        <div class="ring ring-1"></div>
+                        <div class="ring ring-2"></div>
+                        <div class="ring ring-3"></div>
+                    </div>
+                    <div class="portal-center">
                         <i class="fas fa-plus"></i>
                     </div>
-                    <span>Создать узел</span>
+                </div>
+                <div class="portal-label">
+                    <span>Создать живое пространство</span>
                 </div>
             </div>
         </div>
 
-        <!-- Основной контент -->
-        <div class="main-content">
-            <!-- Шапка с Quick Switch -->
-            <div class="header">
-                <div class="header-left">
-                    <button class="back-btn"><i class="fas fa-arrow-left"></i></button>
-                    <div class="current-node">
-                        <div class="node-avatar small" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">
+        <!-- Quantum Interface -->
+        <div class="quantum-interface">
+            <!-- Time-based Adaptation -->
+            <div class="adaptation-panel">
+                <div class="time-adaptation">
+                    <div class="time-indicator">
+                        <div class="time-sun-moon">
+                            <div class="sun"></div>
+                            <div class="moon"></div>
+                        </div>
+                        <span class="current-time" id="currentTime">14:30</span>
+                    </div>
+                    <div class="adaptation-status">
+                        <span class="adaptation-label">Адаптация узлов:</span>
+                        <span class="adaptation-value" id="adaptationValue">Рабочий режим</span>
+                    </div>
+                </div>
+                
+                <div class="mood-adaptation">
+                    <div class="mood-selector">
+                        <div class="mood-option active" data-mood="focus">
+                            <i class="fas fa-bullseye"></i>
+                            <span>Фокус</span>
+                        </div>
+                        <div class="mood-option" data-mood="creative">
+                            <i class="fas fa-palette"></i>
+                            <span>Творчество</span>
+                        </div>
+                        <div class="mood-option" data-mood="relax">
+                            <i class="fas fa-couch"></i>
+                            <span>Отдых</span>
+                        </div>
+                        <div class="mood-option" data-mood="energy">
+                            <i class="fas fa-bolt"></i>
+                            <span>Энергия</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Neural Chat Interface -->
+            <div class="neural-chat">
+                <div class="chat-header">
+                    <div class="chat-node-info">
+                        <div class="chat-node-avatar" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">
+                            <div class="chat-node-pulse"></div>
                             <i class="fas fa-cogs"></i>
                         </div>
-                        <h2>AlphaTeam</h2>
-                    </div>
-                </div>
-                <div class="header-right">
-                    <button class="search-btn"><i class="fas fa-search"></i></button>
-                </div>
-            </div>
-
-            <!-- Панель Quick Switch -->
-            <div class="quick-switch">
-                <div class="switch-item active">Все</div>
-                <div class="switch-item">AlphaTeam</div>
-                <div class="switch-item">GameZone</div>
-                <div class="switch-item">FamilyHub</div>
-                <div class="switch-item add">+</div>
-            </div>
-
-            <!-- Список чатов -->
-            <div class="chat-list">
-                <div class="chat-item" data-node="alpha">
-                    <div class="chat-avatar">
-                        <div class="node-badge" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">A</div>
-                    </div>
-                    <div class="chat-info">
-                        <div class="chat-header">
-                            <h4>Дизайн-команда</h4>
-                            <span class="chat-time">12:30</span>
-                        </div>
-                        <p>Обсуждаем новый UI для Nodes...</p>
-                        <div class="chat-badge">3</div>
-                    </div>
-                </div>
-
-                <div class="chat-item" data-node="game">
-                    <div class="chat-avatar">
-                        <div class="node-badge" style="background: linear-gradient(135deg, #af52de, #bf5af2);">G</div>
-                    </div>
-                    <div class="chat-info">
-                        <div class="chat-header">
-                            <h4>Киберспорт турнир</h4>
-                            <span class="chat-time">11:45</span>
-                        </div>
-                        <p>Стартуем в 20:00, не опаздывайте!</p>
-                    </div>
-                </div>
-
-                <div class="chat-item" data-node="family">
-                    <div class="chat-avatar">
-                        <div class="node-badge" style="background: linear-gradient(135deg, #34c759, #30d158);">F</div>
-                    </div>
-                    <div class="chat-info">
-                        <div class="chat-header">
-                            <h4>Семейный чат</h4>
-                            <span class="chat-time">Вчера</span>
-                        </div>
-                        <p>Мама: Приезжайте в воскресенье на ужин</p>
-                        <div class="chat-badge">1</div>
-                    </div>
-                </div>
-
-                <div class="chat-item" data-node="alpha">
-                    <div class="chat-avatar">
-                        <div class="node-badge" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">A</div>
-                    </div>
-                    <div class="chat-info">
-                        <div class="chat-header">
-                            <h4>Отчеты Q3</h4>
-                            <span class="chat-time">Пт</span>
-                        </div>
-                        <p>Все отчеты готовы к отправке</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Панель создания узла (скрыта по умолчанию) -->
-            <div class="create-node-panel">
-                <h3><i class="fas fa-plus-circle"></i> Создание нового Узла</h3>
-                <div class="form-group">
-                    <label>Название узла</label>
-                    <input type="text" placeholder="Например: DesignLab" value="DesignLab">
-                </div>
-                <div class="form-group">
-                    <label>Выберите цвет</label>
-                    <div class="color-picker">
-                        <div class="color-option" style="background: linear-gradient(135deg, #0088cc, #40b7e8);" data-color="blue"></div>
-                        <div class="color-option" style="background: linear-gradient(135deg, #af52de, #bf5af2);" data-color="purple"></div>
-                        <div class="color-option" style="background: linear-gradient(135deg, #34c759, #30d158);" data-color="green"></div>
-                        <div class="color-option" style="background: linear-gradient(135deg, #ff9500, #ff9f0a);" data-color="orange"></div>
-                        <div class="color-option" style="background: linear-gradient(135deg, #5ac8fa, #64d2ff);" data-color="lightblue"></div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Тип узла</label>
-                    <select>
-                        <option>Рабочий проект</option>
-                        <option>Сообщество по интересам</option>
-                        <option>Семейный чат</option>
-                        <option>Образовательный</option>
-                    </select>
-                </div>
-                <div class="form-buttons">
-                    <button class="btn-secondary">Отмена</button>
-                    <button class="btn-primary">Создать узел</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Панель управления узлом (админка) -->
-        <div class="node-admin-panel">
-            <h3><i class="fas fa-shield-alt"></i> Управление AlphaTeam</h3>
-            <div class="admin-section">
-                <h4>Роли участников</h4>
-                <div class="role-item">
-                    <div class="role-color" style="background-color: #ff3b30;"></div>
-                    <span>Администраторы</span>
-                    <span class="role-count">3</span>
-                </div>
-                <div class="role-item">
-                    <div class="role-color" style="background-color: #007aff;"></div>
-                    <span>Модераторы</span>
-                    <span class="role-count">5</span>
-                </div>
-                <div class="role-item">
-                    <div class="role-color" style="background-color: #34c759;"></div>
-                    <span>Участники</span>
-                    <span class="role-count">24</span>
-                </div>
-            </div>
-            <div class="admin-section">
-                <h4>Каналы узла</h4>
-                <div class="channel-item">#general <span class="channel-type">Текстовый</span></div>
-                <div class="channel-item">#design <span class="channel-type">Текстовый</span></div>
-                <div class="channel-item">#voice-chat <span class="channel-type">Голосовой</span></div>
-                <div class="channel-item">#announcements <span class="channel-type">Только чтение</span></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Страница профиля (скрыта по умолчанию) -->
-    <div class="profile-page" style="display: none;">
-        <div class="profile-container">
-            <!-- Шапка профиля -->
-            <div class="profile-header">
-                <button class="profile-back-btn">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <h2>Профиль узла</h2>
-                <button class="profile-edit-btn">
-                    <i class="fas fa-edit"></i>
-                </button>
-            </div>
-
-            <!-- Основная информация профиля -->
-            <div class="profile-main">
-                <div class="profile-avatar-section">
-                    <div class="profile-avatar large" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">
-                        <i class="fas fa-cogs"></i>
-                        <div class="avatar-edit-overlay">
-                            <i class="fas fa-camera"></i>
+                        <div class="chat-node-details">
+                            <h4>AlphaTeam</h4>
+                            <div class="chat-node-mood">
+                                <span class="mood-indicator focus"></span>
+                                <span>В фокусе</span>
+                            </div>
                         </div>
                     </div>
-                    <h2 class="profile-name">AlphaTeam</h2>
-                    <p class="profile-status">Рабочий проект • 32 участника</p>
-                    
-                    <div class="profile-actions">
-                        <button class="profile-action-btn">
-                            <i class="fas fa-share-alt"></i>
-                            <span>Пригласить</span>
-                        </button>
-                        <button class="profile-action-btn">
-                            <i class="fas fa-qrcode"></i>
-                            <span>QR-код</span>
-                        </button>
-                        <button class="profile-action-btn">
-                            <i class="fas fa-cog"></i>
-                            <span>Настройки</span>
+                    <div class="chat-ai-assist">
+                        <button class="ai-assist-btn" id="aiAssistBtn">
+                            <i class="fas fa-robot"></i>
+                            <span>AI помощь</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Информация о профиле узла -->
-                <div class="profile-info-section">
-                    <div class="info-card">
-                        <h3><i class="fas fa-id-card"></i> Информация профиля</h3>
-                        <div class="info-row">
-                            <span class="info-label">Имя в узле:</span>
-                            <span class="info-value">Алексей (Рабочий)</span>
+                <div class="chat-messages">
+                    <div class="message ai-message">
+                        <div class="message-avatar">
+                            <i class="fas fa-brain"></i>
                         </div>
-                        <div class="info-row">
-                            <span class="info-label">Статус:</span>
-                            <span class="info-value">В сети • Работаю</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Био:</span>
-                            <span class="info-value">Руководитель проекта AlphaTeam. Люблю кофе и дедлайны ☕</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Номер телефона:</span>
-                            <span class="info-value">+7 *** *** ** 45 (скрыто)</span>
-                        </div>
-                    </div>
-
-                    <!-- Настройки приватности узла -->
-                    <div class="info-card">
-                        <h3><i class="fas fa-shield-alt"></i> Настройки узла</h3>
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <h4>Приватность узла</h4>
-                                <p>Только по приглашению</p>
+                        <div class="message-content">
+                            <div class="message-text">
+                                Я заметил, что команда обсуждает новый дизайн. Хотите, чтобы я создал прототип?
                             </div>
-                            <div class="setting-toggle">
-                                <label class="switch">
-                                    <input type="checkbox" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <h4>Показывать основной номер</h4>
-                                <p>Скрыть для участников узла</p>
-                            </div>
-                            <div class="setting-toggle">
-                                <label class="switch">
-                                    <input type="checkbox">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <h4>Авто-сохранение медиа</h4>
-                                <p>Сохранять фото/видео из узла</p>
-                            </div>
-                            <div class="setting-toggle">
-                                <label class="switch">
-                                    <input type="checkbox" checked>
-                                    <span class="slider"></span>
-                                </label>
+                            <div class="message-actions">
+                                <button class="message-action">
+                                    <i class="fas fa-magic"></i>
+                                    <span>Создать прототип</span>
+                                </button>
+                                <button class="message-action">
+                                    <i class="fas fa-comments"></i>
+                                    <span>Предложить тему</span>
+                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Участники узла -->
-                    <div class="info-card">
-                        <h3><i class="fas fa-users"></i> Участники (32)</h3>
-                        <div class="members-grid">
-                            <div class="member-item">
-                                <div class="member-avatar" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">
-                                    А
-                                </div>
-                                <span class="member-name">Алексей</span>
-                                <span class="member-role admin">Админ</span>
+                    <div class="message user-message">
+                        <div class="message-avatar">
+                            <img src="https://i.pravatar.cc/40" alt="User">
+                        </div>
+                        <div class="message-content">
+                            <div class="message-text">
+                                Да, отличная идея! Создай прототип для мобильной версии.
                             </div>
-                            <div class="member-item">
-                                <div class="member-avatar" style="background: linear-gradient(135deg, #af52de, #bf5af2);">
-                                    М
-                                </div>
-                                <span class="member-name">Мария</span>
-                                <span class="member-role moderator">Модератор</span>
-                            </div>
-                            <div class="member-item">
-                                <div class="member-avatar" style="background: linear-gradient(135deg, #34c759, #30d158);">
-                                    Д
-                                </div>
-                                <span class="member-name">Дмитрий</span>
-                                <span class="member-role">Участник</span>
-                            </div>
-                            <div class="member-item">
-                                <div class="member-avatar" style="background: linear-gradient(135deg, #ff9500, #ff9f0a);">
-                                    <i class="fas fa-plus"></i>
-                                </div>
-                                <span class="member-name">Добавить</span>
+                            <div class="message-status">
+                                <span class="status-time">14:32</span>
+                                <i class="fas fa-check-double"></i>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Статистика узла -->
-                    <div class="info-card">
-                        <h3><i class="fas fa-chart-bar"></i> Статистика узла</h3>
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <div class="stat-value">156</div>
-                                <div class="stat-label">Сообщений за день</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">24ч</div>
-                                <div class="stat-label">Активность</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">83%</div>
-                                <div class="stat-label">Участников онлайн</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">7д</div>
-                                <div class="stat-label">Создан назад</div>
+                    <div class="message system-message">
+                        <div class="message-content">
+                            <div class="system-notification">
+                                <i class="fas fa-bolt"></i>
+                                <span>AlphaTeam стал более продуктивным! (+15% энергии)</span>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Опасная зона -->
-                    <div class="info-card danger-zone">
-                        <h3><i class="fas fa-exclamation-triangle"></i> Опасная зона</h3>
-                        <p class="danger-warning">Эти действия нельзя отменить</p>
-                        <div class="danger-actions">
-                            <button class="danger-btn">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span>Покинуть узел</span>
+                <div class="chat-input">
+                    <div class="input-wrapper">
+                        <div class="input-modes">
+                            <button class="input-mode active" data-mode="text">
+                                <i class="fas fa-keyboard"></i>
                             </button>
-                            <button class="danger-btn delete">
-                                <i class="fas fa-trash"></i>
-                                <span>Удалить узел</span>
+                            <button class="input-mode" data-mode="voice">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <button class="input-mode" data-mode="thought">
+                                <i class="fas fa-brain"></i>
                             </button>
                         </div>
+                        <input type="text" 
+                               class="neural-input" 
+                               placeholder="Напишите сообщение или подумайте... (узел чувствует ваши мысли)"
+                               id="neuralInput">
+                        <button class="input-send" id="sendMessage">
+                            <i class="fas fa-paper-plane"></i>
+                            <div class="send-aura"></div>
+                        </button>
+                    </div>
+                    <div class="input-hint">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>Попробуйте подумать о работе — AlphaTeam отреагирует</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Node Evolution Panel -->
+        <div class="evolution-panel">
+            <div class="evolution-header">
+                <h3><i class="fas fa-seedling"></i> Эволюция узлов</h3>
+                <div class="evolution-time">
+                    <i class="fas fa-clock"></i>
+                    <span>След. уровень: 2 дня</span>
+                </div>
+            </div>
+            
+            <div class="evolution-progress">
+                <div class="node-evolution" data-node="alpha">
+                    <div class="evolution-visual">
+                        <div class="evolution-stage stage-3"></div>
+                        <div class="evolution-stage stage-2"></div>
+                        <div class="evolution-stage stage-1 active"></div>
+                        <div class="evolution-core">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                    </div>
+                    <div class="evolution-info">
+                        <div class="evolution-name">AlphaTeam</div>
+                        <div class="evolution-level">Уровень 3</div>
+                        <div class="evolution-stats">
+                            <div class="stat">
+                                <i class="fas fa-chart-line"></i>
+                                <span>+45% продуктивности</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Авто-модерация</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="evolution-next">
+                    <h4><i class="fas fa-rocket"></i> Следующие способности:</h4>
+                    <div class="abilities-list">
+                        <div class="ability">
+                            <div class="ability-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="ability-info">
+                                <div class="ability-name">AI-модератор</div>
+                                <div class="ability-desc">Автоматически модерирует чат</div>
+                            </div>
+                            <div class="ability-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 65%;"></div>
+                                </div>
+                                <span>65%</span>
+                            </div>
+                        </div>
+                        <div class="ability">
+                            <div class="ability-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="ability-info">
+                                <div class="ability-name">Квантовая связь</div>
+                                <div class="ability-desc">Мгновенная синхронизация</div>
+                            </div>
+                            <div class="ability-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 30%;"></div>
+                                </div>
+                                <span>30%</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Контейнер для дракона (скрыт по умолчанию) -->
-    <div class="dragon-container" style="display: none;">
-        <div class="fire-dragon"></div>
-        <div class="dragon-trail"></div>
+    <!-- Universe Controls -->
+    <div class="universe-controls">
+        <div class="control-group">
+            <button class="control-btn" id="timeWarpBtn">
+                <i class="fas fa-forward"></i>
+                <span>Ускорить время</span>
+            </button>
+            <button class="control-btn" id="nodeTalkBtn">
+                <i class="fas fa-comments"></i>
+                <span>Общение узлов</span>
+            </button>
+            <button class="control-btn active" id="chameleonModeBtn">
+                <i class="fas fa-palette"></i>
+                <span>Режим хамелеона</span>
+            </button>
+        </div>
+        
+        <div class="universe-stats">
+            <div class="stat">
+                <div class="stat-value" id="universeEnergy">89%</div>
+                <div class="stat-label">Энергия вселенной</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="nodeConnection">3/∞</div>
+                <div class="stat-label">Подключенные узлы</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="quantumSync">100%</div>
+                <div class="stat-label">Квантовая синхронизация</div>
+            </div>
+        </div>
     </div>
 
-    <!-- Кнопки управления темами -->
-    <div class="theme-controls">
-        <button class="theme-btn active" data-theme="day">День</button>
-        <button class="theme-btn" data-theme="night">Ночь</button>
-        <button class="screenshot-btn">📸 Сделать скриншот</button>
+    <!-- Creation Interface (Hidden) -->
+    <div class="creation-interface" id="creationInterface">
+        <div class="creation-portal">
+            <div class="creation-header">
+                <h2><i class="fas fa-star"></i> Создание живого пространства</h2>
+                <button class="creation-close" id="closeCreation">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="creation-steps">
+                <div class="step active">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Выберите личность</h4>
+                        <div class="personality-selector">
+                            <div class="personality-option" data-personality="professor">
+                                <div class="personality-visual">
+                                    <div class="personality-aura"></div>
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div class="personality-info">
+                                    <div class="personality-name">Профессор</div>
+                                    <div class="personality-desc">Умный, организованный, аналитический</div>
+                                </div>
+                            </div>
+                            <div class="personality-option" data-personality="spark">
+                                <div class="personality-visual">
+                                    <div class="personality-aura"></div>
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <div class="personality-info">
+                                    <div class="personality-name">Искра</div>
+                                    <div class="personality-desc">Энергичный, креативный, игривый</div>
+                                </div>
+                            </div>
+                            <div class="personality-option" data-personality="care">
+                                <div class="personality-visual">
+                                    <div class="personability-aura"></div>
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="personality-info">
+                                    <div class="personality-name">Забота</div>
+                                    <div class="personality-desc">Тёплый, поддерживающий, семейный</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="creation-actions">
+                <button class="creation-action" id="createNodeAction">
+                    <i class="fas fa-star"></i>
+                    <span>Дать жизнь пространству</span>
+                    <div class="action-aura"></div>
+                </button>
+            </div>
+        </div>
     </div>
+
+    <!-- Background Particles -->
+    <canvas id="particlesCanvas" class="particles-canvas"></canvas>
+
+    <!-- Audio Elements -->
+    <audio id="nodeSelectSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" preload="auto"></audio>
+    <audio id="portalSound" src="https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-portal-woosh-2297.mp3" preload="auto"></audio>
+    <audio id="quantumSound" src="https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-sparkle-905.mp3" preload="auto"></audio>
 
     <script src="script.js"></script>
 </body>
