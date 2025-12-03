@@ -8,6 +8,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="day-theme">
+    <!-- Панель выбора фона -->
+    <div class="background-selector">
+        <div class="bg-preview bg-default active" data-bg="default" title="Стандартный фон"></div>
+        <div class="bg-preview bg-gradient-1" data-bg="gradient1" title="Сине-фиолетовый градиент"></div>
+        <div class="bg-preview bg-gradient-2" data-bg="gradient2" title="Темный градиент"></div>
+        <div class="bg-preview bg-pattern-1" data-bg="pattern1" title="Радиальный паттерн"></div>
+        <div class="bg-preview bg-pattern-2" data-bg="pattern2" title="Линейный паттерн"></div>
+        <div class="bg-preview bg-animated" data-bg="animated" title="Анимированный фон"></div>
+        <div class="bg-preview bg-space" data-bg="space" title="Космическая тема"></div>
+        <div class="bg-preview bg-watercolor" data-bg="watercolor" title="Акварель"></div>
+        <div class="bg-preview bg-neon" data-bg="neon" title="Неоновая сетка"></div>
+        <div class="bg-preview dragon-btn" data-bg="dragon" title="Огненный дракон!">
+            🐉
+        </div>
+    </div>
+
     <div class="container">
         <!-- Боковое меню (Telegram style) -->
         <div class="side-menu">
@@ -212,6 +228,12 @@
                 <div class="channel-item">#announcements <span class="channel-type">Только чтение</span></div>
             </div>
         </div>
+    </div>
+
+    <!-- Контейнер для дракона (скрыт по умолчанию) -->
+    <div class="dragon-container" style="display: none;">
+        <div class="fire-dragon"></div>
+        <div class="dragon-trail"></div>
     </div>
 
     <!-- Кнопки управления темами -->
