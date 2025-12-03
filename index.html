@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Nodes - Design Concept</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="day-theme">
+    <div class="container">
+        <!-- Боковое меню (Telegram style) -->
+        <div class="side-menu">
+            <div class="user-section">
+                <div class="user-avatar">
+                    <img src="https://i.pravatar.cc/40" alt="User">
+                </div>
+                <div class="user-info">
+                    <strong>Иван Петров</strong>
+                    <span>Личный аккаунт</span>
+                </div>
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+
+            <div class="accounts-section">
+                <h3>Аккаунты</h3>
+                <div class="account-item active">
+                    <div class="account-avatar">И</div>
+                    <span>Иван (личный)</span>
+                </div>
+                <div class="account-item">
+                    <div class="account-avatar">А</div>
+                    <span>alexey_work</span>
+                </div>
+            </div>
+
+            <div class="nodes-section">
+                <h3>Узлы (Nodes)</h3>
+                <div class="node-item" data-node="alpha">
+                    <div class="node-avatar" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <span>AlphaTeam</span>
+                    <div class="node-indicator"></div>
+                </div>
+                <div class="node-item" data-node="game">
+                    <div class="node-avatar" style="background: linear-gradient(135deg, #af52de, #bf5af2);">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <span>GameZone</span>
+                </div>
+                <div class="node-item" data-node="family">
+                    <div class="node-avatar" style="background: linear-gradient(135deg, #34c759, #30d158);">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <span>FamilyHub</span>
+                </div>
+                <div class="add-node">
+                    <div class="node-avatar add-btn">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <span>Создать узел</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="main-content">
+            <!-- Шапка с Quick Switch -->
+            <div class="header">
+                <div class="header-left">
+                    <button class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                    <div class="current-node">
+                        <div class="node-avatar small" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h2>AlphaTeam</h2>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+
+            <!-- Панель Quick Switch -->
+            <div class="quick-switch">
+                <div class="switch-item active">Все</div>
+                <div class="switch-item">AlphaTeam</div>
+                <div class="switch-item">GameZone</div>
+                <div class="switch-item">FamilyHub</div>
+                <div class="switch-item add">+</div>
+            </div>
+
+            <!-- Список чатов -->
+            <div class="chat-list">
+                <div class="chat-item" data-node="alpha">
+                    <div class="chat-avatar">
+                        <div class="node-badge" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">A</div>
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-header">
+                            <h4>Дизайн-команда</h4>
+                            <span class="chat-time">12:30</span>
+                        </div>
+                        <p>Обсуждаем новый UI для Nodes...</p>
+                        <div class="chat-badge">3</div>
+                    </div>
+                </div>
+
+                <div class="chat-item" data-node="game">
+                    <div class="chat-avatar">
+                        <div class="node-badge" style="background: linear-gradient(135deg, #af52de, #bf5af2);">G</div>
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-header">
+                            <h4>Киберспорт турнир</h4>
+                            <span class="chat-time">11:45</span>
+                        </div>
+                        <p>Стартуем в 20:00, не опаздывайте!</p>
+                    </div>
+                </div>
+
+                <div class="chat-item" data-node="family">
+                    <div class="chat-avatar">
+                        <div class="node-badge" style="background: linear-gradient(135deg, #34c759, #30d158);">F</div>
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-header">
+                            <h4>Семейный чат</h4>
+                            <span class="chat-time">Вчера</span>
+                        </div>
+                        <p>Мама: Приезжайте в воскресенье на ужин</p>
+                        <div class="chat-badge">1</div>
+                    </div>
+                </div>
+
+                <div class="chat-item" data-node="alpha">
+                    <div class="chat-avatar">
+                        <div class="node-badge" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">A</div>
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-header">
+                            <h4>Отчеты Q3</h4>
+                            <span class="chat-time">Пт</span>
+                        </div>
+                        <p>Все отчеты готовы к отправке</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Панель создания узла (скрыта по умолчанию) -->
+            <div class="create-node-panel">
+                <h3><i class="fas fa-plus-circle"></i> Создание нового Узла</h3>
+                <div class="form-group">
+                    <label>Название узла</label>
+                    <input type="text" placeholder="Например: DesignLab" value="DesignLab">
+                </div>
+                <div class="form-group">
+                    <label>Выберите цвет</label>
+                    <div class="color-picker">
+                        <div class="color-option" style="background: linear-gradient(135deg, #0088cc, #40b7e8);" data-color="blue"></div>
+                        <div class="color-option" style="background: linear-gradient(135deg, #af52de, #bf5af2);" data-color="purple"></div>
+                        <div class="color-option" style="background: linear-gradient(135deg, #34c759, #30d158);" data-color="green"></div>
+                        <div class="color-option" style="background: linear-gradient(135deg, #ff9500, #ff9f0a);" data-color="orange"></div>
+                        <div class="color-option" style="background: linear-gradient(135deg, #5ac8fa, #64d2ff);" data-color="lightblue"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Тип узла</label>
+                    <select>
+                        <option>Рабочий проект</option>
+                        <option>Сообщество по интересам</option>
+                        <option>Семейный чат</option>
+                        <option>Образовательный</option>
+                    </select>
+                </div>
+                <div class="form-buttons">
+                    <button class="btn-secondary">Отмена</button>
+                    <button class="btn-primary">Создать узел</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Панель управления узлом (админка) -->
+        <div class="node-admin-panel">
+            <h3><i class="fas fa-shield-alt"></i> Управление AlphaTeam</h3>
+            <div class="admin-section">
+                <h4>Роли участников</h4>
+                <div class="role-item">
+                    <div class="role-color" style="background-color: #ff3b30;"></div>
+                    <span>Администраторы</span>
+                    <span class="role-count">3</span>
+                </div>
+                <div class="role-item">
+                    <div class="role-color" style="background-color: #007aff;"></div>
+                    <span>Модераторы</span>
+                    <span class="role-count">5</span>
+                </div>
+                <div class="role-item">
+                    <div class="role-color" style="background-color: #34c759;"></div>
+                    <span>Участники</span>
+                    <span class="role-count">24</span>
+                </div>
+            </div>
+            <div class="admin-section">
+                <h4>Каналы узла</h4>
+                <div class="channel-item">#general <span class="channel-type">Текстовый</span></div>
+                <div class="channel-item">#design <span class="channel-type">Текстовый</span></div>
+                <div class="channel-item">#voice-chat <span class="channel-type">Голосовой</span></div>
+                <div class="channel-item">#announcements <span class="channel-type">Только чтение</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Кнопки управления темами -->
+    <div class="theme-controls">
+        <button class="theme-btn active" data-theme="day">День</button>
+        <button class="theme-btn" data-theme="night">Ночь</button>
+        <button class="screenshot-btn">📸 Сделать скриншот</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
