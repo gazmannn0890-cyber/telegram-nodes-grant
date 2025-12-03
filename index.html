@@ -411,5 +411,147 @@
     </div>
 
     <script src="script.js"></script>
+    <!-- Кнопка контактов -->
+<button class="contacts-btn" id="contactsBtn">
+    <i class="fas fa-phone-alt"></i>
+    <span class="contacts-badge">3</span>
+</button>
+
+<!-- Выпадающее меню контактов -->
+<div class="contacts-dropdown" id="contactsDropdown">
+    <div class="contacts-header">
+        <h3><i class="fas fa-users"></i> Мои контакты</h3>
+        <button class="contacts-close" id="closeContacts">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <div class="contacts-search">
+        <input type="text" placeholder="Поиск контактов..." id="searchContacts">
+    </div>
+    
+    <div class="contacts-list" id="contactsList">
+        <!-- Контакты будут добавляться через JS -->
+    </div>
+    
+    <div class="contacts-footer">
+        <button class="add-contact-btn" id="addContactBtn">
+            <i class="fas fa-user-plus"></i> Добавить контакт
+        </button>
+    </div>
+</div>
+
+<!-- Модальное окно звонка -->
+<div class="call-modal" id="callModal">
+    <div class="call-container">
+        <div class="call-avatar" id="callAvatar">
+            <div class="call-pulse"></div>
+            <span id="callAvatarText">А</span>
+        </div>
+        
+        <div class="call-info">
+            <div class="call-contact-name" id="callContactName">Алексей</div>
+            <div class="call-status" id="callStatus">Вызов...</div>
+            <div class="call-timer" id="callTimer">00:00</div>
+        </div>
+        
+        <div class="call-controls">
+            <button class="call-control-btn call-mute" id="callMute">
+                <i class="fas fa-microphone"></i>
+                <div class="call-control-badge" id="muteBadge" style="display: none;">
+                    <i class="fas fa-times"></i>
+                </div>
+            </button>
+            
+            <button class="call-control-btn call-decline" id="callDecline">
+                <i class="fas fa-phone-slash"></i>
+            </button>
+            
+            <button class="call-control-btn call-accept" id="callAccept">
+                <i class="fas fa-phone"></i>
+            </button>
+            
+            <button class="call-control-btn call-video" id="callVideo">
+                <i class="fas fa-video"></i>
+            </button>
+            
+            <button class="call-control-btn call-speaker" id="callSpeaker">
+                <i class="fas fa-volume-up"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно видеозвонка -->
+<div class="call-modal video-call" id="videoCallModal">
+    <div class="call-container">
+        <div class="video-container">
+            <div class="local-video" id="localVideo">
+                <div class="video-label">Вы</div>
+            </div>
+            <div class="remote-video" id="remoteVideo">
+                <div class="video-label" id="remoteVideoLabel">Алексей</div>
+            </div>
+        </div>
+        
+        <div class="call-controls">
+            <button class="call-control-btn call-mute" id="videoMute">
+                <i class="fas fa-microphone"></i>
+            </button>
+            
+            <button class="call-control-btn call-decline" id="videoDecline">
+                <i class="fas fa-phone-slash"></i>
+            </button>
+            
+            <button class="call-control-btn call-video" id="toggleVideo">
+                <i class="fas fa-video"></i>
+            </button>
+            
+            <button class="call-control-btn call-speaker" id="videoSpeaker">
+                <i class="fas fa-volume-up"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно конференции -->
+<div class="conference-modal" id="conferenceModal">
+    <div class="conference-header">
+        <h3><i class="fas fa-users"></i> Конференция</h3>
+        <div class="conference-info">
+            <span id="conferenceTimer">00:00</span>
+            <span id="participantCount">3 участника</span>
+        </div>
+        <button class="conference-close" id="closeConference">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <div class="conference-participants" id="conferenceParticipants">
+        <!-- Участники конференции -->
+    </div>
+    
+    <div class="conference-controls">
+        <button class="call-control-btn call-mute" id="conferenceMute">
+            <i class="fas fa-microphone"></i>
+        </button>
+        
+        <button class="call-control-btn call-video" id="conferenceVideo">
+            <i class="fas fa-video"></i>
+        </button>
+        
+        <button class="call-control-btn call-speaker" id="conferenceSpeaker">
+            <i class="fas fa-volume-up"></i>
+        </button>
+        
+        <button class="call-control-btn call-decline" id="endConference">
+            <i class="fas fa-phone-slash"></i>
+        </button>
+        
+        <button class="call-control-btn call-add" id="addParticipant">
+            <i class="fas fa-user-plus"></i>
+        </button>
+    </div>
+</div>
 </body>
 </html>
