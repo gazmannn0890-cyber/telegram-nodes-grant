@@ -422,6 +422,796 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     const dataSystem = new DataSystem();
+
+    // Добавляем после инициализации DataSystem
+
+class ActivitySystem {
+    constructor() {
+        this.activities = new Map();
+        this.init();
+    }
+    
+    init() {
+        this.loadActivities();
+        this.setupUpdates();
+    }
+    
+    loadActivities() {
+        // Пример активностей
+        this.activities.set(1, {
+            id: 1,
+            contactId: 1,
+            type: 'calling',
+            contactName: 'Алексей',
+            status: 'В звонке',
+            duration: '5:23',
+            icon: 'fas fa-phone',
+            color: '#34c759'
+        });
+        
+        this.activities.set(2, {
+            id: 2,
+            contactId: 2,
+            type: 'conference',
+            contactName: 'Мария',
+            status: 'В конференции',
+            duration: '12:45',
+            icon: 'fas fa-video',
+            color: '#0088cc'
+        });
+        
+        this.activities.set(3, {
+            id: 3,
+            contactId: 3,
+            type: 'gaming',
+            contactName: 'Дмитрий',
+            status: 'Играет в CS2',
+            duration: '45:12',
+            icon: 'fas fa-gamepad',
+            color: '#ff9500'
+        });
+        
+        this.activities.set(4, {
+            id: 4,
+            contactId: 4,
+            type: 'typing',
+            contactName: 'Анна',
+            status: 'Печатает...',
+            duration: '',
+            icon: 'fas fa-keyboard',
+            color: '#5ac8fa'
+        });
+        
+        // Павел Дуров
+        this.activities.set(5, {
+            id: 5,
+            contactId: 5,
+            type: 'conference',
+            contactName: 'Павел Дуров',
+            status: 'Проводит митап',
+            duration: '1:30:15',
+            icon: 'fas fa-users',
+            color: '#0088cc'
+        });
+    }
+    
+    renderActivities() {
+        const container = document.getElementById('activityList');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        for (const activity of this.activities.values()) {
+            const activityElement = document.createElement('div');
+            activityElement.className = `activity-item ${activity.type}`;
+            activityElement.dataset.activity = activity.id;
+            
+            activityElement.innerHTML = `
+                <div class="activity-icon">
+                    <i class="${activity.icon}"></i>
+                </div>
+                <div class="activity-info">
+                    <div class="activity-name">${activity.contactName}</div>
+                    <div class="activity-status">
+                        <span>${activity.status}</span>
+                    </div>
+                </div>
+                ${activity.duration ? `<div class="activity-duration">${activity.duration}</div>` : ''}
+            `;
+            
+            activityElement.addEventListener('click', () => {
+                this.handleActivityClick(activity);
+            });
+            
+            container.appendChild(activityElement);
+        }
+    }
+    
+    handleActivityClick(activity) {
+        switch(activity.type) {
+            case 'calling':
+                uiSystem.startCall(activity.contactId, 'audio');
+                break;
+            case 'conference':
+                notificationSystem.show(
+                    'Присоединиться к конференции?',
+                    `${activity.contactName} ${activity.status.toLowerCase()}`,
+                    {
+                        type: 'conference',
+                        duration: 5000,
+                        actions: [
+                            {
+                                label: 'Присоединиться',
+                                callback: () => uiSystem.startConference()
+                            }
+                        ]
+                    }
+                );
+                break;
+            case 'gaming':
+                this.showGameInfo(activity);
+                break;
+        }
+    }
+    
+    showGameInfo(activity) {
+        notificationSystem.show(
+            'Игровая активность',
+            `${activity.contactName} играет в Counter-Strike 2`,
+            {
+                type: 'info',
+                duration: 3000,
+                icon: 'fas fa-gamepad'
+            }
+        );
+    }
+    
+    setupUpdates() {
+        // Обновляем таймеры каждую секунду
+        setInterval(() => {
+            this.updateDurations();
+            this.renderActivities();
+        }, 1000);
+        
+        // Случайные обновления активности
+        setInterval(() => {
+            this.randomActivityUpdate();
+        }, 30000);
+    }
+    
+    updateDurations() {
+        for (const activity of this.activities.values()) {
+            if (activity.duration && activity.duration !== '') {
+                // Увеличиваем время на 1 секунду
+                const timeParts = activity.duration.split(':');
+                if (timeParts.length === 2) {
+                    let minutes = parseInt(timeParts[0]);
+                    let seconds = parseInt(timeParts[1]) + 1;
+                    
+                    if (seconds >= 60) {
+                        minutes++;
+                        seconds = 0;
+                    }
+                    
+                    activity.duration = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }
+        }
+    }
+    
+    randomActivityUpdate() {
+        const activities = Array.from(this.activities.values());
+        if (activities.length > 0) {
+            const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+            
+            // Случайно меняем статус
+            const statuses = ['В звонке', 'Печатает...', 'Онлайн', 'Не беспокоить'];
+            randomActivity.status = statuses[Math.floor(Math.random() * statuses.length)];
+            
+            // Обновляем отображение
+            this.renderActivities();
+        }
+    }
+}
+
+const activitySystem = new ActivitySystem();
+
+// Обновляем класс UISystem
+UISystem.prototype.init = function() {
+    this.cacheElements();
+    this.setupTheme();
+    this.setupEventListeners();
+    this.renderInitialData();
+    this.setupProfileEditing();
+    this.setupSettings();
+};
+
+UISystem.prototype.setupProfileEditing = function() {
+    const editBtn = document.getElementById('editProfileBtn');
+    const cancelBtn = document.getElementById('cancelEditBtn');
+    const saveBtn = document.getElementById('saveProfileBtn');
+    const editSection = document.getElementById('profileEditSection');
+    const profileSection = document.querySelector('.profile-section');
+    
+    if (editBtn && editSection && profileSection) {
+        editBtn.addEventListener('click', () => {
+            profileSection.style.display = 'none';
+            editSection.style.display = 'block';
+            this.populateEditForm();
+        });
+        
+        cancelBtn?.addEventListener('click', () => {
+            editSection.style.display = 'none';
+            profileSection.style.display = 'block';
+        });
+        
+        saveBtn?.addEventListener('click', () => {
+            this.saveProfileChanges();
+            editSection.style.display = 'none';
+            profileSection.style.display = 'block';
+        });
+    }
+};
+
+UISystem.prototype.populateEditForm = function() {
+    document.getElementById('editName').value = AppState.user.name;
+    document.getElementById('editUsername').value = AppState.user.username;
+    document.getElementById('editBio').value = AppState.user.bio;
+};
+
+UISystem.prototype.saveProfileChanges = function() {
+    const newName = document.getElementById('editName').value;
+    const newUsername = document.getElementById('editUsername').value;
+    const newBio = document.getElementById('editBio').value;
+    
+    AppState.user.name = newName;
+    AppState.user.username = newUsername;
+    AppState.user.bio = newBio;
+    
+    // Обновляем отображение профиля
+    this.updateProfileDisplay();
+    
+    notificationSystem.show('Профиль обновлён', 'Изменения сохранены', {
+        type: 'success',
+        duration: 3000
+    });
+    
+    // Сохраняем в localStorage
+    dataSystem.saveToStorage();
+};
+
+UISystem.prototype.updateProfileDisplay = function() {
+    const profileName = document.querySelector('.profile-name');
+    const profileStatus = document.querySelector('.profile-status');
+    
+    if (profileName) {
+        profileName.textContent = AppState.user.name;
+    }
+    
+    if (profileStatus) {
+        profileStatus.textContent = AppState.user.username;
+    }
+    
+    // Обновляем аватар
+    const avatarText = document.querySelector('.avatar-text');
+    if (avatarText) {
+        avatarText.textContent = AppState.user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+    }
+};
+
+UISystem.prototype.setupSettings = function() {
+    const settingsBtn = document.getElementById('settingsBtn');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const soundToggle = document.getElementById('soundToggle');
+    const vibrationToggle = document.getElementById('vibrationToggle');
+    const themeOptions = document.querySelectorAll('.theme-option');
+    
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', () => {
+            this.openSettings();
+        });
+    }
+    
+    if (closeSettingsBtn) {
+        closeSettingsBtn.addEventListener('click', () => {
+            this.closeSettings();
+        });
+    }
+    
+    if (soundToggle) {
+        soundToggle.checked = AppState.user.settings.sounds;
+        soundToggle.addEventListener('change', (e) => {
+            AppState.user.settings.sounds = e.target.checked;
+            dataSystem.saveToStorage();
+        });
+    }
+    
+    if (vibrationToggle) {
+        vibrationToggle.checked = AppState.user.settings.vibration;
+        vibrationToggle.addEventListener('change', (e) => {
+            AppState.user.settings.vibration = e.target.checked;
+            dataSystem.saveToStorage();
+        });
+    }
+    
+    themeOptions?.forEach(option => {
+        option.addEventListener('click', (e) => {
+            const theme = e.currentTarget.dataset.theme;
+            this.setTheme(theme);
+            
+            // Обновляем активный класс
+            themeOptions.forEach(opt => opt.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+        });
+    });
+};
+
+UISystem.prototype.openSettings = function() {
+    document.getElementById('settingsPanel').classList.add('active');
+};
+
+UISystem.prototype.closeSettings = function() {
+    document.getElementById('settingsPanel').classList.remove('active');
+};
+
+UISystem.prototype.setTheme = function(theme) {
+    if (theme === 'auto') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        theme = prefersDark ? 'dark' : 'light';
+    }
+    
+    AppState.user.settings.theme = theme;
+    document.body.className = `${theme}-theme`;
+    localStorage.setItem('theme', theme);
+    
+    const themeIcon = this.elements.themeToggleBtn?.querySelector('i');
+    if (themeIcon) {
+        themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    }
+};
+
+// Обновляем инициализацию данных
+DataSystem.prototype.loadDefaultData = function() {
+    // Обновляем имя пользователя
+    AppState.user.name = 'Газман';
+    AppState.user.username = '@gazman';
+    AppState.user.bio = 'Основатель Telegram Nodes • Любитель кофе и технологий';
+    
+    // Добавляем Павла Дурова в контакты
+    AppState.contacts.set(5, {
+        id: 5,
+        name: 'Павел Дуров',
+        avatar: 'ПД',
+        color: '#0088cc',
+        status: 'online',
+        lastSeen: 'только что',
+        phone: '',
+        email: 'durov@telegram.org',
+        bio: 'Основатель Telegram • Digital nomad',
+        online: true,
+        favorite: true,
+        notifications: true,
+        activity: 'conference',
+        game: null
+    });
+    
+    // Добавляем чат с Павлом Дуровым
+    AppState.chats.set('durov', {
+        id: 'durov',
+        node: 'personal',
+        name: 'Павел Дуров',
+        type: 'personal',
+        avatar: 'ПД',
+        color: '#0088cc',
+        description: 'Основатель Telegram',
+        members: 2,
+        online: 1,
+        lastMessage: {
+            text: 'Новый функционал выглядит отлично!',
+            sender: 'Павел Дуров',
+            time: 'Сегодня 10:30',
+            read: false
+        },
+        unread: 1,
+        pinned: true,
+        muted: false,
+        archived: false,
+        verified: true
+    });
+    
+    // Добавляем сообщения в чат с Дуровым
+    AppState.messages.set('durov', [
+        {
+            id: 1,
+            chatId: 'durov',
+            sender: 5,
+            text: 'Привет! Вижу ты работаешь над новым интерфейсом для Telegram.',
+            time: 'Вчера 18:45',
+            type: 'text',
+            status: 'read',
+            edited: false
+        },
+        {
+            id: 2,
+            chatId: 'durov',
+            sender: AppState.user.id,
+            text: 'Да, Павел! Делаю улучшенную версию с узлами и конференциями.',
+            time: 'Вчера 19:20',
+            type: 'text',
+            status: 'read',
+            edited: true
+        },
+        {
+            id: 3,
+            chatId: 'durov',
+            sender: 5,
+            text: 'Отличная идея! Узлы - это то, что нужно для организации чатов.',
+            time: 'Сегодня 10:15',
+            type: 'text',
+            status: 'read',
+            edited: false
+        },
+        {
+            id: 4,
+            chatId: 'durov',
+            sender: 5,
+            text: 'Новый функционал выглядит отлично! Жду релиза.',
+            time: 'Сегодня 10:30',
+            type: 'text',
+            status: 'delivered',
+            edited: false
+        }
+    ]);
+    
+    // Добавляем больше узлов
+    AppState.nodes.set('music', {
+        id: 'music',
+        name: 'MusicLovers',
+        icon: 'fas fa-music',
+        color: '#ff2d55',
+        gradient: 'linear-gradient(135deg, #ff2d55, #ff375f)',
+        description: 'Обсуждение музыки и концертов',
+        members: 18,
+        online: 9,
+        created: '2024-02-28',
+        privacy: 'public',
+        tags: ['музыка', 'концерты', 'треки'],
+        stats: { messages: 892, files: 45, calls: 12 },
+        unread: 2,
+        pinned: false
+    });
+    
+    AppState.nodes.set('travel', {
+        id: 'travel',
+        name: 'TravelBlog',
+        icon: 'fas fa-plane',
+        color: '#ffcc00',
+        gradient: 'linear-gradient(135deg, #ffcc00, #ff9500)',
+        description: 'Путешествия и приключения',
+        members: 32,
+        online: 14,
+        created: '2024-03-05',
+        privacy: 'public',
+        tags: ['путешествия', 'отдых', 'приключения'],
+        stats: { messages: 1567, files: 234, calls: 8 },
+        unread: 0,
+        pinned: false
+    });
+    
+    // Добавляем больше чатов
+    AppState.chats.set('music_news', {
+        id: 'music_news',
+        node: 'music',
+        name: 'Новости музыки',
+        type: 'channel',
+        avatar: 'Н',
+        color: '#ff2d55',
+        description: 'Свежие релизы и новости индустрии',
+        members: 156,
+        online: 42,
+        lastMessage: {
+            text: 'Новый альбом Taylor Swift уже доступен!',
+            sender: 'Бот новостей',
+            time: '2 часа назад',
+            read: true
+        },
+        unread: 0,
+        pinned: true,
+        muted: false,
+        archived: false
+    });
+    
+    AppState.chats.set('travel_photos', {
+        id: 'travel_photos',
+        node: 'travel',
+        name: 'Фото путешествий',
+        type: 'group',
+        avatar: 'Ф',
+        color: '#ffcc00',
+        description: 'Делимся фотографиями из поездок',
+        members: 24,
+        online: 8,
+        lastMessage: {
+            text: 'Посмотрите на эти виды с Бали! 🌴',
+            sender: 'Анна',
+            time: 'Вчера',
+            read: false
+        },
+        unread: 3,
+        pinned: false,
+        muted: false,
+        archived: false
+    });
+};
+
+// Обновляем отрисовку контактов с активностью
+UISystem.prototype.renderContacts = function() {
+    if (!this.elements.contactsList) return;
+    
+    this.elements.contactsList.innerHTML = '';
+    
+    for (const [id, contact] of AppState.contacts) {
+        const contactElement = document.createElement('div');
+        contactElement.className = 'contact-item';
+        contactElement.dataset.contact = id;
+        
+        // Получаем активность контакта
+        const activity = activitySystem.activities.get(id);
+        const activityClass = activity ? `activity-${activity.type}` : '';
+        const activityIcon = activity ? activity.icon : '';
+        
+        contactElement.innerHTML = `
+            <div class="contact-avatar" style="background: ${contact.color}">
+                ${contact.avatar}
+                ${activity ? `<div class="activity-badge ${activity.type}"><i class="${activityIcon}"></i></div>` : ''}
+            </div>
+            <div class="contact-info">
+                <div class="contact-name">${contact.name}</div>
+                <div class="contact-status">
+                    <span class="contact-status-dot status-${contact.status}"></span>
+                    ${this.getContactStatusText(contact, activity)}
+                </div>
+                ${activity ? `<div class="contact-status-extended">${activity.status}</div>` : ''}
+            </div>
+        `;
+        
+        contactElement.addEventListener('click', () => this.startChatWithContact(id));
+        this.elements.contactsList.appendChild(contactElement);
+    }
+};
+
+UISystem.prototype.getContactStatusText = function(contact, activity) {
+    if (activity) {
+        switch(activity.type) {
+            case 'calling':
+                return 'В звонке';
+            case 'conference':
+                return 'В конференции';
+            case 'gaming':
+                return 'В игре';
+            case 'typing':
+                return 'Печатает...';
+        }
+    }
+    
+    switch(contact.status) {
+        case 'online':
+            return 'В сети';
+        case 'away':
+            return 'Отошёл';
+        case 'busy':
+            return 'Занят';
+        default:
+            return 'Не в сети';
+    }
+};
+
+// Добавляем функцию для игр
+UISystem.prototype.setupGames = function() {
+    const gameItems = document.querySelectorAll('.game-item');
+    gameItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const game = item.dataset.game;
+            this.showGamePlayers(game);
+        });
+    });
+};
+
+UISystem.prototype.showGamePlayers = function(game) {
+    let players = [];
+    
+    switch(game) {
+        case 'cs2':
+            players = [
+                { name: 'Дмитрий', status: 'В игре', rank: 'Global Elite', time: '45 мин' },
+                { name: 'Алексей', status: 'Ожидание', rank: 'Legendary Eagle', time: '5 мин' },
+                { name: 'Иван', status: 'В меню', rank: 'Supreme', time: '2 мин' }
+            ];
+            break;
+        case 'dota':
+            players = [
+                { name: 'Мария', status: 'В игре', rank: 'Ancient', time: '32 мин' },
+                { name: 'Сергей', status: 'Ожидание', rank: 'Divine', time: '8 мин' }
+            ];
+            break;
+    }
+    
+    const modalContent = `
+        <div class="game-players-modal">
+            <h3>Игроки в ${game === 'cs2' ? 'CS2' : 'Dota 2'}</h3>
+            <div class="players-list">
+                ${players.map(player => `
+                    <div class="player-item">
+                        <div class="player-avatar">${player.name.charAt(0)}</div>
+                        <div class="player-info">
+                            <div class="player-name">${player.name}</div>
+                            <div class="player-details">
+                                <span class="player-status">${player.status}</span>
+                                <span class="player-rank">${player.rank}</span>
+                                <span class="player-time">${player.time}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="btn-primary" id="joinGameBtn">
+                <i class="fas fa-gamepad"></i>
+                Присоединиться
+            </button>
+        </div>
+    `;
+    
+    this.showCustomModal('Игровая активность', modalContent);
+    
+    document.getElementById('joinGameBtn')?.addEventListener('click', () => {
+        notificationSystem.show('Присоединение к игре', 'Запуск игры...', {
+            type: 'info',
+            duration: 3000
+        });
+        this.closeModal();
+    });
+};
+
+UISystem.prototype.showCustomModal = function(title, content) {
+    const modal = document.createElement('div');
+    modal.className = 'custom-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>${title}</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                ${content}
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    modal.querySelector('.modal-close').addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+};
+
+UISystem.prototype.closeModal = function() {
+    const modal = document.querySelector('.custom-modal');
+    if (modal) {
+        modal.remove();
+    }
+};
+
+// Обновляем init функцию
+function init() {
+    console.log('🎯 Telegram Nodes запускается...');
+    
+    // Показываем приветственное уведомление
+    setTimeout(() => {
+        notificationSystem.show(
+            'Добро пожаловать, Газман!',
+            'Telegram Nodes готов к работе. Новые функции активированы.',
+            { type: 'success', duration: 5000 }
+        );
+        
+        // Показываем уведомление от Дурова
+        setTimeout(() => {
+            notificationSystem.show(
+                'Павел Дуров',
+                'Новый функционал выглядит отлично!',
+                { 
+                    type: 'message', 
+                    duration: 8000,
+                    icon: 'fas fa-check-circle',
+                    actions: [
+                        {
+                            label: 'Ответить',
+                            callback: () => uiSystem.openChat('durov')
+                        }
+                    ]
+                }
+            );
+        }, 2000);
+    }, 1000);
+    
+    // Инициализируем активности
+    activitySystem.renderActivities();
+    
+    // Настраиваем игры
+    uiSystem.setupGames();
+    
+    // Инициализируем обновления статуса
+    initStatusUpdates();
+    
+    console.log('✅ Приложение успешно запущено с новыми функциями');
+}
+
+// Добавляем консольные команды
+window.TelegramNodes = {
+    ...window.TelegramNodes,
+    
+    // Новые команды
+    editProfile: () => {
+        const editBtn = document.getElementById('editProfileBtn');
+        if (editBtn) editBtn.click();
+    },
+    
+    openSettings: () => {
+        const settingsBtn = document.getElementById('settingsBtn');
+        if (settingsBtn) settingsBtn.click();
+    },
+    
+    showActivity: () => {
+        activitySystem.renderActivities();
+        notificationSystem.show('Активность', 'Список активностей обновлён', {
+            type: 'info',
+            duration: 2000
+        });
+    },
+    
+    startGame: (game = 'cs2') => {
+        const gameEvent = {
+            id: Date.now(),
+            contactId: AppState.user.id,
+            type: 'gaming',
+            contactName: AppState.user.name,
+            status: `Играет в ${game.toUpperCase()}`,
+            duration: '00:00',
+            icon: 'fas fa-gamepad',
+            color: '#ff9500'
+        };
+        
+        activitySystem.activities.set(gameEvent.id, gameEvent);
+        activitySystem.renderActivities();
+        
+        notificationSystem.show('Игра запущена', `Начата игра в ${game.toUpperCase()}`, {
+            type: 'info',
+            duration: 3000,
+            icon: 'fas fa-gamepad'
+        });
+    },
+    
+    simulateCall: (contactId = 1) => {
+        uiSystem.startCall(contactId, 'audio');
+    },
+    
+    helpExtended: () => {
+        console.log('🎮 Расширенные команды Telegram Nodes:');
+        console.log('TelegramNodes.editProfile() - редактировать профиль');
+        console.log('TelegramNodes.openSettings() - открыть настройки');
+        console.log('TelegramNodes.showActivity() - показать активность');
+        console.log('TelegramNodes.startGame("cs2") - начать игру');
+        console.log('TelegramNodes.simulateCall(1) - имитировать звонок');
+        console.log('TelegramNodes.openChat("durov") - чат с Павлом Дуровым');
+    }
+};
+
+console.log('🎮 Введите TelegramNodes.helpExtended() для расширенных команд');
     
     // ===== СИСТЕМА UI =====
     class UISystem {
