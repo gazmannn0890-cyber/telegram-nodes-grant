@@ -18,6 +18,109 @@ document.addEventListener('DOMContentLoaded', function() {
             conference: true
         }
     };
+
+    // ===== ВИЗУАЛЬНЫЕ ЭФФЕКТЫ =====
+
+// Создание частиц фона
+function createParticles() {
+    const container = document.createElement('div');
+    container.className = 'particles';
+    document.body.insertBefore(container, document.body.firstChild);
+    
+    for (let i = 0; i < 40; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        const size = Math.random() * 3 + 1;
+        const colors = ['#0088cc', '#af52de', '#34c759', '#5ac8fa'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        
+        particle.style.cssText = `
+            width: ${size}px;
+            height: ${size}px;
+            background: ${color};
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            animation-delay: ${Math.random() * 20}s;
+        `;
+        
+        container.appendChild(particle);
+    }
+}
+
+// Параллакс эффект при движении мыши
+function initParallax() {
+    const cards = document.querySelectorAll('.chat-card, .node-item');
+    
+    window.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth) - 0.5;
+        const y = (e.clientY / window.innerHeight) - 0.5;
+        
+        cards.forEach(card => {
+            const speed = 0.02;
+            card.style.transform = `translate(${x * speed * 100}px, ${y * speed * 100}px)`;
+        });
+    });
+}
+
+// Применить стеклянные эффекты ко всем элементам
+function applyGlassEffects() {
+    // Добавить классы элементам
+    const elements = [
+        '.profile-card',
+        '.node-item',
+        '.contact-item',
+        '.game-item',
+        '.chat-card',
+        '.icon-btn',
+        '.header-btn',
+        '.filter-btn',
+        '.sort-btn',
+        '.input-btn',
+        '.chat-action-btn'
+    ];
+    
+    elements.forEach(selector => {
+        document.querySelectorAll(selector).forEach(el => {
+            el.classList.add('glass-effect', 'ripple');
+        });
+    });
+}
+
+// Анимировать появление элементов
+function animateElements() {
+    const cards = document.querySelectorAll('.chat-card, .node-item, .contact-item');
+    
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+}
+
+// Инициализация эффектов (вызовите эту функцию в конце init())
+function initEffects() {
+    createParticles();
+    initParallax();
+    applyGlassEffects();
+    animateElements();
+    
+    // Добавить hover эффекты
+    document.querySelectorAll('.chat-card, .node-item, .contact-item').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            el.style.transform = 'translateY(-6px) scale(1.02)';
+        });
+        
+        el.addEventListener('mouseleave', () => {
+            el.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+}
     
     // ========== ВИЗУАЛЬНЫЕ ЭФФЕКТЫ ==========
     function createParticles() {
