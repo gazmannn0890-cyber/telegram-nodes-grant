@@ -73,7 +73,115 @@
                         <i class="fas fa-cog"></i>
                     </button>
                 </div>
+                <!-- Добавляем после блока с контактами в боковой панели -->
 
+<!-- Статусы контактов -->
+<div class="section-header">
+    <h3>Активность</h3>
+    <button class="section-action" id="refreshActivityBtn">
+        <i class="fas fa-sync-alt"></i>
+    </button>
+</div>
+<div class="activity-list" id="activityList">
+    <!-- Активности будут загружены через JS -->
+</div>
+
+<!-- Игры -->
+<div class="section-header">
+    <h3>Игры</h3>
+    <button class="section-action" id="gamesMenuBtn">
+        <i class="fas fa-gamepad"></i>
+    </button>
+</div>
+<div class="games-list" id="gamesList">
+    <div class="game-item" data-game="cs2">
+        <div class="game-icon">
+            <i class="fas fa-crosshairs"></i>
+        </div>
+        <div class="game-info">
+            <span class="game-name">CS2</span>
+            <span class="game-status">3 онлайн</span>
+        </div>
+    </div>
+    <div class="game-item" data-game="dota">
+        <div class="game-icon">
+            <i class="fas fa-tower"></i>
+        </div>
+        <div class="game-info">
+            <span class="game-name">Dota 2</span>
+            <span class="game-status">2 онлайн</span>
+        </div>
+    </div>
+</div>
+
+<!-- Добавляем в панель профиля редактирование -->
+<div class="profile-edit-section" id="profileEditSection" style="display: none;">
+    <div class="edit-form">
+        <div class="form-group">
+            <label>Имя</label>
+            <input type="text" id="editName" value="Газман" class="form-input">
+        </div>
+        <div class="form-group">
+            <label>Никнейм</label>
+            <input type="text" id="editUsername" value="@gazman" class="form-input">
+        </div>
+        <div class="form-group">
+            <label>О себе</label>
+            <textarea id="editBio" class="form-textarea">Основатель Telegram Nodes</textarea>
+        </div>
+        <div class="form-actions">
+            <button class="btn-secondary" id="cancelEditBtn">Отмена</button>
+            <button class="btn-primary" id="saveProfileBtn">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Добавляем меню настроек -->
+<div class="settings-panel" id="settingsPanel">
+    <div class="settings-header">
+        <button class="back-btn" id="closeSettingsBtn">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2>Настройки</h2>
+    </div>
+    <div class="settings-content">
+        <div class="settings-section">
+            <h3>Уведомления</h3>
+            <div class="setting-item">
+                <span>Звуки уведомлений</span>
+                <label class="switch">
+                    <input type="checkbox" id="soundToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <span>Вибросигнал</span>
+                <label class="switch">
+                    <input type="checkbox" id="vibrationToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="settings-section">
+            <h3>Внешний вид</h3>
+            <div class="theme-selector">
+                <button class="theme-option active" data-theme="dark">
+                    <i class="fas fa-moon"></i>
+                    Тёмная
+                </button>
+                <button class="theme-option" data-theme="light">
+                    <i class="fas fa-sun"></i>
+                    Светлая
+                </button>
+                <button class="theme-option" data-theme="auto">
+                    <i class="fas fa-adjust"></i>
+                    Авто
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+                
                 <!-- Статистика профиля -->
                 <div class="profile-stats">
                     <div class="stat-item">
