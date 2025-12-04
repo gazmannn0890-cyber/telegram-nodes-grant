@@ -1,19 +1,21 @@
-// Telegram Nodes - Полностью рабочая версия
+// Telegram Nodes - Полностью исправленная версия
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Telegram Nodes запускается...');
     
     // ========== КОНФИГУРАЦИЯ ==========
     const config = {
         appName: 'Telegram Nodes',
-        version: '2.0',
+        version: '2.1',
         developer: 'Газман',
         defaultTheme: 'dark',
         features: {
             nodes: true,
             chats: true,
-            calls: false,
+            calls: true,
             games: true,
-            notifications: true
+            notifications: true,
+            emoji: true,
+            conference: true
         }
     };
     
@@ -259,6 +261,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         ],
         
+        emojis: {
+            smileys: ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯'],
+            people: ['👋', '🤚', '🖐', '✋', '🖖', '👌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '👇', '☝️', '👍', '👎', '✊', '👊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✍️', '💅', '🤳', '💪', '🦵', '🦶', '👂', '🦻', '👃', '🧠', '🦷', '🦴', '👀', '👁️', '👅', '👄'],
+            nature: ['🐵', '🐒', '🦍', '🐶', '🐕', '🦮', '🐕‍🦺', '🐩', '🐺', '🦊', '🦝', '🐱', '🐈', '🦁', '🐯', '🐅', '🐆', '🐴', '🐎', '🦄', '🦓', '🦌', '🐮', '🐂', '🐃', '🐄', '🐷', '🐖', '🐗', '🐽', '🐏', '🐑', '🐐', '🐪', '🐫', '🦙', '🦒', '🐘', '🦏', '🦛', '🐭', '🐁', '🐀', '🐹', '🐰', '🐇', '🐿️'],
+            objects: ['⌚', '📱', '📲', '💻', '⌨️', '🖥️', '🖨️', '🖱️', '🖲️', '🎮', '🕹️', '🗜️', '💽', '💾', '💿', '📀', '📼', '📷', '📸', '📹', '🎥', '📽️', '🎞️', '📞', '☎️', '📟', '📠', '📺', '📻', '🎙️', '🎚️', '🎛️', '🧭', '⏱️', '⏲️', '⏰', '🕰️', '⌛', '⏳', '📡', '🔋', '🔌', '💡', '🔦', '🕯️', '🧯']
+        },
+        
         messages: {
             'design-team': [
                 {
@@ -284,14 +293,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     time: '12:25',
                     type: 'incoming',
                     status: 'read'
-                },
-                {
-                    id: 4,
-                    sender: 'Вы',
-                    text: 'Завтра к 15:00 будет готово. Сделаем презентацию для всей команды.',
-                    time: '12:28',
-                    type: 'outgoing',
-                    status: 'read'
                 }
             ],
             'durov-chat': [
@@ -311,50 +312,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     time: '19:20',
                     type: 'outgoing',
                     status: 'read'
-                },
-                {
-                    id: 3,
-                    sender: 'Павел Дуров',
-                    text: 'Отличная идея! Узлы - это то, что нужно для организации чатов.',
-                    time: '10:15',
-                    type: 'incoming',
-                    status: 'read',
-                    verified: true
-                },
-                {
-                    id: 4,
-                    sender: 'Павел Дуров',
-                    text: 'Новый функционал выглядит отлично! Жду релиза.',
-                    time: '10:30',
-                    type: 'incoming',
-                    status: 'read',
-                    verified: true
-                }
-            ],
-            'cs2-tournament': [
-                {
-                    id: 1,
-                    sender: 'Дмитрий',
-                    text: 'Ребята, все готовы к турниру? Команды уже формируются!',
-                    time: '14:20',
-                    type: 'incoming',
-                    status: 'read'
-                },
-                {
-                    id: 2,
-                    sender: 'Вы',
-                    text: 'Да, наша команда готова. Ждём расписание матчей.',
-                    time: '14:25',
-                    type: 'outgoing',
-                    status: 'read'
-                },
-                {
-                    id: 3,
-                    sender: 'Алексей',
-                    text: 'У меня есть предложение по стратегии, обсудим перед игрой?',
-                    time: '14:30',
-                    type: 'incoming',
-                    status: 'read'
                 }
             ]
         }
@@ -370,7 +327,11 @@ document.addEventListener('DOMContentLoaded', function() {
         currentSort: 'time',
         notifications: [],
         isSidebarVisible: window.innerWidth > 768,
-        isTyping: false
+        isTyping: false,
+        isEmojiPanelOpen: false,
+        isConferenceActive: false,
+        conferenceTimer: 0,
+        conferenceTimerInterval: null
     };
     
     // ========== DOM ЭЛЕМЕНТЫ ==========
@@ -387,10 +348,14 @@ document.addEventListener('DOMContentLoaded', function() {
         sidebar: document.getElementById('sidebar'),
         mainContent: document.getElementById('main-content'),
         chatPanel: document.getElementById('chat-panel'),
+        conferencePanel: document.getElementById('conference-panel'),
         
         // Профиль
         profileCard: document.getElementById('profile-card'),
         profileMenuBtn: document.getElementById('profile-menu-btn'),
+        profileModal: document.getElementById('profile-modal'),
+        profileModalOverlay: document.getElementById('profile-modal-overlay'),
+        closeProfileModal: document.getElementById('close-profile-modal'),
         
         // Поиск
         globalSearch: document.getElementById('global-search'),
@@ -418,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
         newChatBtn: document.getElementById('new-chat-btn'),
         startChatBtn: document.getElementById('start-chat-btn'),
         
-        // Фильтры и сортировка
+        // Фильтры
         filterButtons: document.querySelectorAll('.filter-btn'),
         sortButtons: document.querySelectorAll('.sort-btn'),
         
@@ -430,13 +395,22 @@ document.addEventListener('DOMContentLoaded', function() {
         messagesContainer: document.getElementById('messages-container'),
         messageInput: document.getElementById('message-input'),
         sendBtn: document.getElementById('send-btn'),
+        emojiToggleBtn: document.getElementById('emoji-toggle-btn'),
+        emojiPanel: document.getElementById('emoji-panel'),
+        emojiGrid: document.getElementById('emoji-grid'),
+        emojiCategories: document.querySelectorAll('.emoji-category'),
+        
+        // Видеоконференция
+        startConferenceBtn: document.getElementById('start-conference-btn'),
+        closeConferenceBtn: document.getElementById('close-conference-btn'),
+        conferenceTimer: document.getElementById('conference-timer'),
+        conferenceGrid: document.getElementById('conference-grid'),
+        confMuteBtn: document.getElementById('conf-mute-btn'),
+        confVideoBtn: document.getElementById('conf-video-btn'),
+        confEndBtn: document.getElementById('conf-end-btn'),
         
         // Уведомления
-        notificationsContainer: document.getElementById('notifications-container'),
-        
-        // Модальные окна
-        modalOverlay: document.getElementById('modal-overlay'),
-        newChatModal: document.getElementById('new-chat-modal')
+        notificationsContainer: document.getElementById('notifications-container')
     };
     
     // ========== ИНИЦИАЛИЗАЦИЯ ==========
@@ -456,6 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderActivity();
         updateCurrentNode();
         renderChats();
+        renderEmojis();
         
         // Настройка обработчиков событий
         setupEventListeners();
@@ -469,7 +444,7 @@ document.addEventListener('DOMContentLoaded', function() {
         simulateActivity();
     }
     
-    // ========== ФУНКЦИИ ПРЕЛОАДЕРА ==========
+    // ========== ПРЕЛОАДЕР ==========
     function simulatePreloader() {
         let progress = 0;
         const interval = setInterval(() => {
@@ -636,7 +611,7 @@ document.addEventListener('DOMContentLoaded', function() {
                        chat.lastMessage.toLowerCase().includes(query);
             }
             
-            // Фильтр по типу
+            // Индивидуальные фильтры
             switch (state.currentFilter) {
                 case 'unread':
                     return chat.unread > 0;
@@ -646,6 +621,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     return chat.type === 'group';
                 case 'channel':
                     return chat.type === 'channel';
+                case 'pinned':
+                    return chat.pinned === true;
                 default:
                     return true;
             }
@@ -656,7 +633,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (state.currentSort === 'unread') {
                 return b.unread - a.unread;
             } else {
-                // Сортировка по времени (простая имитация)
+                // Сортировка по времени
                 const timeOrder = { '12:30': 1, '11:45': 2, '10:30': 3, 'Пт': 4, 'Вчера': 5, '09:15': 6 };
                 return (timeOrder[a.time] || 99) - (timeOrder[b.time] || 99);
             }
@@ -715,6 +692,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    function renderEmojis() {
+        const container = elements.emojiGrid;
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        // Рендерим смайлики
+        Object.keys(appData.emojis).forEach(category => {
+            appData.emojis[category].forEach(emoji => {
+                const emojiElement = document.createElement('div');
+                emojiElement.className = 'emoji-item';
+                emojiElement.textContent = emoji;
+                emojiElement.dataset.emoji = emoji;
+                emojiElement.addEventListener('click', () => insertEmoji(emoji));
+                container.appendChild(emojiElement);
+            });
+        });
+    }
+    
     // ========== ФУНКЦИИ ЧАТА ==========
     function openChat(chatId) {
         const chat = appData.chats.find(c => c.id === chatId);
@@ -752,6 +748,7 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.chatPanel.classList.remove('active');
         elements.mainContent.style.display = 'flex';
         elements.messageInput.value = '';
+        closeEmojiPanel();
     }
     
     function loadMessages(chatId) {
@@ -839,23 +836,27 @@ document.addEventListener('DOMContentLoaded', function() {
         container.appendChild(messageElement);
         input.value = '';
         
-        // Добавить в данные (если есть массив сообщений для этого чата)
-        if (appData.messages[chatId]) {
-            appData.messages[chatId].push(userMessage);
+        // Добавить в данные
+        if (!appData.messages[chatId]) {
+            appData.messages[chatId] = [];
         }
+        appData.messages[chatId].push(userMessage);
         
         // Прокрутить вниз
         setTimeout(() => {
             container.scrollTop = container.scrollHeight;
         }, 100);
         
-        // Симулировать ответ через 1-3 секунды
+        // Симулировать ответ
         setTimeout(() => {
             simulateReply(chatId);
         }, 1000 + Math.random() * 2000);
         
         // Обновить список чатов
         updateChatPreview(chatId, text);
+        
+        // Закрыть панель эмодзи
+        closeEmojiPanel();
     }
     
     function simulateReply(chatId) {
@@ -883,9 +884,10 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         // Добавить в данные
-        if (appData.messages[chatId]) {
-            appData.messages[chatId].push(replyMessage);
+        if (!appData.messages[chatId]) {
+            appData.messages[chatId] = [];
         }
+        appData.messages[chatId].push(replyMessage);
         
         // Добавить в UI
         const container = elements.messagesContainer;
@@ -933,7 +935,170 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // ========== ФУНКЦИИ УЗЛОВ ==========
+    // ========== ЭМОДЗИ ==========
+    function insertEmoji(emoji) {
+        const input = elements.messageInput;
+        if (!input) return;
+        
+        const cursorPos = input.selectionStart;
+        const textBefore = input.value.substring(0, cursorPos);
+        const textAfter = input.value.substring(cursorPos);
+        
+        input.value = textBefore + emoji + textAfter;
+        input.focus();
+        input.setSelectionRange(cursorPos + emoji.length, cursorPos + emoji.length);
+        
+        // Авторазмер textarea
+        input.style.height = 'auto';
+        input.style.height = (input.scrollHeight) + 'px';
+    }
+    
+    function toggleEmojiPanel() {
+        state.isEmojiPanelOpen = !state.isEmojiPanelOpen;
+        
+        if (state.isEmojiPanelOpen) {
+            elements.emojiPanel.classList.add('active');
+            elements.emojiToggleBtn.classList.add('active');
+        } else {
+            closeEmojiPanel();
+        }
+    }
+    
+    function closeEmojiPanel() {
+        state.isEmojiPanelOpen = false;
+        elements.emojiPanel.classList.remove('active');
+        elements.emojiToggleBtn.classList.remove('active');
+    }
+    
+    // ========== ВИДЕОКОНФЕРЕНЦИЯ ==========
+    function startConference() {
+        state.isConferenceActive = true;
+        state.conferenceTimer = 0;
+        
+        // Показать панель конференции
+        elements.conferencePanel.classList.add('active');
+        elements.mainContent.style.display = 'none';
+        elements.chatPanel.classList.remove('active');
+        
+        // Запустить таймер
+        startConferenceTimer();
+        
+        // Загрузить участников
+        renderConferenceParticipants();
+        
+        showNotification('Конференция', 'Конференция началась', 'success');
+    }
+    
+    function closeConference() {
+        state.isConferenceActive = false;
+        
+        // Остановить таймер
+        stopConferenceTimer();
+        
+        // Скрыть панель конференции
+        elements.conferencePanel.classList.remove('active');
+        elements.mainContent.style.display = 'flex';
+        
+        showNotification('Конференция', 'Конференция завершена', 'info');
+    }
+    
+    function startConferenceTimer() {
+        stopConferenceTimer();
+        
+        state.conferenceTimerInterval = setInterval(() => {
+            state.conferenceTimer++;
+            updateConferenceTimer();
+        }, 1000);
+    }
+    
+    function stopConferenceTimer() {
+        if (state.conferenceTimerInterval) {
+            clearInterval(state.conferenceTimerInterval);
+            state.conferenceTimerInterval = null;
+        }
+    }
+    
+    function updateConferenceTimer() {
+        const minutes = Math.floor(state.conferenceTimer / 60);
+        const seconds = state.conferenceTimer % 60;
+        const timerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (elements.conferenceTimer) {
+            elements.conferenceTimer.textContent = timerText;
+        }
+    }
+    
+    function renderConferenceParticipants() {
+        const container = elements.conferenceGrid;
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        // Добавить пользователя
+        const userParticipant = document.createElement('div');
+        userParticipant.className = 'participant-card active-speaker';
+        userParticipant.innerHTML = `
+            <div class="participant-avatar" style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
+                Г
+            </div>
+            <div class="participant-name">Вы (Ведущий)</div>
+            <div class="participant-status">
+                <i class="fas fa-microphone"></i>
+            </div>
+        `;
+        container.appendChild(userParticipant);
+        
+        // Добавить контактов
+        appData.contacts.slice(0, 3).forEach(contact => {
+            const participant = document.createElement('div');
+            participant.className = 'participant-card';
+            participant.innerHTML = `
+                <div class="participant-avatar" style="background: ${contact.color}">
+                    ${contact.avatar}
+                </div>
+                <div class="participant-name">${contact.name}</div>
+                <div class="participant-status">
+                    <i class="fas fa-microphone-slash"></i>
+                </div>
+            `;
+            container.appendChild(participant);
+        });
+    }
+    
+    // ========== ПРОФИЛЬ ==========
+    function openProfile() {
+        elements.profileModal.classList.add('active');
+        elements.profileModalOverlay.classList.add('active');
+    }
+    
+    function closeProfile() {
+        elements.profileModal.classList.remove('active');
+        elements.profileModalOverlay.classList.remove('active');
+    }
+    
+    // ========== ТЕМЫ ==========
+    function setTheme(theme) {
+        state.theme = theme;
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        
+        // Обновить иконку
+        const icon = elements.themeToggle?.querySelector('i');
+        if (icon) {
+            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        
+        // Обновить фон
+        document.body.style.background = theme === 'dark' ? '#0a0a0f' : '#f5f7ff';
+    }
+    
+    function toggleTheme() {
+        const newTheme = state.theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        showNotification('Тема изменена', `Переключено на ${newTheme === 'dark' ? 'тёмную' : 'светлую'} тему`, 'info');
+    }
+    
+    // ========== УЗЛЫ ==========
     function switchNode(nodeId) {
         state.activeNode = nodeId;
         
@@ -945,7 +1110,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Обновить текущий узел в хедере
+        // Обновить текущий узел
         updateCurrentNode();
         
         // Перерисовать чаты
@@ -956,25 +1121,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (node) {
             showNotification(`Узел "${node.name}"`, node.description, 'info');
         }
-    }
-    
-    // ========== ФУНКЦИИ ТЕМЫ ==========
-    function setTheme(theme) {
-        state.theme = theme;
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-        
-        // Обновить иконку
-        const icon = elements.themeToggle?.querySelector('i');
-        if (icon) {
-            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-    }
-    
-    function toggleTheme() {
-        const newTheme = state.theme === 'dark' ? 'light' : 'dark';
-        setTheme(newTheme);
-        showNotification('Тема изменена', `Переключено на ${newTheme === 'dark' ? 'тёмную' : 'светлую'} тему`, 'info');
     }
     
     // ========== УВЕДОМЛЕНИЯ ==========
@@ -1056,7 +1202,9 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.globalSearch.value = '';
         state.searchQuery = '';
         renderChats();
-        elements.searchClear.style.display = 'none';
+        if (elements.searchClear) {
+            elements.searchClear.style.display = 'none';
+        }
     }
     
     // ========== ФИЛЬТРЫ И СОРТИРОВКА ==========
@@ -1068,8 +1216,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Добавить активный класс нажатой кнопке
                 btn.classList.add('active');
                 // Обновить фильтр
-                state.currentFilter = btn.textContent.toLowerCase();
-                if (state.currentFilter === 'ещё') state.currentFilter = 'all';
+                state.currentFilter = btn.dataset.filter;
                 // Перерисовать чаты
                 renderChats();
             });
@@ -1095,8 +1242,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const notifications = [
             { title: 'Павел Дуров онлайн', message: 'Только что зашел в сеть', type: 'info' },
             { title: 'Новое сообщение', message: 'У вас 3 новых сообщения', type: 'info' },
-            { title: 'CS2 Турнир', message: 'Регистрация заканчивается через 2 дня', type: 'warning' },
-            { title: 'Система', message: 'Все компоненты работают стабильно', type: 'success' }
+            { title: 'CS2 Турнир', message: 'Регистрация заканчивается через 2 дня', type: 'warning' }
         ];
         
         // Показать случайное уведомление каждые 30-60 секунд
@@ -1104,23 +1250,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const randomNotif = notifications[Math.floor(Math.random() * notifications.length)];
             showNotification(randomNotif.title, randomNotif.message, randomNotif.type);
         }, 30000 + Math.random() * 30000);
-        
-        // Обновить статус "печатает" каждые 2-3 минуты
-        setInterval(() => {
-            const randomContact = appData.contacts[Math.floor(Math.random() * appData.contacts.length)];
-            if (randomContact.status !== 'offline') {
-                randomContact.status = 'typing';
-                randomContact.lastSeen = 'печатает...';
-                renderContacts();
-                
-                // Вернуть статус через 10 секунд
-                setTimeout(() => {
-                    randomContact.status = 'online';
-                    randomContact.lastSeen = 'только что';
-                    renderContacts();
-                }, 10000);
-            }
-        }, 120000 + Math.random() * 60000);
     }
     
     // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
@@ -1139,6 +1268,8 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.backBtn.addEventListener('click', () => {
                 if (state.activeChat) {
                     closeChat();
+                } else if (state.isConferenceActive) {
+                    closeConference();
                 }
             });
         }
@@ -1193,6 +1324,50 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
+        // Эмодзи
+        if (elements.emojiToggleBtn) {
+            elements.emojiToggleBtn.addEventListener('click', toggleEmojiPanel);
+        }
+        
+        // Категории эмодзи
+        elements.emojiCategories?.forEach(category => {
+            category.addEventListener('click', function() {
+                elements.emojiCategories.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                // Здесь можно реализовать фильтрацию эмодзи по категориям
+            });
+        });
+        
+        // Видеоконференция
+        if (elements.startConferenceBtn) {
+            elements.startConferenceBtn.addEventListener('click', startConference);
+        }
+        
+        if (elements.closeConferenceBtn) {
+            elements.closeConferenceBtn.addEventListener('click', closeConference);
+        }
+        
+        if (elements.confEndBtn) {
+            elements.confEndBtn.addEventListener('click', closeConference);
+        }
+        
+        // Профиль
+        if (elements.profileCard) {
+            elements.profileCard.addEventListener('click', openProfile);
+        }
+        
+        if (elements.profileMenuBtn) {
+            elements.profileMenuBtn.addEventListener('click', openProfile);
+        }
+        
+        if (elements.closeProfileModal) {
+            elements.closeProfileModal.addEventListener('click', closeProfile);
+        }
+        
+        if (elements.profileModalOverlay) {
+            elements.profileModalOverlay.addEventListener('click', closeProfile);
+        }
+        
         // Обновление активности
         if (elements.refreshActivityBtn) {
             elements.refreshActivityBtn.addEventListener('click', () => {
@@ -1206,6 +1381,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Клик вне элементов
         document.addEventListener('click', (e) => {
+            // Закрытие панели эмодзи при клике вне
+            if (!e.target.closest('.emoji-panel') && !e.target.closest('#emoji-toggle-btn')) {
+                closeEmojiPanel();
+            }
+            
             // Закрытие уведомлений при клике вне
             if (!e.target.closest('.notification')) {
                 document.querySelectorAll('.notification').forEach(notif => {
@@ -1230,9 +1410,9 @@ document.addEventListener('DOMContentLoaded', function() {
         state.isSidebarVisible = window.innerWidth > 768;
         if (elements.sidebar) {
             if (state.isSidebarVisible) {
-                elements.sidebar.style.left = '0';
+                elements.sidebar.style.transform = 'translateY(0)';
             } else {
-                elements.sidebar.style.left = '-100%';
+                elements.sidebar.style.transform = 'translateY(-100%)';
             }
         }
     }
@@ -1272,6 +1452,8 @@ document.addEventListener('DOMContentLoaded', function() {
         switchNode: switchNode,
         toggleTheme: toggleTheme,
         showNotification: showNotification,
+        startConference: startConference,
+        closeConference: closeConference,
         
         // Данные
         getAppData: () => appData,
@@ -1290,6 +1472,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('TelegramNodes.switchNode("game") - переключить узел');
             console.log('TelegramNodes.toggleTheme() - сменить тему');
             console.log('TelegramNodes.showNotification("Заголовок", "Текст", "type")');
+            console.log('TelegramNodes.startConference() - начать конференцию');
             console.log('TelegramNodes.getAppData() - получить все данные');
             console.log('TelegramNodes.getState() - получить состояние');
             console.log('TelegramNodes.test() - тестовая команда');
@@ -1304,6 +1487,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('👤 Пользователь:', appData.user.name);
         console.log('📱 Узлов:', appData.nodes.length);
         console.log('💬 Чатов:', appData.chats.length);
+        console.log('🎮 Эмодзи:', Object.values(appData.emojis).flat().length);
         console.log('🔧 Версия:', config.version);
         
         // Показать справку в консоли
