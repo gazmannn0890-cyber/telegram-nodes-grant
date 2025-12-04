@@ -3,438 +3,514 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Nodes | Modern Interface</title>
+    <title>Telegram Nodes • Современный мессенджер</title>
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
+    
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
 </head>
 <body class="dark-theme">
+    <!-- Аудио для уведомлений -->
+    <audio id="notificationSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="messageSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-message-pop-alert-2354.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="callSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-phone-ring-1001.mp3" type="audio/mpeg">
+    </audio>
+
     <!-- Фоновые элементы -->
-    <div class="bg-elements"></div>
-    
-    <!-- Уведомления -->
-    <div class="notification-center"></div>
-    
+    <div class="bg-elements">
+        <div class="bg-gradient"></div>
+        <div class="bg-grid"></div>
+        <div class="bg-particles"></div>
+    </div>
+
+    <!-- Система уведомлений -->
+    <div class="notification-system"></div>
+
+    <!-- Модальные окна -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+
     <!-- Главный контейнер -->
-    <div class="container">
+    <div class="app-container">
         
         <!-- Боковая панель -->
         <aside class="side-panel">
-            <!-- Профиль -->
-            <div class="profile-card" id="profileCard">
-                <div class="profile-avatar">
-                    <div class="avatar-img">
-                        <i class="fas fa-user"></i>
+            <!-- Профиль пользователя -->
+            <div class="profile-section" id="profileSection">
+                <div class="profile-header">
+                    <div class="avatar-wrapper">
+                        <div class="avatar-large" style="background: linear-gradient(135deg, #0088cc, #0055aa);">
+                            <span class="avatar-text">ИП</span>
+                            <div class="online-status online"></div>
+                        </div>
+                        <button class="status-picker" id="statusPicker">
+                            <i class="fas fa-circle"></i>
+                        </button>
                     </div>
-                    <div class="profile-badge">
-                        <i class="fas fa-circle"></i>
+                    <div class="profile-info">
+                        <h2 class="profile-name">Иван Петров</h2>
+                        <p class="profile-status">+7 (900) 123-45-67</p>
+                    </div>
+                    <button class="settings-btn" id="settingsBtn">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+
+                <!-- Статистика профиля -->
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">128</span>
+                        <span class="stat-label">Чаты</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">48</span>
+                        <span class="stat-label">Контакты</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">5</span>
+                        <span class="stat-label">Узлы</span>
                     </div>
                 </div>
-                <div class="profile-info">
-                    <h3 class="profile-name">Газманчик</h3>
-                    <p class="profile-status">+7 (900) 123-45-67</p>
+            </div>
+
+            <!-- Панель поиска -->
+            <div class="search-section">
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Поиск сообщений, чатов..." id="globalSearch">
+                    <button class="search-clear" id="searchClear">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <button class="profile-menu-btn">
-                    <i class="fas fa-ellipsis-v"></i>
+            </div>
+
+            <!-- Аккаунты -->
+            <div class="section-header">
+                <h3>Аккаунты</h3>
+                <button class="section-action" id="addAccountBtn">
+                    <i class="fas fa-plus"></i>
                 </button>
             </div>
-            
-            <!-- Аккаунты -->
-            <div class="panel-section">
-                <h4 class="section-title">Аккаунты</h4>
-                <div class="accounts-list">
-                    <div class="account-item active">
-                        <div class="account-icon" style="background: linear-gradient(135deg, #0088cc, #0055aa);">
-                            <i class="fas fa-user"></i>
-                        </div>
+            <div class="accounts-list">
+                <div class="account-item active">
+                    <div class="account-icon" style="background: linear-gradient(135deg, #0088cc, #0055aa);">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="account-info">
                         <span class="account-name">Личный</span>
+                        <span class="account-status">Основной</span>
                     </div>
-                    <div class="account-item">
-                        <div class="account-icon" style="background: linear-gradient(135deg, #af52de, #7d3cff);">
-                            <i class="fas fa-briefcase"></i>
-                        </div>
+                </div>
+                <div class="account-item">
+                    <div class="account-icon" style="background: linear-gradient(135deg, #af52de, #7d3cff);">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="account-info">
                         <span class="account-name">Работа</span>
+                        <span class="account-status">Неактивен</span>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Узлы -->
-            <div class="panel-section">
-                <div class="section-header">
-                    <h4 class="section-title">Узлы</h4>
-                    <button class="add-btn">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
-                <div class="nodes-list">
-                    <div class="node-item active" data-node="alpha">
-                        <div class="node-icon">
-                            <div class="icon-wrapper" style="background: linear-gradient(135deg, #0088cc, #0055aa);">
-                                <i class="fas fa-rocket"></i>
-                            </div>
-                            <span class="node-badge">3</span>
-                        </div>
-                        <div class="node-info">
-                            <h5 class="node-name">AlphaTeam</h5>
-                            <p class="node-desc">Разработка</p>
-                        </div>
-                    </div>
-                    
-                    <div class="node-item" data-node="game">
-                        <div class="node-icon">
-                            <div class="icon-wrapper" style="background: linear-gradient(135deg, #af52de, #7d3cff);">
-                                <i class="fas fa-gamepad"></i>
-                            </div>
-                        </div>
-                        <div class="node-info">
-                            <h5 class="node-name">GameZone</h5>
-                            <p class="node-desc">Игровое сообщество</p>
-                        </div>
-                    </div>
-                    
-                    <div class="node-item" data-node="family">
-                        <div class="node-icon">
-                            <div class="icon-wrapper" style="background: linear-gradient(135deg, #34c759, #2a8c4a);">
-                                <i class="fas fa-heart"></i>
-                            </div>
-                            <span class="node-badge">1</span>
-                        </div>
-                        <div class="node-info">
-                            <h5 class="node-name">FamilyHub</h5>
-                            <p class="node-desc">Семейный чат</p>
-                        </div>
-                    </div>
-                    
-                    <div class="node-item" data-node="work">
-                        <div class="node-icon">
-                            <div class="icon-wrapper" style="background: linear-gradient(135deg, #ff9500, #ff5500);">
-                                <i class="fas fa-code"></i>
-                            </div>
-                        </div>
-                        <div class="node-info">
-                            <h5 class="node-name">WorkSpace</h5>
-                            <p class="node-desc">Фриланс</p>
-                        </div>
-                    </div>
-                    
-                    <div class="node-item" data-node="study">
-                        <div class="node-icon">
-                            <div class="icon-wrapper" style="background: linear-gradient(135deg, #5ac8fa, #2a7fff);">
-                                <i class="fas fa-graduation-cap"></i>
-                            </div>
-                            <span class="node-badge">2</span>
-                        </div>
-                        <div class="node-info">
-                            <h5 class="node-name">StudyHub</h5>
-                            <p class="node-desc">Обучение</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="section-header">
+                <h3>Узлы</h3>
+                <button class="section-action" id="addNodeBtn">
+                    <i class="fas fa-plus"></i>
+                </button>
             </div>
-            
-            <!-- Контакты -->
-            <div class="panel-section">
-                <div class="section-header">
-                    <h4 class="section-title">Контакты</h4>
-                    <button class="search-btn">
-                        <i class="fas fa-search"></i>
-                    </button>
+            <div class="nodes-list" id="nodesList">
+                <!-- Узлы будут загружены через JS -->
+            </div>
+
+            <!-- Быстрые контакты -->
+            <div class="section-header">
+                <h3>Контакты</h3>
+                <button class="section-action" id="addContactBtn">
+                    <i class="fas fa-user-plus"></i>
+                </button>
+            </div>
+            <div class="contacts-list" id="contactsList">
+                <!-- Контакты будут загружены через JS -->
+            </div>
+
+            <!-- Теги / Категории -->
+            <div class="section-header">
+                <h3>Категории</h3>
+                <button class="section-action" id="addCategoryBtn">
+                    <i class="fas fa-tag"></i>
+                </button>
+            </div>
+            <div class="categories-list">
+                <div class="category-item">
+                    <div class="category-color" style="background: #0088cc;"></div>
+                    <span class="category-name">Работа</span>
+                    <span class="category-count">24</span>
                 </div>
-                <div class="contacts-list">
-                    <div class="contact-item" data-contact-id="1">
-                        <div class="contact-avatar" style="background: linear-gradient(135deg, #0088cc, #0055aa);">
-                            А
-                        </div>
-                        <div class="contact-info">
-                            <h5 class="contact-name">DeDnY</h5>
-                            <p class="contact-status">В сети • Team Lead</p>
-                        </div>
-                        <div class="contact-actions">
-                            <button class="action-btn call-btn" title="Позвонить">
-                                <i class="fas fa-phone"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="contact-item" data-contact-id="2">
-                        <div class="contact-avatar" style="background: linear-gradient(135deg, #af52de, #7d3cff);">
-                            М
-                        </div>
-                        <div class="contact-info">
-                            <h5 class="contact-name">Дианка донатерша</h5>
-                            <p class="contact-status">В сети • Donater</p>
-                        </div>
-                        <div class="contact-actions">
-                            <button class="action-btn call-btn" title="Позвонить">
-                                <i class="fas fa-phone"></i>
-                            </button>
-                        </div>
-                    </div>
+                <div class="category-item">
+                    <div class="category-color" style="background: #34c759;"></div>
+                    <span class="category-name">Семья</span>
+                    <span class="category-count">8</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-color" style="background: #af52de;"></div>
+                    <span class="category-name">Друзья</span>
+                    <span class="category-count">16</span>
                 </div>
             </div>
         </aside>
-        
+
         <!-- Основной контент -->
         <main class="main-content">
-            <!-- Хедер -->
+            <!-- Хедер основного контента -->
             <header class="main-header">
                 <div class="header-left">
                     <button class="back-btn" id="backBtn">
                         <i class="fas fa-arrow-left"></i>
                     </button>
-                    <div class="current-node">
-                        <div class="node-header-icon" style="background: linear-gradient(135deg, #0088cc, #0055aa);">
+                    <div class="current-context">
+                        <div class="context-icon" style="background: linear-gradient(135deg, #0088cc, #0055aa);">
                             <i class="fas fa-rocket"></i>
                         </div>
-                        <div class="node-header-info">
-                            <h1 class="node-title">AlphaTeam</h1>
-                            <p class="node-subtitle">24 участника • Рабочая команда</p>
+                        <div class="context-info">
+                            <h1 class="context-title">AlphaTeam</h1>
+                            <p class="context-subtitle">24 участника • 12 онлайн</p>
                         </div>
                     </div>
                 </div>
                 <div class="header-right">
-                    <div class="search-container">
+                    <div class="search-wrapper compact">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Поиск..." class="search-input">
+                        <input type="text" placeholder="Поиск..." id="chatSearch">
                     </div>
-                    <button class="header-action-btn" id="notificationsBtn">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge">3</span>
-                    </button>
-                    <button class="header-action-btn" id="settingsBtn">
-                        <i class="fas fa-cog"></i>
-                    </button>
+                    <div class="header-actions">
+                        <button class="header-action-btn" id="notificationsToggle">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge">3</span>
+                        </button>
+                        <button class="header-action-btn" id="viewToggle">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                        <button class="header-action-btn" id="filterToggle">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                        <button class="header-action-btn primary" id="newChatBtn">
+                            <i class="fas fa-plus"></i>
+                            Новый чат
+                        </button>
+                    </div>
                 </div>
             </header>
-            
-            <!-- Фильтры -->
-            <div class="filters-bar">
+
+            <!-- Фильтры и сортировка -->
+            <div class="filters-bar" id="filtersBar">
                 <div class="filters-scroll">
-                    <button class="filter-btn active">Все чаты</button>
+                    <button class="filter-btn active">Все</button>
                     <button class="filter-btn">Непрочитанные</button>
                     <button class="filter-btn">Закреплённые</button>
                     <button class="filter-btn">Личные</button>
                     <button class="filter-btn">Группы</button>
                     <button class="filter-btn">Каналы</button>
+                    <button class="filter-btn">Архив</button>
+                    <button class="filter-btn">Скрытые</button>
                 </div>
-                <div class="view-toggle">
-                    <button class="view-btn active" data-view="grid">
-                        <i class="fas fa-th-large"></i>
+                <div class="sort-controls">
+                    <button class="sort-btn" id="sortByTime">
+                        <i class="fas fa-clock"></i>
+                        По времени
                     </button>
-                    <button class="view-btn" data-view="list">
-                        <i class="fas fa-list"></i>
+                    <button class="sort-btn" id="sortByUnread">
+                        <i class="fas fa-envelope"></i>
+                        По непрочитанным
                     </button>
                 </div>
             </div>
-            
+
             <!-- Список чатов -->
-            <div class="chats-container grid-view" id="chatsContainer">
-                <!-- Чаты будут добавлены через JS -->
+            <div class="chats-container" id="chatsContainer">
+                <!-- Чаты будут загружены через JS -->
+            </div>
+
+            <!-- Пустое состояние -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3>Нет активных чатов</h3>
+                <p>Начните новый разговор или выберите узел для просмотра чатов</p>
+                <button class="btn-primary" id="startFirstChat">
+                    <i class="fas fa-plus"></i>
+                    Начать чат
+                </button>
             </div>
         </main>
-        
-        <!-- Панель профиля -->
-        <div class="profile-panel" id="profilePanel">
-            <div class="panel-header">
-                <button class="back-btn" id="closeProfileBtn">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <h2 class="panel-title">Профиль</h2>
-                <button class="edit-btn">
-                    <i class="fas fa-edit"></i>
-                </button>
-            </div>
-            <div class="profile-content">
-                <div class="profile-cover">
-                    <div class="cover-gradient"></div>
-                    <div class="profile-avatar-large">
-                        <div class="avatar-large">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <button class="avatar-edit-btn">
-                            <i class="fas fa-camera"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="profile-details">
-                    <h2 class="profile-fullname">Gazman</h2>
-                    <p class="profile-username">@gazmannn</p>
-                    <div class="profile-stats">
-                        <div class="stat-item">
-                            <span class="stat-value">156</span>
-                            <span class="stat-label">Чатов</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">48</span>
-                            <span class="stat-label">Контактов</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">5</span>
-                            <span class="stat-label">Узлов</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="profile-info-cards">
-                    <div class="info-card">
-                        <div class="card-header">
-                            <i class="fas fa-phone"></i>
-                            <h3>Телефон</h3>
-                        </div>
-                        <p class="card-content">+7 (900) 123-45-67</p>
-                    </div>
-                    <div class="info-card">
-                        <div class="card-header">
-                            <i class="fas fa-envelope"></i>
-                            <h3>Email</h3>
-                        </div>
-                        <p class="card-content">gazman@example.com</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Панель чата -->
+
+        <!-- Панель активного чата -->
         <div class="chat-panel" id="chatPanel">
             <div class="chat-header">
-                <button class="back-btn" id="closeChatBtn">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <div class="chat-info">
-                    <div class="chat-avatar" style="background: linear-gradient(135deg, #0088cc, #0055aa);">
-                        Д
-                    </div>
-                    <div>
-                        <h3 class="chat-title">Дизайн-команда</h3>
-                        <p class="chat-status">8 участников • Последний раз в сети 5 минут назад</p>
+                <div class="chat-header-left">
+                    <button class="back-btn" id="closeChatBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="chat-info">
+                        <div class="chat-avatar" style="background: linear-gradient(135deg, #0088cc, #0055aa);">
+                            Д
+                        </div>
+                        <div class="chat-details">
+                            <h3 class="chat-title">Дизайн-команда</h3>
+                            <div class="chat-status">
+                                <span class="online-dot"></span>
+                                <span class="status-text">8 участников • 5 онлайн</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="chat-actions">
-                    <button class="chat-action-btn">
+                <div class="chat-header-right">
+                    <button class="chat-action-btn" id="voiceCallBtn">
                         <i class="fas fa-phone"></i>
                     </button>
-                    <button class="chat-action-btn">
+                    <button class="chat-action-btn" id="videoCallBtn">
                         <i class="fas fa-video"></i>
                     </button>
-                    <button class="chat-action-btn">
+                    <button class="chat-action-btn" id="chatMenuBtn">
                         <i class="fas fa-ellipsis-v"></i>
                     </button>
                 </div>
             </div>
-            
+
+            <!-- Сообщения -->
             <div class="messages-container" id="messagesContainer">
-                <!-- Сообщения будут добавлены через JS -->
+                <div class="messages-scroll" id="messagesScroll">
+                    <!-- Сообщения будут загружены через JS -->
+                </div>
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="typing-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                    <span id="typingText">Кто-то печатает...</span>
+                </div>
             </div>
-            
-            <div class="message-input-area">
+
+            <!-- Поле ввода сообщения -->
+            <div class="message-input-container">
                 <div class="input-actions">
-                    <button class="input-btn">
-                        <i class="fas fa-plus"></i>
+                    <button class="input-action-btn" id="attachFileBtn">
+                        <i class="fas fa-paperclip"></i>
                     </button>
-                    <button class="input-btn">
+                    <button class="input-action-btn" id="attachImageBtn">
                         <i class="fas fa-image"></i>
                     </button>
-                    <button class="input-btn">
-                        <i class="fas fa-paperclip"></i>
+                    <button class="input-action-btn" id="attachAudioBtn">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="input-action-btn" id="emojiBtn">
+                        <i class="fas fa-smile"></i>
                     </button>
                 </div>
                 <div class="message-input-wrapper">
-                    <input type="text" placeholder="Сообщение..." class="message-input" id="messageInput">
-                    <button class="voice-btn">
-                        <i class="fas fa-microphone"></i>
+                    <textarea 
+                        class="message-input" 
+                        id="messageInput" 
+                        placeholder="Сообщение..."
+                        rows="1"
+                    ></textarea>
+                    <button class="send-btn" id="sendMessageBtn">
+                        <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
-                <button class="send-btn" id="sendMessageBtn">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
             </div>
         </div>
-        
+
+        <!-- Панель профиля / настроек -->
+        <div class="profile-panel" id="profilePanel">
+            <div class="profile-panel-header">
+                <button class="back-btn" id="closeProfileBtn">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2>Профиль</h2>
+                <button class="edit-btn" id="editProfileBtn">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </div>
+            <div class="profile-panel-content">
+                <!-- Содержимое профиля будет загружено через JS -->
+            </div>
+        </div>
+
         <!-- Экран звонка -->
         <div class="call-screen" id="callScreen">
             <div class="call-container">
                 <div class="call-header">
-                    <div class="call-timer">00:00</div>
-                    <button class="minimize-btn">
-                        <i class="fas fa-window-minimize"></i>
-                    </button>
+                    <div class="call-timer" id="callTimer">00:00</div>
+                    <div class="call-actions">
+                        <button class="call-action-btn" id="minimizeCallBtn">
+                            <i class="fas fa-window-minimize"></i>
+                        </button>
+                        <button class="call-action-btn" id="endCallBtn">
+                            <i class="fas fa-phone-slash"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="call-content">
-                    <div class="call-avatar-large" style="background: linear-gradient(135deg, #0088cc, #0055aa);">
+                    <div class="call-avatar" style="background: linear-gradient(135deg, #0088cc, #0055aa);">
                         А
                         <div class="call-pulse"></div>
                     </div>
-                    <h2 class="call-name">Алексей</h2>
-                    <p class="call-status">Аудиозвонок...</p>
+                    <h2 class="call-name" id="callName">Алексей</h2>
+                    <p class="call-status" id="callStatus">Вызов...</p>
                 </div>
                 <div class="call-controls">
-                    <button class="call-control-btn mute">
+                    <button class="call-control-btn" id="muteBtn">
                         <i class="fas fa-microphone"></i>
+                        <span>Микрофон</span>
                     </button>
-                    <button class="call-control-btn end">
-                        <i class="fas fa-phone-slash"></i>
-                    </button>
-                    <button class="call-control-btn video">
+                    <button class="call-control-btn" id="videoToggleBtn">
                         <i class="fas fa-video"></i>
+                        <span>Камера</span>
                     </button>
-                    <button class="call-control-btn speaker">
+                    <button class="call-control-btn" id="speakerBtn">
                         <i class="fas fa-volume-up"></i>
+                        <span>Динамик</span>
+                    </button>
+                    <button class="call-control-btn danger" id="endCallMainBtn">
+                        <i class="fas fa-phone-slash"></i>
+                        <span>Завершить</span>
                     </button>
                 </div>
             </div>
         </div>
-        
+
         <!-- Экран конференции -->
         <div class="conference-screen" id="conferenceScreen">
             <div class="conference-header">
                 <div class="conference-info">
-                    <div class="conference-timer">00:00</div>
-                    <div class="participant-count">6 участников</div>
+                    <div class="conference-timer" id="conferenceTimer">00:00</div>
+                    <div class="conference-title">
+                        <i class="fas fa-users"></i>
+                        <span>Групповой звонок</span>
+                    </div>
                 </div>
                 <div class="conference-actions">
-                    <button class="conference-action-btn">
+                    <button class="conference-action-btn" id="addParticipantBtn">
                         <i class="fas fa-user-plus"></i>
                     </button>
-                    <button class="conference-action-btn">
+                    <button class="conference-action-btn" id="fullscreenBtn">
                         <i class="fas fa-expand"></i>
                     </button>
                 </div>
             </div>
             <div class="conference-grid" id="conferenceGrid">
-                <!-- Участники будут добавлены через JS -->
+                <!-- Участники конференции -->
             </div>
             <div class="conference-controls">
-                <button class="conference-control-btn mute">
+                <button class="conference-control-btn" id="confMuteBtn">
                     <i class="fas fa-microphone"></i>
                 </button>
-                <button class="conference-control-btn end">
-                    <i class="fas fa-phone-slash"></i>
-                </button>
-                <button class="conference-control-btn video">
+                <button class="conference-control-btn" id="confVideoBtn">
                     <i class="fas fa-video"></i>
                 </button>
-                <button class="conference-control-btn screen-share">
+                <button class="conference-control-btn" id="confScreenBtn">
                     <i class="fas fa-desktop"></i>
+                </button>
+                <button class="conference-control-btn danger" id="confEndBtn">
+                    <i class="fas fa-phone-slash"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Мини-плеер звонка -->
+        <div class="mini-call" id="miniCall">
+            <div class="mini-call-content">
+                <div class="mini-avatar">А</div>
+                <div class="mini-info">
+                    <span class="mini-name">Алексей</span>
+                    <span class="mini-timer">01:23</span>
+                </div>
+                <button class="mini-action" id="expandCallBtn">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button class="mini-action danger" id="endMiniCallBtn">
+                    <i class="fas fa-phone-slash"></i>
                 </button>
             </div>
         </div>
     </div>
-    
-    <!-- Плавающие кнопки -->
+
+    <!-- Плавающие кнопки действий -->
     <div class="floating-actions">
-        <button class="floating-btn theme-toggle" id="themeToggle">
+        <button class="floating-btn" id="themeToggleBtn">
             <i class="fas fa-moon"></i>
         </button>
-        <button class="floating-btn new-chat" id="newChatBtn">
+        <button class="floating-btn" id="newChatFloatBtn">
             <i class="fas fa-edit"></i>
         </button>
-        <button class="floating-btn start-conference" id="startConferenceBtn">
+        <button class="floating-btn primary" id="startConferenceBtn">
             <i class="fas fa-video"></i>
         </button>
+    </div>
+
+    <!-- Эмодзи панель -->
+    <div class="emoji-picker" id="emojiPicker">
+        <div class="emoji-header">
+            <div class="emoji-categories">
+                <button class="emoji-category active" data-category="smileys">
+                    <i class="fas fa-smile"></i>
+                </button>
+                <button class="emoji-category" data-category="people">
+                    <i class="fas fa-user"></i>
+                </button>
+                <button class="emoji-category" data-category="nature">
+                    <i class="fas fa-leaf"></i>
+                </button>
+                <button class="emoji-category" data-category="food">
+                    <i class="fas fa-utensils"></i>
+                </button>
+                <button class="emoji-category" data-category="activities">
+                    <i class="fas fa-futbol"></i>
+                </button>
+            </div>
+            <button class="emoji-close" id="emojiCloseBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="emoji-grid" id="emojiGrid">
+            <!-- Эмодзи будут загружены через JS -->
+        </div>
+    </div>
+
+    <!-- Контекстное меню -->
+    <div class="context-menu" id="contextMenu">
+        <div class="context-menu-content" id="contextMenuContent">
+            <!-- Динамически заполняется -->
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Загрузка...</p>
+        </div>
     </div>
 
     <script src="script.js"></script>
