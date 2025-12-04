@@ -2560,6 +2560,642 @@ textarea:focus {
     box-shadow: var(--shadow-lg);
 }
 
+/* ===== АКТИВНОСТЬ ===== */
+.activity-list {
+    padding: 8px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    border-left: 3px solid transparent;
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+.activity-item:hover {
+    background: var(--bg-hover);
+    transform: translateX(4px);
+}
+
+.activity-item.calling {
+    border-left-color: var(--success);
+}
+
+.activity-item.conference {
+    border-left-color: var(--primary);
+}
+
+.activity-item.gaming {
+    border-left-color: var(--warning);
+}
+
+.activity-item.typing {
+    border-left-color: var(--info);
+}
+
+.activity-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--bg-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-size: 12px;
+    color: var(--text-primary);
+}
+
+.activity-item.calling .activity-icon {
+    background: rgba(52, 199, 89, 0.2);
+    color: var(--success);
+}
+
+.activity-item.conference .activity-icon {
+    background: rgba(0, 136, 204, 0.2);
+    color: var(--primary);
+}
+
+.activity-item.gaming .activity-icon {
+    background: rgba(255, 149, 0, 0.2);
+    color: var(--warning);
+}
+
+.activity-info {
+    flex: 1;
+}
+
+.activity-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.activity-status {
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.activity-duration {
+    margin-left: auto;
+    font-size: 10px;
+    color: var(--text-tertiary);
+    background: var(--bg-hover);
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+/* ===== ИГРЫ ===== */
+.games-list {
+    padding: 8px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.game-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+.game-item:hover {
+    background: var(--bg-hover);
+    transform: translateX(4px);
+}
+
+.game-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--gradient-warning);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-size: 14px;
+    color: white;
+}
+
+.game-info {
+    flex: 1;
+}
+
+.game-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: block;
+}
+
+.game-status {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+/* ===== РЕДАКТИРОВАНИЕ ПРОФИЛЯ ===== */
+.profile-edit-section {
+    padding: 24px;
+    animation: fadeIn 0.3s ease;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.form-input {
+    height: 44px;
+    padding: 0 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 14px;
+    outline: none;
+    transition: var(--transition-normal);
+}
+
+.form-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-extra-light);
+}
+
+.form-textarea {
+    min-height: 100px;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: inherit;
+    line-height: 1.5;
+    resize: vertical;
+    outline: none;
+    transition: var(--transition-normal);
+}
+
+.form-textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-extra-light);
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn-secondary {
+    height: 44px;
+    padding: 0 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    flex: 1;
+    transition: var(--transition-normal);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-hover);
+    transform: translateY(-2px);
+}
+
+/* ===== НАСТРОЙКИ ===== */
+.settings-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-primary);
+    display: none;
+    flex-direction: column;
+    z-index: 150;
+}
+
+.settings-panel.active {
+    display: flex;
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    height: var(--header-height);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    gap: 20px;
+}
+
+.settings-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    flex: 1;
+    margin: 0;
+}
+
+.settings-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+.settings-section {
+    margin-bottom: 32px;
+}
+
+.settings-section h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+}
+
+.setting-item span {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Переключатель */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    transition: var(--transition-normal);
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background: var(--text-secondary);
+    transition: var(--transition-normal);
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+    background: white;
+}
+
+/* Выбор темы */
+.theme-selector {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.theme-option {
+    flex: 1;
+    min-width: 100px;
+    height: 80px;
+    padding: 12px;
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition-normal);
+}
+
+.theme-option:hover {
+    background: var(--bg-hover);
+    transform: translateY(-2px);
+}
+
+.theme-option.active {
+    border-color: var(--primary);
+    background: var(--primary-extra-light);
+}
+
+.theme-option i {
+    font-size: 20px;
+}
+
+.theme-option span {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Индикатор статуса в контактах */
+.contact-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+    display: inline-block;
+}
+
+.status-online {
+    background: var(--success);
+}
+
+.status-away {
+    background: var(--warning);
+}
+
+.status-busy {
+    background: var(--danger);
+}
+
+.status-invisible {
+    background: var(--text-disabled);
+}
+
+/* Бейдж активности в контактах */
+.activity-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: white;
+    z-index: 1;
+}
+
+.activity-badge.calling {
+    background: var(--success);
+}
+
+.activity-badge.conference {
+    background: var(--primary);
+}
+
+.activity-badge.gaming {
+    background: var(--warning);
+}
+
+.activity-badge.typing {
+    background: var(--info);
+}
+
+/* Расширенный статус контакта */
+.contact-status-extended {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 2px;
+}
+
+/* Анимация пульсации для активных контактов */
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.8;
+    }
+    80%, 100% {
+        transform: scale(1.2);
+        opacity: 0;
+    }
+}
+
+.pulse-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse-ring 2s infinite;
+}
+
+/* Стили для игры в CS2 в профиле */
+.cs2-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 149, 0, 0.1);
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    margin-top: 8px;
+    border-left: 3px solid var(--warning);
+}
+
+.cs2-status i {
+    color: var(--warning);
+}
+
+.cs2-info {
+    flex: 1;
+}
+
+.cs2-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: block;
+}
+
+.cs2-details {
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+.cs2-timer {
+    font-size: 11px;
+    color: var(--warning);
+    font-weight: 600;
+}
+
+/* Улучшенный индикатор набора текста */
+.typing-extended {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    border-left: 3px solid var(--info);
+}
+
+.typing-user {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.typing-action {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+/* Панель эмодзи и стикеров */
+.sticker-picker {
+    position: fixed;
+    bottom: 120px;
+    right: 32px;
+    width: 320px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    display: none;
+    z-index: 1001;
+}
+
+.sticker-categories {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    overflow-x: auto;
+}
+
+.sticker-category {
+    padding: 8px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition-fast);
+}
+
+.sticker-category:hover,
+.sticker-category.active {
+    background: var(--gradient-primary);
+    color: white;
+    border-color: transparent;
+}
+
+.sticker-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 16px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.sticker-item {
+    aspect-ratio: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.sticker-item:hover {
+    background: var(--bg-hover);
+    transform: scale(1.1);
+    border-color: var(--primary);
+}
+
+/* Анимация появления новых элементов */
+@keyframes newItem {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.new-item {
+    animation: newItem 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 /* Плавные переходы */
 * {
     transition: background-color var(--transition-normal),
