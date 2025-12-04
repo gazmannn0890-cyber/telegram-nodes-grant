@@ -3,64 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Nodes - Живые пространства</title>
+    <title>Telegram Nodes</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="day-theme">
-    <!-- AI Assistant Notification -->
-    <div class="ai-notification" id="aiNotification">
-        <div class="ai-notification-content">
-            <div class="ai-avatar">
-                <i class="fas fa-brain"></i>
-                <div class="ai-pulse"></div>
-            </div>
-            <div class="ai-message">
-                <span class="ai-name">NOVA</span>
-                <p>Режим "Хамелеон" активен. Узлы адаптируются под время суток.</p>
-            </div>
-            <button class="ai-close-btn" id="closeAiNotification">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- Chameleon Mode Indicator -->
-    <div class="chameleon-indicator">
-        <div class="chameleon-status">
-            <span class="chameleon-icon">
-                <i class="fas fa-palette"></i>
-            </span>
-            <span class="chameleon-text">Режим Хамелеон: </span>
-            <span class="chameleon-value" id="chameleonStatus">Авто-адаптация</span>
-        </div>
-        <div class="time-indicator">
-            <i class="fas fa-clock"></i>
-            <span id="currentTime">14:30</span>
-            <span class="time-period" id="timePeriod">День</span>
-        </div>
-    </div>
-
-    <!-- Background Selector -->
-    <div class="background-selector">
-        <div class="bg-preview bg-default active" data-bg="default" title="Стандартный фон"></div>
-        <div class="bg-preview bg-gradient-1" data-bg="gradient1" title="Сине-фиолетовый градиент"></div>
-        <div class="bg-preview bg-gradient-2" data-bg="gradient2" title="Темный градиент"></div>
-        <div class="bg-preview bg-pattern-1" data-bg="pattern1" title="Радиальный паттерн"></div>
-        <div class="bg-preview bg-pattern-2" data-bg="pattern2" title="Линейный паттерн"></div>
-        <div class="bg-preview bg-animated" data-bg="animated" title="Анимированный фон"></div>
-        <div class="bg-preview bg-space" data-bg="space" title="Космическая тема"></div>
-        <div class="bg-preview bg-watercolor" data-bg="watercolor" title="Акварель"></div>
-        <div class="bg-preview bg-neon" data-bg="neon" title="Неоновая сетка"></div>
-        <div class="bg-preview dragon-btn" data-bg="dragon" title="Огненный дракон!">
-            🐉
-        </div>
-    </div>
-
     <div class="container">
         <!-- Боковое меню -->
         <div class="side-menu">
-            <div class="user-section" id="profile-link">
+            <!-- Профиль -->
+            <div class="user-section" id="profileLink">
                 <div class="user-avatar">
                     <img src="https://i.pravatar.cc/40" alt="User">
                 </div>
@@ -68,490 +20,337 @@
                     <strong>Иван Петров</strong>
                     <span>Личный аккаунт</span>
                 </div>
-                <div class="menu-toggle">
-                    <i class="fas fa-chevron-right"></i>
-                </div>
+                <i class="fas fa-chevron-right"></i>
             </div>
 
-            <div class="accounts-section">
+            <!-- Аккаунты -->
+            <div class="section">
                 <h3>Аккаунты</h3>
                 <div class="account-item active">
-                    <div class="account-avatar">И</div>
-                    <span>Иван (личный)</span>
+                    <div class="avatar">И</div>
+                    <span>Иван</span>
                 </div>
                 <div class="account-item">
-                    <div class="account-avatar">А</div>
+                    <div class="avatar">А</div>
                     <span>alexey_work</span>
                 </div>
             </div>
 
-            <!-- ЖИВЫЕ УЗЛЫ С ХАМЕЛЕОНОМ -->
-            <div class="nodes-section">
-                <h3>Живые пространства 
-                    <span class="chameleon-badge" id="chameleonToggle">
-                        <i class="fas fa-palette"></i>
-                        Хамелеон
-                    </span>
-                </h3>
-                
-                <!-- Узлы с адаптацией -->
-                <div class="node-item living-node active" data-node="alpha">
-                    <div class="node-avatar chameleon-node" 
-                         style="background: linear-gradient(135deg, #0088cc, #40b7e8);"
-                         data-time="day"
-                         data-mood="focus">
-                        <i class="fas fa-cogs"></i>
-                        <div class="node-pulse"></div>
-                        <div class="node-time-indicator">
-                            <i class="fas fa-sun"></i>
-                        </div>
+            <!-- Узлы -->
+            <div class="section">
+                <h3>Узлы</h3>
+                <div class="node-item active" data-node="alpha">
+                    <div class="node-avatar" style="background: #0088cc;">
+                        <i class="fas fa-briefcase"></i>
                     </div>
                     <span>AlphaTeam</span>
-                    <div class="node-indicator"></div>
-                    <div class="node-adaptation">
-                        <span class="adaptation-label">День • Фокус</span>
-                    </div>
+                    <div class="badge">3</div>
                 </div>
-                
-                <div class="node-item living-node" data-node="game">
-                    <div class="node-avatar chameleon-node" 
-                         style="background: linear-gradient(135deg, #af52de, #bf5af2);"
-                         data-time="day"
-                         data-mood="energy">
+                <div class="node-item" data-node="game">
+                    <div class="node-avatar" style="background: #af52de;">
                         <i class="fas fa-gamepad"></i>
-                        <div class="node-pulse"></div>
-                        <div class="node-time-indicator">
-                            <i class="fas fa-bolt"></i>
-                        </div>
                     </div>
                     <span>GameZone</span>
-                    <div class="node-adaptation">
-                        <span class="adaptation-label">День • Энергия</span>
-                    </div>
                 </div>
-                
-                <div class="node-item living-node" data-node="family">
-                    <div class="node-avatar chameleon-node" 
-                         style="background: linear-gradient(135deg, #34c759, #30d158);"
-                         data-time="evening"
-                         data-mood="relax">
+                <div class="node-item" data-node="family">
+                    <div class="node-avatar" style="background: #34c759;">
                         <i class="fas fa-home"></i>
-                        <div class="node-pulse"></div>
-                        <div class="node-time-indicator">
-                            <i class="fas fa-moon"></i>
-                        </div>
                     </div>
                     <span>FamilyHub</span>
-                    <div class="node-adaptation">
-                        <span class="adaptation-label">Вечер • Отдых</span>
-                    </div>
                 </div>
-                
-                <div class="add-node">
-                    <div class="node-avatar add-btn chameleon-node">
+                <div class="node-item add">
+                    <div class="node-avatar">
                         <i class="fas fa-plus"></i>
-                        <div class="adaptive-sparkle"></div>
                     </div>
-                    <span>Создать живое пространство</span>
+                    <span>Создать узел</span>
                 </div>
             </div>
 
-            <!-- Quick Adaptation Controls -->
-            <div class="adaptation-controls">
-                <h4><i class="fas fa-sliders-h"></i> Быстрая адаптация</h4>
-                <div class="adaptation-buttons">
-                    <button class="adapt-btn active" data-adapt="auto">
-                        <i class="fas fa-robot"></i> Авто
-                    </button>
-                    <button class="adapt-btn" data-adapt="focus">
-                        <i class="fas fa-bullseye"></i> Фокус
-                    </button>
-                    <button class="adapt-btn" data-adapt="creative">
-                        <i class="fas fa-palette"></i> Креатив
-                    </button>
-                    <button class="adapt-btn" data-adapt="relax">
-                        <i class="fas fa-couch"></i> Отдых
-                    </button>
+            <!-- Контакты -->
+            <div class="section">
+                <h3>Контакты</h3>
+                <div class="contact-item" data-contact="1">
+                    <div class="avatar" style="background: #0088cc;">А</div>
+                    <div class="contact-info">
+                        <strong>Алексей</strong>
+                        <span>В сети</span>
+                    </div>
+                    <div class="contact-actions">
+                        <button class="call-btn" title="Аудиозвонок"><i class="fas fa-phone"></i></button>
+                        <button class="call-btn video" title="Видеозвонок"><i class="fas fa-video"></i></button>
+                    </div>
+                </div>
+                <div class="contact-item" data-contact="2">
+                    <div class="avatar" style="background: #af52de;">М</div>
+                    <div class="contact-info">
+                        <strong>Мария</strong>
+                        <span>В сети</span>
+                    </div>
+                    <div class="contact-actions">
+                        <button class="call-btn" title="Аудиозвонок"><i class="fas fa-phone"></i></button>
+                        <button class="call-btn video" title="Видеозвонок"><i class="fas fa-video"></i></button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Основной контент -->
         <div class="main-content">
-            <!-- Адаптивный хедер -->
+            <!-- Хедер -->
             <div class="header">
                 <div class="header-left">
                     <button class="back-btn"><i class="fas fa-arrow-left"></i></button>
-                    <div class="current-node adaptive">
-                        <div class="node-avatar small chameleon-node" 
-                             style="background: linear-gradient(135deg, #0088cc, #40b7e8);">
-                            <i class="fas fa-cogs"></i>
-                            <div class="node-aura"></div>
+                    <div class="current-node">
+                        <div class="node-avatar small" style="background: #0088cc;">
+                            <i class="fas fa-briefcase"></i>
                         </div>
-                        <div class="node-title">
-                            <h2>AlphaTeam</h2>
-                            <div class="node-subtitle">
-                                <span class="adaptation-info">
-                                    <i class="fas fa-sync-alt"></i> 
-                                    Адаптирован под <span class="adaptation-value">дневной фокус</span>
-                                </span>
-                            </div>
-                        </div>
+                        <h2>AlphaTeam</h2>
                     </div>
                 </div>
                 <div class="header-right">
                     <button class="search-btn"><i class="fas fa-search"></i></button>
-                    <button class="ai-quick-btn" id="aiQuickBtn">
-                        <i class="fas fa-robot"></i>
-                        <span class="ai-badge">AI</span>
-                    </button>
+                    <button class="new-chat-btn"><i class="fas fa-edit"></i> Новый чат</button>
                 </div>
             </div>
 
-            <!-- AI Quick Suggestions -->
-            <div class="ai-suggestions-bar">
-                <div class="suggestion">
-                    <i class="fas fa-lightbulb"></i>
-                    <span>NOVA: Предлагаю создать канал для дизайна</span>
-                    <button class="suggestion-action">Создать</button>
-                </div>
+            <!-- Фильтры -->
+            <div class="filters">
+                <button class="filter-btn active">Все чаты</button>
+                <button class="filter-btn">Непрочитанные</button>
+                <button class="filter-btn">Закреплённые</button>
+                <button class="filter-btn">Личные</button>
             </div>
 
-            <!-- Quick Switch -->
-            <div class="quick-switch">
-                <div class="switch-item active adaptive-filter" data-filter="all">
-                    <i class="fas fa-layer-group"></i>
-                    <span>Все</span>
-                </div>
-                <div class="switch-item adaptive-filter" data-filter="alpha">
-                    <div class="switch-node-avatar" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">
-                        <i class="fas fa-cogs"></i>
-                    </div>
-                    <span>AlphaTeam</span>
-                </div>
-                <div class="switch-item adaptive-filter" data-filter="game">
-                    <div class="switch-node-avatar" style="background: linear-gradient(135deg, #af52de, #bf5af2);">
-                        <i class="fas fa-gamepad"></i>
-                    </div>
-                    <span>GameZone</span>
-                </div>
-                <div class="switch-item adaptive-filter" data-filter="family">
-                    <div class="switch-node-avatar" style="background: linear-gradient(135deg, #34c759, #30d158);">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <span>FamilyHub</span>
-                </div>
-                <div class="switch-item add adaptive-filter">
-                    <i class="fas fa-plus"></i>
-                    <div class="add-ripple"></div>
-                </div>
-            </div>
-
-            <!-- Chat List with AI hints -->
+            <!-- Список чатов -->
             <div class="chat-list">
-                <!-- Chat with AI hint -->
-                <div class="chat-item adaptive-chat" data-node="alpha">
+                <!-- Чат 1 -->
+                <div class="chat-item active" data-chat="design">
                     <div class="chat-avatar">
-                        <div class="node-badge chameleon-badge" style="background: linear-gradient(135deg, #0088cc, #40b7e8);">
-                            A
-                            <div class="badge-pulse"></div>
-                        </div>
-                        <div class="ai-hint-indicator" title="AI предложение">
-                            <i class="fas fa-robot"></i>
-                        </div>
+                        <div class="avatar" style="background: #0088cc;">Д</div>
                     </div>
                     <div class="chat-info">
                         <div class="chat-header">
                             <h4>Дизайн-команда</h4>
-                            <span class="chat-time">12:30</span>
+                            <span class="time">12:30</span>
                         </div>
-                        <p>Обсуждаем новый UI для Nodes...</p>
-                        <div class="chat-ai-hint">
-                            <i class="fas fa-lightbulb"></i>
-                            <span>NOVA: Предлагаю создать прототип</span>
+                        <p class="last-message">Обсуждаем новый UI для Nodes...</p>
+                        <div class="chat-meta">
+                            <span class="unread">3</span>
+                            <i class="fas fa-check-double read"></i>
                         </div>
-                        <div class="chat-badge">3</div>
                     </div>
                 </div>
 
-                <div class="chat-item adaptive-chat" data-node="game">
+                <!-- Чат 2 -->
+                <div class="chat-item" data-chat="reports">
                     <div class="chat-avatar">
-                        <div class="node-badge chameleon-badge" style="background: linear-gradient(135deg, #af52de, #bf5af2);">
-                            G
-                            <div class="badge-pulse"></div>
+                        <div class="avatar" style="background: #0088cc;">О</div>
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-header">
+                            <h4>Отчеты Q3</h4>
+                            <span class="time">Пт</span>
                         </div>
+                        <p class="last-message">Все отчеты готовы к отправке</p>
+                        <div class="chat-meta">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Чат 3 -->
+                <div class="chat-item" data-chat="tournament">
+                    <div class="chat-avatar">
+                        <div class="avatar" style="background: #af52de;">К</div>
                     </div>
                     <div class="chat-info">
                         <div class="chat-header">
                             <h4>Киберспорт турнир</h4>
-                            <span class="chat-time">11:45</span>
+                            <span class="time">11:45</span>
                         </div>
-                        <p>Стартуем в 20:00, не опаздывайте!</p>
+                        <p class="last-message">Стартуем в 20:00, не опаздывайте!</p>
+                        <div class="chat-meta">
+                            <i class="fas fa-volume-mute"></i>
+                        </div>
                     </div>
                 </div>
 
-                <div class="chat-item adaptive-chat" data-node="family">
+                <!-- Чат 4 -->
+                <div class="chat-item" data-chat="family">
                     <div class="chat-avatar">
-                        <div class="node-badge chameleon-badge" style="background: linear-gradient(135deg, #34c759, #30d158);">
-                            F
-                            <div class="badge-pulse"></div>
-                        </div>
-                        <div class="ai-hint-indicator" title="AI напоминание">
-                            <i class="fas fa-bell"></i>
-                        </div>
+                        <div class="avatar" style="background: #34c759;">С</div>
                     </div>
                     <div class="chat-info">
                         <div class="chat-header">
                             <h4>Семейный чат</h4>
-                            <span class="chat-time">Вчера</span>
+                            <span class="time">Вчера</span>
                         </div>
-                        <p>Мама: Приезжайте в воскресенье на ужин</p>
-                        <div class="chat-ai-hint reminder">
-                            <i class="fas fa-bell"></i>
-                            <span>NOVA: Напомнить ответить маме</span>
-                        </div>
-                        <div class="chat-badge">1</div>
-                    </div>
-                </div>
-
-                <!-- AI Generated Topic -->
-                <div class="chat-item ai-generated-topic">
-                    <div class="chat-avatar">
-                        <div class="node-badge ai-badge">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                    </div>
-                    <div class="chat-info">
-                        <div class="chat-header">
-                            <h4>Новая тема от NOVA</h4>
-                            <span class="chat-label ai-label">AI предложение</span>
-                        </div>
-                        <p>Предлагаю обсудить интеграцию с внешними API...</p>
-                        <div class="ai-topic-actions">
-                            <button class="ai-topic-btn primary">Начать обсуждение</button>
-                            <button class="ai-topic-btn secondary">Отложить</button>
+                        <p class="last-message">Мама: Приезжайте в воскресенье</p>
+                        <div class="chat-meta">
+                            <span class="unread">1</span>
+                            <i class="fas fa-pin"></i>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Adaptation Stats -->
-            <div class="adaptation-stats-card">
-                <h4><i class="fas fa-chart-line"></i> Статистика адаптации</h4>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-value">89%</div>
-                        <div class="stat-label">Эффективность узлов</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">24%</div>
-                        <div class="stat-label">Рост активности</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">15</div>
-                        <div class="stat-label">AI предложений</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">3.2ч</div>
-                        <div class="stat-label">В фокусе</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Admin Panel -->
-        <div class="node-admin-panel">
-            <h3><i class="fas fa-shield-alt"></i> Управление AlphaTeam</h3>
-            <div class="ai-suggestions">
-                <h4><i class="fas fa-lightbulb"></i> Предложения AI</h4>
-                <div class="suggestion-card">
-                    <p>Создать канал #design на основе активности чата</p>
-                    <button class="suggestion-btn">Принять</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Profile Page (unchanged) -->
-    <div class="profile-page" style="display: none;">
-        <div class="profile-container">
-            <!-- ... existing profile code ... -->
-        </div>
-    </div>
-
-    <!-- Dragon Container -->
-    <div class="dragon-container" style="display: none;">
-        <div class="fire-dragon"></div>
-        <div class="dragon-trail"></div>
-    </div>
-
-    <!-- Enhanced Theme Controls -->
-    <div class="theme-controls enhanced">
-        <div class="chameleon-control-group">
-            <button class="chameleon-toggle-btn active" id="toggleChameleon">
-                <i class="fas fa-palette"></i>
-                <span>Режим Хамелеон</span>
-                <div class="toggle-indicator"></div>
+            <!-- Кнопка создания чата -->
+            <button class="floating-btn">
+                <i class="fas fa-edit"></i>
             </button>
-            <div class="time-simulator">
-                <span>Время:</span>
-                <select id="timeSimulator">
-                    <option value="morning">Утро (06:00)</option>
-                    <option value="day" selected>День (14:00)</option>
-                    <option value="evening">Вечер (20:00)</option>
-                    <option value="night">Ночь (02:00)</option>
-                </select>
+        </div>
+
+        <!-- Панель чата (скрыта по умолчанию) -->
+        <div class="chat-panel" id="chatPanel">
+            <div class="chat-header">
+                <button class="back-to-list"><i class="fas fa-arrow-left"></i></button>
+                <div class="chat-info">
+                    <div class="avatar" style="background: #0088cc;">Д</div>
+                    <div>
+                        <h3>Дизайн-команда</h3>
+                        <span class="status">Алексей, Мария, Дмитрий и ещё 5</span>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button><i class="fas fa-phone"></i></button>
+                    <button><i class="fas fa-video"></i></button>
+                    <button><i class="fas fa-ellipsis-v"></i></button>
+                </div>
+            </div>
+
+            <div class="messages-container">
+                <div class="message-date">Сегодня</div>
+
+                <!-- Сообщения -->
+                <div class="message incoming">
+                    <div class="message-avatar">
+                        <div class="avatar small" style="background: #af52de;">М</div>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-sender">Мария</div>
+                        <div class="message-text">Привет! Как продвигается работа над новым дизайном?</div>
+                        <div class="message-time">12:15</div>
+                    </div>
+                </div>
+
+                <div class="message outgoing">
+                    <div class="message-content">
+                        <div class="message-text">Почти закончили! Осталось сделать анимации переходов</div>
+                        <div class="message-time">12:20 ✓✓</div>
+                    </div>
+                </div>
+
+                <div class="message incoming">
+                    <div class="message-avatar">
+                        <div class="avatar small" style="background: #0088cc;">А</div>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-sender">Алексей</div>
+                        <div class="message-text">Отлично! Когда сможете показать прототип?</div>
+                        <div class="message-time">12:25</div>
+                    </div>
+                </div>
+
+                <!-- Новое сообщение -->
+                <div class="message outgoing new">
+                    <div class="message-content">
+                        <div class="message-text">Сегодня к вечеру. Добавили тёмную тему и адаптив</div>
+                        <div class="message-time">12:30 ✓</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Поле ввода -->
+            <div class="message-input">
+                <button class="attach-btn"><i class="fas fa-paperclip"></i></button>
+                <input type="text" placeholder="Сообщение..." id="messageInput">
+                <button class="send-btn" id="sendMessage">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </div>
         </div>
-        <div class="theme-group">
-            <button class="theme-btn active" data-theme="day">День</button>
-            <button class="theme-btn" data-theme="night">Ночь</button>
-            <button class="screenshot-btn">📸 Скриншот</button>
+
+        <!-- Панель создания узла -->
+        <div class="create-panel" id="createPanel">
+            <div class="panel-header">
+                <h3><i class="fas fa-plus-circle"></i> Создать узел</h3>
+                <button class="close-panel"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="panel-content">
+                <div class="form-group">
+                    <label>Название узла</label>
+                    <input type="text" placeholder="Например: MarketingTeam" value="MarketingTeam">
+                </div>
+                <div class="form-group">
+                    <label>Цвет узла</label>
+                    <div class="color-picker">
+                        <div class="color-option active" style="background: #0088cc;"></div>
+                        <div class="color-option" style="background: #af52de;"></div>
+                        <div class="color-option" style="background: #34c759;"></div>
+                        <div class="color-option" style="background: #ff9500;"></div>
+                        <div class="color-option" style="background: #5ac8fa;"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Тип узла</label>
+                    <select>
+                        <option>Рабочий проект</option>
+                        <option>Сообщество по интересам</option>
+                        <option>Семейный чат</option>
+                        <option>Образовательный</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Приватность</label>
+                    <div class="privacy-options">
+                        <label class="privacy-option">
+                            <input type="radio" name="privacy" checked>
+                            <span>Открытый (все могут присоединиться)</span>
+                        </label>
+                        <label class="privacy-option">
+                            <input type="radio" name="privacy">
+                            <span>По приглашению</span>
+                        </label>
+                        <label class="privacy-option">
+                            <input type="radio" name="privacy">
+                            <span>Закрытый</span>
+                        </label>
+                    </div>
+                </div>
+                <button class="create-btn">Создать узел</button>
+            </div>
         </div>
+    </div>
+
+    <!-- Модалка звонка -->
+    <div class="call-modal" id="callModal">
+        <div class="call-container">
+            <div class="call-header">
+                <h3>Звонок</h3>
+                <button class="close-call"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="call-avatar">
+                <div class="avatar large" style="background: #0088cc;">А</div>
+            </div>
+            <div class="call-info">
+                <h4>Алексей</h4>
+                <p class="call-status">Соединение...</p>
+                <p class="call-timer">00:00</p>
+            </div>
+            <div class="call-controls">
+                <button class="control-btn mute"><i class="fas fa-microphone"></i></button>
+                <button class="control-btn end"><i class="fas fa-phone-slash"></i></button>
+                <button class="control-btn speaker"><i class="fas fa-volume-up"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Контролы тем -->
+    <div class="theme-controls">
+        <button class="theme-btn day active">День</button>
+        <button class="theme-btn night">Ночь</button>
     </div>
 
     <script src="script.js"></script>
-    <!-- Кнопка контактов -->
-<button class="contacts-btn" id="contactsBtn">
-    <i class="fas fa-phone-alt"></i>
-    <span class="contacts-badge">3</span>
-</button>
-
-<!-- Выпадающее меню контактов -->
-<div class="contacts-dropdown" id="contactsDropdown">
-    <div class="contacts-header">
-        <h3><i class="fas fa-users"></i> Мои контакты</h3>
-        <button class="contacts-close" id="closeContacts">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-    
-    <div class="contacts-search">
-        <input type="text" placeholder="Поиск контактов..." id="searchContacts">
-    </div>
-    
-    <div class="contacts-list" id="contactsList">
-        <!-- Контакты будут добавляться через JS -->
-    </div>
-    
-    <div class="contacts-footer">
-        <button class="add-contact-btn" id="addContactBtn">
-            <i class="fas fa-user-plus"></i> Добавить контакт
-        </button>
-    </div>
-</div>
-
-<!-- Модальное окно звонка -->
-<div class="call-modal" id="callModal">
-    <div class="call-container">
-        <div class="call-avatar" id="callAvatar">
-            <div class="call-pulse"></div>
-            <span id="callAvatarText">А</span>
-        </div>
-        
-        <div class="call-info">
-            <div class="call-contact-name" id="callContactName">Алексей</div>
-            <div class="call-status" id="callStatus">Вызов...</div>
-            <div class="call-timer" id="callTimer">00:00</div>
-        </div>
-        
-        <div class="call-controls">
-            <button class="call-control-btn call-mute" id="callMute">
-                <i class="fas fa-microphone"></i>
-                <div class="call-control-badge" id="muteBadge" style="display: none;">
-                    <i class="fas fa-times"></i>
-                </div>
-            </button>
-            
-            <button class="call-control-btn call-decline" id="callDecline">
-                <i class="fas fa-phone-slash"></i>
-            </button>
-            
-            <button class="call-control-btn call-accept" id="callAccept">
-                <i class="fas fa-phone"></i>
-            </button>
-            
-            <button class="call-control-btn call-video" id="callVideo">
-                <i class="fas fa-video"></i>
-            </button>
-            
-            <button class="call-control-btn call-speaker" id="callSpeaker">
-                <i class="fas fa-volume-up"></i>
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно видеозвонка -->
-<div class="call-modal video-call" id="videoCallModal">
-    <div class="call-container">
-        <div class="video-container">
-            <div class="local-video" id="localVideo">
-                <div class="video-label">Вы</div>
-            </div>
-            <div class="remote-video" id="remoteVideo">
-                <div class="video-label" id="remoteVideoLabel">Алексей</div>
-            </div>
-        </div>
-        
-        <div class="call-controls">
-            <button class="call-control-btn call-mute" id="videoMute">
-                <i class="fas fa-microphone"></i>
-            </button>
-            
-            <button class="call-control-btn call-decline" id="videoDecline">
-                <i class="fas fa-phone-slash"></i>
-            </button>
-            
-            <button class="call-control-btn call-video" id="toggleVideo">
-                <i class="fas fa-video"></i>
-            </button>
-            
-            <button class="call-control-btn call-speaker" id="videoSpeaker">
-                <i class="fas fa-volume-up"></i>
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно конференции -->
-<div class="conference-modal" id="conferenceModal">
-    <div class="conference-header">
-        <h3><i class="fas fa-users"></i> Конференция</h3>
-        <div class="conference-info">
-            <span id="conferenceTimer">00:00</span>
-            <span id="participantCount">3 участника</span>
-        </div>
-        <button class="conference-close" id="closeConference">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-    
-    <div class="conference-participants" id="conferenceParticipants">
-        <!-- Участники конференции -->
-    </div>
-    
-    <div class="conference-controls">
-        <button class="call-control-btn call-mute" id="conferenceMute">
-            <i class="fas fa-microphone"></i>
-        </button>
-        
-        <button class="call-control-btn call-video" id="conferenceVideo">
-            <i class="fas fa-video"></i>
-        </button>
-        
-        <button class="call-control-btn call-speaker" id="conferenceSpeaker">
-            <i class="fas fa-volume-up"></i>
-        </button>
-        
-        <button class="call-control-btn call-decline" id="endConference">
-            <i class="fas fa-phone-slash"></i>
-        </button>
-        
-        <button class="call-control-btn call-add" id="addParticipant">
-            <i class="fas fa-user-plus"></i>
-        </button>
-    </div>
-</div>
 </body>
 </html>
