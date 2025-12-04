@@ -1,482 +1,373 @@
-// Telegram Nodes - Расширенный функциональный скрипт
+// Telegram Nodes - Улучшенный скрипт с профилем и анимациями
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Загрузка Telegram Nodes...');
+    console.log('🚀 Telegram Nodes загружается...');
     
     // ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =====
-    let currentView = 'grid'; // 'grid' или 'list'
-    let currentTheme = 'dark';
-    let currentChat = null;
-    let currentCall = null;
-    let currentConference = null;
-    let callTimer = null;
-    let callDuration = 0;
-    
-    // Конфигурация узлов
-    const nodes = {
-        alpha: {
-            name: 'AlphaTeam',
-            color: 'linear-gradient(135deg, #0088cc, #0055aa)',
-            icon: 'fas fa-briefcase',
-            members: 24,
-            description: 'Рабочая команда разработки',
-            chats: ['design', 'reports', 'planning', 'backend', 'frontend']
-        },
-        game: {
-            name: 'GameZone',
-            color: 'linear-gradient(135deg, #af52de, #7d3cff)',
-            icon: 'fas fa-gamepad',
-            members: 48,
-            description: 'Игровое сообщество',
-            chats: ['tournament', 'stream', 'team', 'news', 'lfg']
-        },
-        family: {
-            name: 'FamilyHub',
-            color: 'linear-gradient(135deg, #34c759, #2a8c4a)',
-            icon: 'fas fa-home',
-            members: 12,
-            description: 'Семейный чат',
-            chats: ['family', 'parents', 'kids', 'vacation']
-        },
-        work: {
-            name: 'WorkSpace',
-            color: 'linear-gradient(135deg, #ff9500, #ff5500)',
-            icon: 'fas fa-code',
-            members: 36,
-            description: 'Фриланс проекты',
-            chats: ['clients', 'invoices', 'projects', 'meetings']
-        },
-        study: {
-            name: 'StudyHub',
-            color: 'linear-gradient(135deg, #5ac8fa, #2a7fff)',
-            icon: 'fas fa-graduation-cap',
-            members: 32,
-            description: 'Образовательный центр',
-            chats: ['courses', 'homework', 'exams', 'resources']
-        }
+    const state = {
+        currentTheme: 'dark',
+        currentView: 'grid',
+        activeNode: 'alpha',
+        activeChat: null,
+        activeCall: null,
+        activeConference: null,
+        callTimer: null,
+        callDuration: 0
     };
     
-    // Контакты
-    const contacts = [
-        { id: 1, name: 'Алексей', avatar: 'А', color: '#0088cc', status: 'online', role: 'Team Lead' },
-        { id: 2, name: 'Мария', avatar: 'М', color: '#af52de', status: 'online', role: 'Designer' },
-        { id: 3, name: 'Дмитрий', avatar: 'Д', color: '#34c759', status: 'away', role: 'Developer' },
-        { id: 4, name: 'Анна', avatar: 'А', color: '#ff9500', status: 'offline', role: 'PM' },
-        { id: 5, name: 'Сергей', avatar: 'С', color: '#5ac8fa', status: 'online', role: 'DevOps' },
-        { id: 6, name: 'Елена', avatar: 'Е', color: '#ff2d55', status: 'online', role: 'QA' },
-        { id: 7, name: 'Иван', avatar: 'И', color: '#5856d6', status: 'away', role: 'Frontend' },
-        { id: 8, name: 'Ольга', avatar: 'О', color: '#ff9500', status: 'online', role: 'Backend' }
-    ];
-    
-    // Чаты
-    const chats = {
-        design: {
-            id: 'design',
-            name: 'Дизайн-команда',
-            node: 'alpha',
-            type: 'group',
-            lastMessage: 'Обсуждаем новый UI для Nodes...',
-            time: '12:30',
-            unread: 3,
-            pinned: true,
-            members: ['Алексей', 'Мария', 'Дмитрий', 'Анна'],
-            avatar: 'Д',
-            color: '#0088cc'
+    // Данные
+    const data = {
+        nodes: {
+            alpha: {
+                name: 'AlphaTeam',
+                icon: 'fas fa-rocket',
+                color: 'linear-gradient(135deg, #0088cc, #0055aa)',
+                members: 24,
+                description: 'Рабочая команда разработки',
+                unread: 3
+            },
+            game: {
+                name: 'GameZone',
+                icon: 'fas fa-gamepad',
+                color: 'linear-gradient(135deg, #af52de, #7d3cff)',
+                members: 48,
+                description: 'Игровое сообщество',
+                unread: 0
+            },
+            family: {
+                name: 'FamilyHub',
+                icon: 'fas fa-heart',
+                color: 'linear-gradient(135deg, #34c759, #2a8c4a)',
+                members: 12,
+                description: 'Семейный чат',
+                unread: 1
+            },
+            work: {
+                name: 'WorkSpace',
+                icon: 'fas fa-code',
+                color: 'linear-gradient(135deg, #ff9500, #ff5500)',
+                members: 36,
+                description: 'Фриланс проекты',
+                unread: 0
+            },
+            study: {
+                name: 'StudyHub',
+                icon: 'fas fa-graduation-cap',
+                color: 'linear-gradient(135deg, #5ac8fa, #2a7fff)',
+                members: 32,
+                description: 'Обучение и курсы',
+                unread: 2
+            }
         },
-        reports: {
-            id: 'reports',
-            name: 'Отчеты Q3',
-            node: 'alpha',
-            type: 'channel',
-            lastMessage: 'Все отчеты готовы к отправке',
-            time: 'Пт',
-            unread: 0,
-            pinned: false,
-            members: ['Алексей', 'Сергей'],
-            avatar: 'О',
-            color: '#0088cc'
-        },
-        tournament: {
-            id: 'tournament',
-            name: 'Киберспорт турнир',
-            node: 'game',
-            type: 'group',
-            lastMessage: 'Стартуем в 20:00, не опаздывайте!',
-            time: '11:45',
-            unread: 0,
-            pinned: true,
-            members: ['Дмитрий', 'Иван', 'Ольга'],
-            avatar: 'К',
-            color: '#af52de'
-        },
-        family: {
-            id: 'family',
-            name: 'Семейный чат',
-            node: 'family',
-            type: 'group',
-            lastMessage: 'Мама: Приезжайте в воскресенье',
-            time: 'Вчера',
-            unread: 1,
-            pinned: true,
-            members: ['Анна', 'Елена', 'Иван'],
-            avatar: 'С',
-            color: '#34c759'
-        },
-        planning: {
-            id: 'planning',
-            name: 'Планирование спринта',
-            node: 'alpha',
-            type: 'group',
-            lastMessage: 'Дедлайн - следующая пятница',
-            time: '10:20',
-            unread: 5,
-            pinned: false,
-            members: ['Алексей', 'Мария', 'Дмитрий', 'Сергей', 'Елена'],
-            avatar: 'П',
-            color: '#0088cc'
-        },
-        stream: {
-            id: 'stream',
-            name: 'Стрим трансляция',
-            node: 'game',
-            type: 'channel',
-            lastMessage: 'Начинаем через 15 минут!',
-            time: 'Сейчас',
-            unread: 12,
-            pinned: false,
-            members: ['Дмитрий', 'Иван'],
-            avatar: 'С',
-            color: '#af52de'
-        },
-        clients: {
-            id: 'clients',
-            name: 'Общение с клиентами',
-            node: 'work',
-            type: 'group',
-            lastMessage: 'Новый проект на 5000$',
-            time: '09:15',
-            unread: 0,
-            pinned: true,
-            members: ['Алексей', 'Мария'],
-            avatar: 'К',
-            color: '#ff9500'
-        },
-        courses: {
-            id: 'courses',
-            name: 'Онлайн курсы',
-            node: 'study',
-            type: 'channel',
-            lastMessage: 'Новый урок по JavaScript',
-            time: '08:30',
-            unread: 2,
-            pinned: false,
-            members: ['Дмитрий', 'Ольга', 'Елена'],
-            avatar: 'К',
-            color: '#5ac8fa'
-        }
-    };
-    
-    // Сообщения для чатов
-    const messages = {
-        design: [
-            { id: 1, sender: 'Мария', text: 'Привет! Как продвигается работа над новым дизайном?', time: '12:15', type: 'incoming' },
-            { id: 2, sender: 'Вы', text: 'Почти закончили! Осталось сделать анимации переходов', time: '12:20', type: 'outgoing' },
-            { id: 3, sender: 'Алексей', text: 'Отлично! Когда сможете показать прототип?', time: '12:25', type: 'incoming' },
-            { id: 4, sender: 'Вы', text: 'Сегодня к вечеру. Добавили тёмную тему и адаптив', time: '12:30', type: 'outgoing' },
-            { id: 5, sender: 'Дмитрий', text: 'Супер! Жду не дождусь посмотреть', time: '12:35', type: 'incoming' }
+        
+        chats: [
+            {
+                id: 'design',
+                name: 'Дизайн-команда',
+                node: 'alpha',
+                type: 'group',
+                lastMessage: 'Обсуждаем новый UI для проекта...',
+                time: '12:30',
+                unread: 3,
+                pinned: true,
+                members: 8,
+                avatar: 'Д',
+                color: '#0088cc'
+            },
+            {
+                id: 'reports',
+                name: 'Отчеты Q3',
+                node: 'alpha',
+                type: 'channel',
+                lastMessage: 'Все отчеты готовы к отправке',
+                time: 'Пт',
+                unread: 0,
+                pinned: false,
+                members: 2,
+                avatar: 'О',
+                color: '#0088cc'
+            },
+            {
+                id: 'tournament',
+                name: 'Киберспорт турнир',
+                node: 'game',
+                type: 'group',
+                lastMessage: 'Стартуем в 20:00, не опаздывайте!',
+                time: '11:45',
+                unread: 0,
+                pinned: true,
+                members: 24,
+                avatar: 'К',
+                color: '#af52de'
+            },
+            {
+                id: 'family',
+                name: 'Семейный чат',
+                node: 'family',
+                type: 'group',
+                lastMessage: 'Мама: Приезжайте в воскресенье',
+                time: 'Вчера',
+                unread: 1,
+                pinned: true,
+                members: 5,
+                avatar: 'С',
+                color: '#34c759'
+            },
+            {
+                id: 'planning',
+                name: 'Планирование спринта',
+                node: 'alpha',
+                type: 'group',
+                lastMessage: 'Дедлайн - следующая пятница',
+                time: '10:20',
+                unread: 5,
+                pinned: false,
+                members: 12,
+                avatar: 'П',
+                color: '#0088cc'
+            }
         ],
-        family: [
-            { id: 1, sender: 'Мама', text: 'Приезжайте в воскресенье на обед', time: 'Вчера 18:30', type: 'incoming' },
-            { id: 2, sender: 'Вы', text: 'Хорошо, во сколько приходить?', time: 'Вчера 19:15', type: 'outgoing' },
-            { id: 3, sender: 'Папа', text: 'К 14:00. Готовлю шашлык!', time: 'Вчера 19:45', type: 'incoming' },
-            { id: 4, sender: 'Сестра', text: 'Я тоже буду с детьми', time: 'Сегодня 10:20', type: 'incoming' }
-        ],
-        tournament: [
-            { id: 1, sender: 'Админ', text: 'Турнир начнётся в 20:00 по МСК', time: '11:30', type: 'incoming' },
-            { id: 2, sender: 'Игрок1', text: 'Готовы разорвать всех!', time: '11:35', type: 'incoming' },
-            { id: 3, sender: 'Вы', text: 'Наша команда в сборе', time: '11:40', type: 'outgoing' },
-            { id: 4, sender: 'Админ', text: 'Призовой фонд - 1000$', time: '11:45', type: 'incoming' }
+        
+        contacts: [
+            { id: 1, name: 'Алексей', avatar: 'А', color: '#0088cc', status: 'online', role: 'Team Lead' },
+            { id: 2, name: 'Мария', avatar: 'М', color: '#af52de', status: 'online', role: 'Designer' },
+            { id: 3, name: 'Дмитрий', avatar: 'Д', color: '#34c759', status: 'away', role: 'Developer' },
+            { id: 4, name: 'Анна', avatar: 'А', color: '#ff9500', status: 'offline', role: 'PM' }
         ]
-    };
-    
-    // ===== КЭШ ЭЛЕМЕНТОВ =====
-    const elements = {
-        // Основные панели
-        sidePanel: document.querySelector('.side-panel'),
-        mainContent: document.querySelector('.main-content'),
-        chatPanel: document.querySelector('.chat-panel'),
-        contactsPanel: document.querySelector('.contacts-panel'),
-        settingsPanel: document.querySelector('.settings-panel'),
-        callScreen: document.querySelector('.call-screen'),
-        conferenceScreen: document.querySelector('.conference-screen'),
-        
-        // Навигация
-        backBtn: document.querySelector('.back-btn'),
-        backToList: document.querySelector('.back-to-list'),
-        
-        // Узлы
-        nodeItems: document.querySelectorAll('.node-item'),
-        currentNodeAvatar: document.querySelector('.current-node-avatar'),
-        currentNodeTitle: document.querySelector('.node-details h2'),
-        currentNodeDesc: document.querySelector('.node-details p'),
-        
-        // Чаты
-        chatList: document.querySelector('.chat-list'),
-        chatItems: document.querySelectorAll('.chat-item'),
-        
-        // Сообщения
-        messagesContainer: document.querySelector('.messages-container'),
-        messageInput: document.querySelector('.message-input'),
-        sendBtn: document.querySelector('.send-btn'),
-        
-        // Поиск и фильтры
-        searchInput: document.querySelector('.search-bar input'),
-        filterBtns: document.querySelectorAll('.filter-btn'),
-        viewBtns: document.querySelectorAll('.view-btn'),
-        
-        // Звонки
-        callAvatar: document.querySelector('.call-avatar'),
-        callName: document.querySelector('.call-info h2'),
-        callStatus: document.querySelector('.call-status'),
-        callTimer: document.querySelector('.call-timer'),
-        callControls: document.querySelectorAll('.call-control-btn'),
-        
-        // Конференция
-        conferenceGrid: document.querySelector('.conference-grid'),
-        
-        // Плавающие кнопки
-        floatingBtns: document.querySelectorAll('.floating-btn'),
-        themeToggle: document.querySelector('.theme-switch'),
-        
-        // Уведомления
-        notificationCenter: document.querySelector('.notification-center')
     };
     
     // ===== ИНИЦИАЛИЗАЦИЯ =====
     function init() {
-        console.log('🎮 Инициализация приложения...');
+        console.log('🎨 Инициализация интерфейса...');
         
-        // Создаем фоновые элементы
-        createBackgroundParticles();
-        
-        // Загружаем сохраненные настройки
+        // Загружаем настройки
         loadSettings();
         
-        // Инициализируем интерфейс
+        // Инициализируем UI
         initUI();
         
         // Настраиваем обработчики
         setupEventListeners();
         
-        // Запускаем обновления
-        startUpdates();
+        // Запускаем фоновые процессы
+        startBackgroundProcesses();
         
-        // Показываем приветственное уведомление
+        // Показываем приветствие
         setTimeout(() => {
-            showNotification('Добро пожаловать в Telegram Nodes!', 'Доступны все функции: чаты, звонки, конференции.', 'success');
-        }, 1000);
+            showNotification('Добро пожаловать в Telegram Nodes!', 'Интерфейс готов к работе', 'success');
+        }, 800);
         
-        // Консольные команды
-        setupConsoleCommands();
-        
-        console.log('✅ Приложение успешно запущено!');
+        console.log('✅ Приложение запущено успешно');
     }
     
     // ===== UI ИНИЦИАЛИЗАЦИЯ =====
     function initUI() {
-        // Обновляем информацию о текущем узле
-        updateCurrentNode('alpha');
+        // Обновляем текущий узел
+        updateActiveNode(state.activeNode);
         
-        // Рендерим список чатов
-        renderChatList();
+        // Рендерим чаты
+        renderChats();
         
-        // Создаем фоновые анимации
-        createAnimations();
+        // Создаем анимированный фон
+        createAnimatedBackground();
+        
+        // Добавляем начальные анимации
+        animateElements();
     }
     
-    function createBackgroundParticles() {
+    function createAnimatedBackground() {
         const bgContainer = document.querySelector('.bg-elements');
         if (!bgContainer) return;
         
-        // Создаем частицы
-        for (let i = 0; i < 20; i++) {
+        // Создаем анимированные частицы
+        for (let i = 0; i < 15; i++) {
             const particle = document.createElement('div');
             particle.className = 'bg-particle';
             
-            // Случайные параметры
-            const size = Math.random() * 100 + 50;
+            const size = Math.random() * 100 + 30;
             const posX = Math.random() * 100;
             const posY = Math.random() * 100;
-            const color = i % 3 === 0 ? 'var(--tg-accent)' : 
-                          i % 3 === 1 ? 'var(--tg-purple)' : 'var(--tg-cyan)';
+            const colors = [
+                'rgba(0, 136, 204, 0.1)',
+                'rgba(175, 82, 222, 0.1)',
+                'rgba(52, 199, 89, 0.1)',
+                'rgba(255, 149, 0, 0.1)'
+            ];
+            const color = colors[Math.floor(Math.random() * colors.length)];
             
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            particle.style.left = `${posX}%`;
-            particle.style.top = `${posY}%`;
-            particle.style.background = color;
-            particle.style.opacity = `${Math.random() * 0.1 + 0.05}`;
-            particle.style.animationDelay = `${Math.random() * 5}s`;
-            
-            // Анимация движения
-            particle.style.animation = `float ${10 + Math.random() * 20}s infinite ease-in-out`;
+            particle.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${posX}%;
+                top: ${posY}%;
+                background: ${color};
+                border-radius: 50%;
+                filter: blur(40px);
+                animation: float ${10 + Math.random() * 20}s infinite ease-in-out;
+                animation-delay: ${Math.random() * 5}s;
+            `;
             
             bgContainer.appendChild(particle);
         }
     }
     
-    function createAnimations() {
+    function animateElements() {
         // Анимация появления элементов
-        const animatedElements = document.querySelectorAll('.chat-item, .node-item, .account-item');
-        animatedElements.forEach((el, index) => {
-            el.style.animationDelay = `${index * 0.05}s`;
-            el.style.animation = 'slideIn 0.5s ease backwards';
+        const elements = document.querySelectorAll('.node-item, .chat-card, .contact-item');
+        elements.forEach((el, index) => {
+            el.style.animation = `slideIn 0.4s ease ${index * 0.05}s both`;
         });
     }
     
     // ===== УПРАВЛЕНИЕ УЗЛАМИ =====
-    function updateCurrentNode(nodeId) {
-        const node = nodes[nodeId];
+    function updateActiveNode(nodeId) {
+        const node = data.nodes[nodeId];
         if (!node) return;
         
-        // Обновляем аватар
-        if (elements.currentNodeAvatar) {
-            elements.currentNodeAvatar.style.background = node.color;
-            elements.currentNodeAvatar.innerHTML = `<i class="${node.icon}"></i>`;
+        state.activeNode = nodeId;
+        
+        // Обновляем заголовок
+        const titleElement = document.querySelector('.node-title');
+        const subtitleElement = document.querySelector('.node-subtitle');
+        const iconElement = document.querySelector('.node-header-icon');
+        
+        if (titleElement) {
+            titleElement.textContent = node.name;
+            titleElement.className = 'node-title text-gradient';
         }
         
-        // Обновляем текст
-        if (elements.currentNodeTitle) {
-            elements.currentNodeTitle.textContent = node.name;
+        if (subtitleElement) {
+            subtitleElement.textContent = `${node.members} участников • ${node.description}`;
         }
         
-        if (elements.currentNodeDesc) {
-            elements.currentNodeDesc.innerHTML = `
-                <i class="fas fa-users"></i> ${node.members} участников
-                <span class="node-members">${node.description}</span>
-            `;
+        if (iconElement) {
+            iconElement.style.background = node.color;
+            iconElement.innerHTML = `<i class="${node.icon}"></i>`;
         }
         
-        // Обновляем активный элемент
-        elements.nodeItems.forEach(item => {
+        // Обновляем активный элемент в списке
+        document.querySelectorAll('.node-item').forEach(item => {
             item.classList.remove('active');
             if (item.dataset.node === nodeId) {
                 item.classList.add('active');
             }
         });
         
-        // Фильтруем чаты по узлу
+        // Фильтруем чаты
         filterChatsByNode(nodeId);
         
-        // Показываем уведомление
-        showNotification(`Переключен на ${node.name}`, `Доступно чатов: ${node.chats.length}`, 'info');
+        // Сохраняем в localStorage
+        localStorage.setItem('activeNode', nodeId);
+        
+        // Анимация
+        if (iconElement) {
+            iconElement.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                iconElement.style.transform = 'scale(1)';
+            }, 300);
+        }
+        
+        showNotification(`Узел "${node.name}"`, `${node.description}`, 'info');
     }
     
     function filterChatsByNode(nodeId) {
-        const chatItems = document.querySelectorAll('.chat-item');
-        chatItems.forEach(item => {
-            const chatNode = item.dataset.node;
-            if (chatNode === nodeId) {
-                item.style.display = 'block';
+        const chatCards = document.querySelectorAll('.chat-card');
+        chatCards.forEach(card => {
+            if (card.dataset.node === nodeId) {
+                card.style.display = 'block';
+                card.style.animation = 'fadeIn 0.3s ease';
             } else {
-                item.style.display = 'none';
+                card.style.display = 'none';
             }
         });
         
         // Сбрасываем фильтры
-        elements.filterBtns.forEach(btn => btn.classList.remove('active'));
-        elements.filterBtns[0].classList.add('active');
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector('.filter-btn').classList.add('active');
     }
     
     // ===== УПРАВЛЕНИЕ ЧАТАМИ =====
-    function renderChatList() {
-        const chatList = elements.chatList;
-        if (!chatList) return;
+    function renderChats() {
+        const container = document.getElementById('chatsContainer');
+        if (!container) return;
         
-        chatList.innerHTML = '';
+        container.innerHTML = '';
         
-        Object.values(chats).forEach(chat => {
-            const chatElement = document.createElement('div');
-            chatElement.className = 'chat-item';
-            chatElement.dataset.chat = chat.id;
-            chatElement.dataset.node = chat.node;
+        data.chats.forEach(chat => {
+            const chatCard = document.createElement('div');
+            chatCard.className = 'chat-card';
+            chatCard.dataset.chat = chat.id;
+            chatCard.dataset.node = chat.node;
             
-            const node = nodes[chat.node];
-            const nodeColor = node ? node.color : '#0088cc';
-            
-            chatElement.innerHTML = `
+            chatCard.innerHTML = `
                 <div class="chat-header">
-                    <div class="chat-avatar" data-node="${chat.node}" style="background: ${chat.color}">
+                    <div class="chat-avatar-main" style="background: ${chat.color}">
                         ${chat.avatar}
                     </div>
-                    <div class="chat-title">
-                        <h3>
+                    <div class="chat-info-main">
+                        <div class="chat-title-main">
                             ${chat.name}
                             <span class="chat-type">${chat.type === 'group' ? 'Группа' : 'Канал'}</span>
-                        </h3>
+                        </div>
                         <div class="chat-time">${chat.time}</div>
                     </div>
                 </div>
                 <p class="chat-preview">${chat.lastMessage}</p>
-                <div class="chat-stats">
+                <div class="chat-footer">
                     <div class="chat-members">
                         <div class="member-avatars">
-                            ${chat.members.slice(0, 3).map(member => `
-                                <div class="member-avatar" title="${member}">${member.charAt(0)}</div>
+                            ${Array.from({length: Math.min(3, chat.members)}).map((_, i) => `
+                                <div class="member-avatar">${i + 1}</div>
                             `).join('')}
-                            ${chat.members.length > 3 ? `
-                                <div class="member-avatar">+${chat.members.length - 3}</div>
+                            ${chat.members > 3 ? `
+                                <div class="member-avatar">+${chat.members - 3}</div>
                             ` : ''}
                         </div>
-                        <span>${chat.members.length} участников</span>
+                        <span>${chat.members} участников</span>
                     </div>
-                    <div class="chat-activity">
-                        ${chat.pinned ? '<i class="fas fa-thumbtack pinned-badge"></i>' : ''}
-                        ${chat.unread > 0 ? `<span class="unread-count">${chat.unread}</span>` : ''}
+                    <div class="chat-stats">
+                        ${chat.pinned ? '<i class="fas fa-thumbtack pinned-icon"></i>' : ''}
+                        ${chat.unread > 0 ? `<span class="unread-badge">${chat.unread}</span>` : ''}
                     </div>
                 </div>
             `;
             
-            chatList.appendChild(chatElement);
+            container.appendChild(chatCard);
         });
         
         // Добавляем обработчики
-        document.querySelectorAll('.chat-item').forEach(item => {
-            item.addEventListener('click', () => openChat(item.dataset.chat));
+        document.querySelectorAll('.chat-card').forEach(card => {
+            card.addEventListener('click', () => openChat(card.dataset.chat));
         });
     }
     
     function openChat(chatId) {
-        const chat = chats[chatId];
+        const chat = data.chats.find(c => c.id === chatId);
         if (!chat) return;
         
-        currentChat = chatId;
+        state.activeChat = chatId;
         
-        // Скрываем главный контент
-        elements.mainContent.style.display = 'none';
+        // Скрываем основной контент
+        document.querySelector('.main-content').style.display = 'none';
         
         // Показываем панель чата
-        elements.chatPanel.classList.add('active');
+        const chatPanel = document.getElementById('chatPanel');
+        chatPanel.classList.add('active');
         
-        // Обновляем заголовок
-        const chatAvatar = elements.chatPanel.querySelector('.chat-panel-avatar');
-        const chatTitle = elements.chatPanel.querySelector('.chat-panel-info h2');
-        const chatInfo = elements.chatPanel.querySelector('.chat-panel-info p');
+        // Обновляем информацию о чате
+        const chatTitle = chatPanel.querySelector('.chat-title');
+        const chatAvatar = chatPanel.querySelector('.chat-avatar');
+        const chatStatus = chatPanel.querySelector('.chat-status');
         
+        if (chatTitle) chatTitle.textContent = chat.name;
         if (chatAvatar) {
             chatAvatar.style.background = chat.color;
             chatAvatar.textContent = chat.avatar;
         }
-        
-        if (chatTitle) {
-            chatTitle.textContent = chat.name;
-        }
-        
-        if (chatInfo) {
-            chatInfo.innerHTML = `
-                <i class="fas fa-users"></i> ${chat.members.length} участников
-                <i class="fas fa-circle" style="color: ${chat.type === 'group' ? '#34c759' : '#ff9500'}"></i>
-                ${chat.type === 'group' ? 'Группа' : 'Канал'}
-            `;
+        if (chatStatus) {
+            chatStatus.textContent = `${chat.members} участников • Последняя активность недавно`;
         }
         
         // Загружаем сообщения
@@ -486,12 +377,19 @@ document.addEventListener('DOMContentLoaded', function() {
         chat.unread = 0;
         updateChatBadge(chatId);
         
-        // Показываем уведомление
-        showNotification(`Открыт чат: ${chat.name}`, 'Можно начинать общение', 'info');
+        // Прокручиваем вниз
+        setTimeout(() => {
+            const messagesContainer = document.getElementById('messagesContainer');
+            if (messagesContainer) {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }, 100);
+        
+        showNotification(`Чат "${chat.name}"`, 'Открыт для общения', 'info');
     }
     
     function loadMessages(chatId) {
-        const container = elements.messagesContainer;
+        const container = document.getElementById('messagesContainer');
         if (!container) return;
         
         container.innerHTML = '';
@@ -502,16 +400,22 @@ document.addEventListener('DOMContentLoaded', function() {
         dateDiv.innerHTML = '<span>Сегодня</span>';
         container.appendChild(dateDiv);
         
-        // Загружаем сообщения
-        const chatMessages = messages[chatId] || [];
-        chatMessages.forEach(msg => {
+        // Примерные сообщения
+        const messages = [
+            { id: 1, sender: 'Мария', text: 'Привет! Как продвигается работа над новым дизайном?', time: '12:15', type: 'incoming' },
+            { id: 2, sender: 'Вы', text: 'Почти закончили! Осталось сделать анимации переходов', time: '12:20', type: 'outgoing' },
+            { id: 3, sender: 'Алексей', text: 'Отлично! Когда сможете показать прототип?', time: '12:25', type: 'incoming' },
+            { id: 4, sender: 'Вы', text: 'Сегодня к вечеру. Добавили тёмную тему и адаптив', time: '12:30', type: 'outgoing' }
+        ];
+        
+        messages.forEach(msg => {
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${msg.type} ${msg.id === chatMessages.length ? 'new' : ''}`;
+            messageDiv.className = `message ${msg.type}`;
             
             if (msg.type === 'incoming') {
                 messageDiv.innerHTML = `
-                    <div class="message-avatar">
-                        <div class="avatar" style="background: ${getUserColor(msg.sender)}">${msg.sender.charAt(0)}</div>
+                    <div class="message-avatar" style="background: ${getUserColor(msg.sender)}">
+                        ${msg.sender.charAt(0)}
                     </div>
                     <div class="message-content">
                         <div class="message-sender">${msg.sender}</div>
@@ -533,26 +437,20 @@ document.addEventListener('DOMContentLoaded', function() {
             
             container.appendChild(messageDiv);
         });
-        
-        // Прокручиваем вниз
-        setTimeout(() => {
-            container.scrollTop = container.scrollHeight;
-        }, 100);
     }
     
     function sendMessage() {
-        const input = elements.messageInput;
+        const input = document.getElementById('messageInput');
         if (!input || !input.value.trim()) return;
         
         const messageText = input.value.trim();
-        const chatId = currentChat;
+        const container = document.getElementById('messagesContainer');
         
-        if (!chatId) return;
+        if (!container) return;
         
-        // Добавляем сообщение в UI
-        const container = elements.messagesContainer;
+        // Создаем новое сообщение
         const messageDiv = document.createElement('div');
-        messageDiv.className = 'message outgoing new';
+        messageDiv.className = 'message outgoing';
         messageDiv.innerHTML = `
             <div class="message-content">
                 <div class="message-text">${messageText}</div>
@@ -564,8 +462,6 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         
         container.appendChild(messageDiv);
-        
-        // Очищаем поле ввода
         input.value = '';
         
         // Прокручиваем вниз
@@ -575,35 +471,29 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Имитируем ответ через 1-3 секунды
         setTimeout(() => {
-            simulateReply(chatId);
+            simulateReply();
         }, 1000 + Math.random() * 2000);
-        
-        // Логирование
-        console.log(`💬 Сообщение отправлено в ${chatId}: ${messageText}`);
     }
     
-    function simulateReply(chatId) {
+    function simulateReply() {
         const replies = [
-            'Понял!',
-            'Интересно...',
-            'Согласен с тобой',
-            'Дай подумать',
-            'Можешь подробнее?',
+            'Понял вас!',
             'Отличная идея!',
-            'Сделаю в ближайшее время',
-            'Давай обсудим завтра'
+            'Давайте обсудим подробнее',
+            'Согласен с вами',
+            'Интересный вопрос'
         ];
         
-        const senders = ['Алексей', 'Мария', 'Дмитрий', 'Анна', 'Сергей'];
+        const senders = ['Алексей', 'Мария', 'Дмитрий'];
         const randomSender = senders[Math.floor(Math.random() * senders.length)];
         const randomReply = replies[Math.floor(Math.random() * replies.length)];
         
-        const container = elements.messagesContainer;
+        const container = document.getElementById('messagesContainer');
         const messageDiv = document.createElement('div');
-        messageDiv.className = 'message incoming new';
+        messageDiv.className = 'message incoming';
         messageDiv.innerHTML = `
-            <div class="message-avatar">
-                <div class="avatar" style="background: ${getUserColor(randomSender)}">${randomSender.charAt(0)}</div>
+            <div class="message-avatar" style="background: ${getUserColor(randomSender)}">
+                ${randomSender.charAt(0)}
             </div>
             <div class="message-content">
                 <div class="message-sender">${randomSender}</div>
@@ -614,187 +504,165 @@ document.addEventListener('DOMContentLoaded', function() {
         
         container.appendChild(messageDiv);
         
-        // Прокручиваем вниз
         setTimeout(() => {
             container.scrollTop = container.scrollHeight;
         }, 100);
     }
     
     function closeChat() {
-        elements.mainContent.style.display = 'flex';
-        elements.chatPanel.classList.remove('active');
-        currentChat = null;
+        document.querySelector('.main-content').style.display = 'flex';
+        document.getElementById('chatPanel').classList.remove('active');
+        state.activeChat = null;
     }
     
-    // ===== СИСТЕМА ЗВОНКОВ =====
+    // ===== ПРОФИЛЬ =====
+    function openProfile() {
+        // Скрываем основной контент
+        document.querySelector('.main-content').style.display = 'none';
+        
+        // Показываем панель профиля
+        const profilePanel = document.getElementById('profilePanel');
+        profilePanel.classList.add('active');
+        
+        // Анимация появления
+        profilePanel.style.animation = 'slideIn 0.3s ease';
+        
+        showNotification('Профиль пользователя', 'Информация и настройки', 'info');
+    }
+    
+    function closeProfile() {
+        document.querySelector('.main-content').style.display = 'flex';
+        document.getElementById('profilePanel').classList.remove('active');
+    }
+    
+    // ===== ЗВОНКИ =====
     function startCall(contactId, type = 'audio') {
-        const contact = contacts.find(c => c.id == contactId);
+        const contact = data.contacts.find(c => c.id == contactId);
         if (!contact) return;
         
-        // Останавливаем предыдущий звонок
-        if (currentCall || currentConference) {
-            endCall();
-            endConference();
-        }
+        // Останавливаем текущие звонки
+        if (state.activeCall) endCall();
+        if (state.activeConference) endConference();
         
         // Обновляем UI
-        if (elements.callAvatar) {
-            elements.callAvatar.style.background = contact.color;
-            elements.callAvatar.textContent = contact.avatar;
+        const callScreen = document.getElementById('callScreen');
+        const callAvatar = callScreen.querySelector('.call-avatar-large');
+        const callName = callScreen.querySelector('.call-name');
+        const callStatus = callScreen.querySelector('.call-status');
+        
+        if (callAvatar) {
+            callAvatar.style.background = `linear-gradient(135deg, ${contact.color}, ${contact.color}99)`;
+            callAvatar.textContent = contact.avatar;
         }
         
-        if (elements.callName) {
-            elements.callName.textContent = contact.name;
+        if (callName) {
+            callName.textContent = contact.name;
         }
         
-        if (elements.callStatus) {
-            elements.callStatus.textContent = type === 'audio' ? 'Аудиозвонок' : 'Видеозвонок';
-        }
-        
-        if (elements.callTimer) {
-            elements.callTimer.textContent = '00:00';
+        if (callStatus) {
+            callStatus.textContent = type === 'audio' ? 'Аудиозвонок...' : 'Видеозвонок...';
         }
         
         // Показываем экран звонка
-        elements.callScreen.classList.add('active');
+        callScreen.classList.add('active');
         
         // Сбрасываем таймер
-        callDuration = 0;
+        state.callDuration = 0;
         
         // Имитируем ответ через 3 секунды
         setTimeout(() => {
-            if (elements.callScreen.classList.contains('active')) {
+            if (callScreen.classList.contains('active')) {
                 startCallTimer();
-                if (elements.callStatus) {
-                    elements.callStatus.textContent = 'Разговор';
+                if (callStatus) {
+                    callStatus.textContent = 'Разговор';
                 }
-                showNotification(`Начат ${type === 'audio' ? 'аудиозвонок' : 'видеозвонок'} с ${contact.name}`, 'success');
+                showNotification(`${type === 'audio' ? 'Звонок' : 'Видеозвонок'} с ${contact.name}`, 'Начат', 'success');
             }
         }, 3000);
         
-        currentCall = { contact, type, startTime: new Date() };
+        state.activeCall = { contact, type };
     }
     
     function startCallTimer() {
-        if (callTimer) clearInterval(callTimer);
+        if (state.callTimer) clearInterval(state.callTimer);
         
-        callTimer = setInterval(() => {
-            callDuration++;
-            const minutes = Math.floor(callDuration / 60).toString().padStart(2, '0');
-            const seconds = (callDuration % 60).toString().padStart(2, '0');
+        state.callTimer = setInterval(() => {
+            state.callDuration++;
+            const minutes = Math.floor(state.callDuration / 60).toString().padStart(2, '0');
+            const seconds = (state.callDuration % 60).toString().padStart(2, '0');
             
-            if (elements.callTimer) {
-                elements.callTimer.textContent = `${minutes}:${seconds}`;
+            const callTimerElement = document.querySelector('.call-timer');
+            if (callTimerElement) {
+                callTimerElement.textContent = `${minutes}:${seconds}`;
             }
         }, 1000);
     }
     
     function endCall() {
-        if (callTimer) {
-            clearInterval(callTimer);
-            callTimer = null;
+        if (state.callTimer) {
+            clearInterval(state.callTimer);
+            state.callTimer = null;
         }
         
-        elements.callScreen.classList.remove('active');
+        document.getElementById('callScreen').classList.remove('active');
         
-        if (currentCall) {
-            const duration = callDuration;
-            showNotification(`Звонок завершен`, `Длительность: ${Math.floor(duration/60)}:${(duration%60).toString().padStart(2, '0')}`, 'info');
-            currentCall = null;
+        if (state.activeCall) {
+            const duration = state.callDuration;
+            showNotification('Звонок завершен', `Длительность: ${Math.floor(duration/60)}:${(duration%60).toString().padStart(2, '0')}`, 'info');
+            state.activeCall = null;
         }
-    }
-    
-    function toggleMute() {
-        const muteBtn = document.querySelector('.call-control-btn.mute i');
-        if (muteBtn.classList.contains('fa-microphone')) {
-            muteBtn.className = 'fas fa-microphone-slash';
-            showNotification('Микрофон выключен', 'info');
-        } else {
-            muteBtn.className = 'fas fa-microphone';
-            showNotification('Микрофон включен', 'info');
-        }
-        
-        const muteControl = document.querySelector('.call-control-btn.mute');
-        muteControl.classList.toggle('active');
-    }
-    
-    function toggleSpeaker() {
-        const speakerBtn = document.querySelector('.call-control-btn.speaker i');
-        if (speakerBtn.classList.contains('fa-volume-up')) {
-            speakerBtn.className = 'fas fa-volume-mute';
-            showNotification('Динамик выключен', 'info');
-        } else {
-            speakerBtn.className = 'fas fa-volume-up';
-            showNotification('Динамик включен', 'info');
-        }
-        
-        const speakerControl = document.querySelector('.call-control-btn.speaker');
-        speakerControl.classList.toggle('active');
     }
     
     // ===== КОНФЕРЕНЦИЯ =====
     function startConference() {
         // Останавливаем текущие звонки
-        if (currentCall) endCall();
-        
-        // Создаем участников конференции
-        const participants = [...contacts].slice(0, 6).map((contact, index) => ({
-            ...contact,
-            muted: index > 0,
-            isYou: index === 0,
-            activeSpeaker: index === 0
-        }));
-        
-        // Рендерим участников
-        renderConferenceParticipants(participants);
+        if (state.activeCall) endCall();
         
         // Показываем экран конференции
-        elements.conferenceScreen.classList.add('active');
+        const conferenceScreen = document.getElementById('conferenceScreen');
+        conferenceScreen.classList.add('active');
         
-        // Запускаем таймер
-        callDuration = 0;
+        // Сбрасываем таймер
+        state.callDuration = 0;
         startCallTimer();
         
-        // Обновляем статус
-        currentConference = {
-            participants,
-            startTime: new Date(),
-            activeSpeaker: 0
-        };
+        // Имитируем участников
+        simulateConferenceParticipants();
         
-        // Показываем уведомление
-        showNotification('Конференция начата', `Участников: ${participants.length}`, 'success');
+        state.activeConference = { participants: data.contacts.slice(0, 4) };
         
-        // Имитируем смену активного говорящего
+        showNotification('Конференция начата', 'Присоединяйтесь к обсуждению', 'success');
+        
+        // Имитация активности
         setInterval(() => {
-            if (currentConference) {
+            if (state.activeConference) {
                 simulateConferenceActivity();
             }
         }, 5000);
     }
     
-    function renderConferenceParticipants(participants) {
-        const grid = elements.conferenceGrid;
+    function simulateConferenceParticipants() {
+        const grid = document.getElementById('conferenceGrid');
         if (!grid) return;
         
         grid.innerHTML = '';
         
-        participants.forEach((participant, index) => {
+        data.contacts.slice(0, 6).forEach((contact, index) => {
             const card = document.createElement('div');
-            card.className = `participant-card ${participant.activeSpeaker ? 'active-speaker' : ''}`;
+            card.className = `participant-card ${index === 0 ? 'active-speaker' : ''}`;
             
             card.innerHTML = `
-                <div class="participant-avatar" style="background: ${participant.color}">
-                    ${participant.avatar}
+                <div class="participant-avatar" style="background: linear-gradient(135deg, ${contact.color}, ${contact.color}99)">
+                    ${contact.avatar}
                 </div>
                 <div class="participant-info">
-                    <h3>${participant.isYou ? 'Вы' : participant.name}</h3>
+                    <h3>${index === 0 ? 'Вы' : contact.name}</h3>
                     <div class="participant-status">
-                        <i class="fas fa-circle" style="color: ${participant.status === 'online' ? '#34c759' : '#ff9500'}"></i>
-                        ${participant.status === 'online' ? 'В сети' : 'Отошёл'}
+                        <i class="fas fa-circle" style="color: ${contact.status === 'online' ? '#34c759' : '#ff9500'}"></i>
+                        ${contact.status === 'online' ? 'В сети' : 'Отошёл'}
                     </div>
                 </div>
-                ${participant.muted ? '<div class="participant-muted"><i class="fas fa-microphone-slash"></i></div>' : ''}
+                ${index > 1 ? '<div class="participant-muted"><i class="fas fa-microphone-slash"></i></div>' : ''}
             `;
             
             grid.appendChild(card);
@@ -802,172 +670,116 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function simulateConferenceActivity() {
-        if (!currentConference) return;
+        const cards = document.querySelectorAll('.participant-card');
+        cards.forEach(card => card.classList.remove('active-speaker'));
         
-        // Случайно выбираем нового активного говорящего
-        const oldSpeaker = currentConference.activeSpeaker;
-        let newSpeaker;
-        do {
-            newSpeaker = Math.floor(Math.random() * currentConference.participants.length);
-        } while (newSpeaker === oldSpeaker);
-        
-        // Обновляем состояние
-        currentConference.activeSpeaker = newSpeaker;
-        currentConference.participants.forEach((p, i) => {
-            p.activeSpeaker = i === newSpeaker;
-        });
-        
-        // Обновляем UI
-        renderConferenceParticipants(currentConference.participants);
+        const randomCard = cards[Math.floor(Math.random() * cards.length)];
+        randomCard.classList.add('active-speaker');
         
         // Случайно включаем/выключаем микрофон
         if (Math.random() > 0.7) {
-            const randomParticipant = Math.floor(Math.random() * currentConference.participants.length);
-            currentConference.participants[randomParticipant].muted = !currentConference.participants[randomParticipant].muted;
-            renderConferenceParticipants(currentConference.participants);
+            const mutedElement = randomCard.querySelector('.participant-muted');
+            if (mutedElement) {
+                mutedElement.remove();
+            } else {
+                randomCard.innerHTML += '<div class="participant-muted"><i class="fas fa-microphone-slash"></i></div>';
+            }
         }
     }
     
     function endConference() {
-        if (callTimer) {
-            clearInterval(callTimer);
-            callTimer = null;
+        if (state.callTimer) {
+            clearInterval(state.callTimer);
+            state.callTimer = null;
         }
         
-        elements.conferenceScreen.classList.remove('active');
+        document.getElementById('conferenceScreen').classList.remove('active');
         
-        if (currentConference) {
-            const duration = callDuration;
+        if (state.activeConference) {
+            const duration = state.callDuration;
             showNotification('Конференция завершена', `Длительность: ${Math.floor(duration/60)}:${(duration%60).toString().padStart(2, '0')}`, 'info');
-            currentConference = null;
+            state.activeConference = null;
         }
     }
     
-    function addParticipantToConference() {
-        if (!currentConference) return;
-        
-        // Находим контакт, которого еще нет в конференции
-        const existingIds = currentConference.participants.map(p => p.id);
-        const newContact = contacts.find(c => !existingIds.includes(c.id));
-        
-        if (newContact) {
-            currentConference.participants.push({
-                ...newContact,
-                muted: true,
-                isYou: false,
-                activeSpeaker: false
-            });
-            
-            renderConferenceParticipants(currentConference.participants);
-            showNotification(`${newContact.name} присоединился к конференции`, 'info');
-        } else {
-            showNotification('Нет доступных контактов для добавления', 'warning');
-        }
-    }
-    
-    // ===== УПРАВЛЕНИЕ ТЕМАМИ =====
+    // ===== ТЕМЫ =====
     function toggleTheme() {
-        currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        state.currentTheme = state.currentTheme === 'dark' ? 'light' : 'dark';
         
         // Обновляем класс body
         document.body.classList.remove('dark-theme', 'light-theme');
-        document.body.classList.add(`${currentTheme}-theme`);
+        document.body.classList.add(`${state.currentTheme}-theme`);
         
         // Обновляем иконку
-        const themeIcon = document.querySelector('.theme-switch i');
+        const themeIcon = document.querySelector('.theme-toggle i');
         if (themeIcon) {
-            themeIcon.className = currentTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+            themeIcon.className = state.currentTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
         }
         
         // Сохраняем настройку
-        localStorage.setItem('telegramNodesTheme', currentTheme);
+        localStorage.setItem('telegramNodesTheme', state.currentTheme);
         
-        // Показываем уведомление
-        showNotification(`Тема изменена: ${currentTheme === 'dark' ? 'Тёмная' : 'Светлая'}`, 'info');
+        showNotification(`Тема изменена`, `${state.currentTheme === 'dark' ? 'Тёмная' : 'Светлая'} тема активна`, 'success');
     }
     
-    // ===== ФИЛЬТРЫ И ПОИСК =====
-    function applyFilter(filterType) {
-        const chatItems = document.querySelectorAll('.chat-item');
-        
-        switch(filterType) {
-            case 'Все чаты':
-                chatItems.forEach(item => item.style.display = 'block');
-                break;
-            case 'Непрочитанные':
-                chatItems.forEach(item => {
-                    const hasUnread = item.querySelector('.unread-count');
-                    item.style.display = hasUnread ? 'block' : 'none';
-                });
-                break;
-            case 'Закреплённые':
-                chatItems.forEach(item => {
-                    const isPinned = item.querySelector('.pinned-badge');
-                    item.style.display = isPinned ? 'block' : 'none';
-                });
-                break;
-            case 'Личные':
-                chatItems.forEach(item => {
-                    const isPersonal = !item.dataset.node || item.dataset.node === 'family';
-                    item.style.display = isPersonal ? 'block' : 'none';
-                });
-                break;
-        }
-        
-        // Обновляем активную кнопку
-        elements.filterBtns.forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.textContent === filterType) {
-                btn.classList.add('active');
+    // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
+    function getCurrentTime() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+    
+    function getUserColor(name) {
+        const colors = ['#0088cc', '#af52de', '#34c759', '#ff9500', '#5ac8fa', '#ff2d55'];
+        const index = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return colors[index % colors.length];
+    }
+    
+    function updateChatBadge(chatId) {
+        const chatCard = document.querySelector(`.chat-card[data-chat="${chatId}"]`);
+        if (chatCard) {
+            const badge = chatCard.querySelector('.unread-badge');
+            if (badge) {
+                badge.remove();
             }
-        });
-    }
-    
-    function toggleView() {
-        currentView = currentView === 'grid' ? 'list' : 'grid';
-        const chatList = elements.chatList;
-        
-        if (chatList) {
-            chatList.classList.toggle('list-view', currentView === 'list');
         }
-        
-        // Обновляем кнопки
-        elements.viewBtns.forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.dataset.view === currentView) {
-                btn.classList.add('active');
-            }
-        });
-        
-        showNotification(`Режим просмотра: ${currentView === 'grid' ? 'Сетка' : 'Список'}`, 'info');
     }
     
-    function searchChats(query) {
-        const chatItems = document.querySelectorAll('.chat-item');
-        const searchTerm = query.toLowerCase().trim();
+    function loadSettings() {
+        const savedTheme = localStorage.getItem('telegramNodesTheme') || 'dark';
+        state.currentTheme = savedTheme;
         
-        if (!searchTerm) {
-            chatItems.forEach(item => item.style.display = 'block');
-            return;
-        }
+        document.body.classList.add(`${state.currentTheme}-theme`);
         
-        chatItems.forEach(item => {
-            const title = item.querySelector('h3').textContent.toLowerCase();
-            const preview = item.querySelector('.chat-preview').textContent.toLowerCase();
-            
-            if (title.includes(searchTerm) || preview.includes(searchTerm)) {
-                item.style.display = 'block';
-                item.style.animation = 'pulse 0.5s ease';
-                setTimeout(() => item.style.animation = '', 500);
-            } else {
-                item.style.display = 'none';
-            }
-        });
+        const savedNode = localStorage.getItem('activeNode') || 'alpha';
+        state.activeNode = savedNode;
     }
     
-    // ===== УВЕДОМЛЕНИЯ =====
+    function startBackgroundProcesses() {
+        // Обновление времени
+        setInterval(() => {
+            const timeElements = document.querySelectorAll('.time, .chat-time');
+            timeElements.forEach(el => {
+                if (el.textContent === 'Сейчас') {
+                    el.textContent = getCurrentTime();
+                }
+            });
+        }, 60000);
+        
+        // Имитация активности
+        setInterval(() => {
+            if (Math.random() > 0.7 && !state.activeChat) {
+                const randomChat = data.chats[Math.floor(Math.random() * data.chats.length)];
+                randomChat.unread++;
+                updateChatBadge(randomChat.id);
+                renderChats();
+            }
+        }, 15000);
+    }
+    
     function showNotification(title, message, type = 'info') {
-        const center = elements.notificationCenter;
+        const center = document.querySelector('.notification-center');
         if (!center) return;
         
         const notification = document.createElement('div');
@@ -987,24 +799,19 @@ document.addEventListener('DOMContentLoaded', function() {
         
         center.appendChild(notification);
         
-        // Показываем с анимацией
         setTimeout(() => {
             notification.classList.add('show');
         }, 10);
         
-        // Авто-удаление через 5 секунд
         const autoRemove = setTimeout(() => {
             removeNotification(notification);
         }, 5000);
         
-        // Кнопка закрытия
         const closeBtn = notification.querySelector('.notification-close');
         closeBtn.addEventListener('click', () => {
             clearTimeout(autoRemove);
             removeNotification(notification);
         });
-        
-        console.log(`📢 ${type.toUpperCase()}: ${title} - ${message}`);
     }
     
     function removeNotification(notification) {
@@ -1026,259 +833,84 @@ document.addEventListener('DOMContentLoaded', function() {
         return icons[type] || 'info-circle';
     }
     
-    // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
-    function getCurrentTime() {
-        const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        return `${hours}:${minutes}`;
-    }
-    
-    function getUserColor(name) {
-        const colors = ['#0088cc', '#af52de', '#34c759', '#ff9500', '#5ac8fa', '#ff2d55', '#5856d6'];
-        const index = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        return colors[index % colors.length];
-    }
-    
-    function updateChatBadge(chatId) {
-        const chatItem = document.querySelector(`.chat-item[data-chat="${chatId}"]`);
-        if (chatItem) {
-            const badge = chatItem.querySelector('.unread-count');
-            if (badge) {
-                badge.remove();
-            }
-        }
-    }
-    
-    function loadSettings() {
-        const savedTheme = localStorage.getItem('telegramNodesTheme') || 'dark';
-        currentTheme = savedTheme;
-        
-        // Применяем тему
-        document.body.classList.add(`${currentTheme}-theme`);
-        
-        // Обновляем иконку
-        const themeIcon = document.querySelector('.theme-switch i');
-        if (themeIcon) {
-            themeIcon.className = currentTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-        }
-    }
-    
-    function startUpdates() {
-        // Обновление времени в реальном времени
-        setInterval(() => {
-            const timeElements = document.querySelectorAll('.time, .chat-time');
-            timeElements.forEach(el => {
-                if (el.textContent === 'Сейчас') {
-                    el.textContent = getCurrentTime();
-                }
-            });
-        }, 60000); // Каждую минуту
-        
-        // Имитация активности
-        setInterval(() => {
-            if (Math.random() > 0.7) {
-                simulateRandomActivity();
-            }
-        }, 10000); // Каждые 10 секунд
-    }
-    
-    function simulateRandomActivity() {
-        const activities = [
-            () => {
-                const randomChat = Object.keys(chats)[Math.floor(Math.random() * Object.keys(chats).length)];
-                if (chats[randomChat]) {
-                    chats[randomChat].unread++;
-                    renderChatList();
-                }
-            },
-            () => {
-                const randomContact = contacts[Math.floor(Math.random() * contacts.length)];
-                if (randomContact.status !== 'online') {
-                    randomContact.status = 'online';
-                }
-            },
-            () => {
-                const now = new Date();
-                const hour = now.getHours();
-                if (hour >= 9 && hour <= 18 && Math.random() > 0.8) {
-                    showNotification('Новое сообщение', 'Кто-то написал в чат', 'info');
-                }
-            }
-        ];
-        
-        const randomActivity = activities[Math.floor(Math.random() * activities.length)];
-        randomActivity();
-    }
-    
     // ===== ОБРАБОТЧИКИ СОБЫТИЙ =====
     function setupEventListeners() {
         console.log('⚙️ Настройка обработчиков событий...');
         
-        // ===== УЗЛЫ =====
-        elements.nodeItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const nodeId = this.dataset.node;
-                if (nodeId) {
-                    updateCurrentNode(nodeId);
-                }
-            });
+        // Профиль
+        document.getElementById('profileCard')?.addEventListener('click', openProfile);
+        document.getElementById('closeProfileBtn')?.addEventListener('click', closeProfile);
+        
+        // Узлы
+        document.querySelectorAll('.node-item').forEach(item => {
+            item.addEventListener('click', () => updateActiveNode(item.dataset.node));
         });
         
-        // ===== ЧАТЫ =====
+        // Чаты
+        document.querySelectorAll('.chat-card').forEach(card => {
+            card.addEventListener('click', () => openChat(card.dataset.chat));
+        });
+        
+        // Закрытие чата
+        document.getElementById('closeChatBtn')?.addEventListener('click', closeChat);
+        
         // Отправка сообщения
-        if (elements.sendBtn) {
-            elements.sendBtn.addEventListener('click', sendMessage);
-        }
-        
-        if (elements.messageInput) {
-            elements.messageInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-        }
-        
-        // ===== НАВИГАЦИЯ =====
-        // Кнопка назад
-        if (elements.backBtn) {
-            elements.backBtn.addEventListener('click', function() {
-                if (currentChat) {
-                    closeChat();
-                } else if (currentCall) {
-                    endCall();
-                } else if (currentConference) {
-                    endConference();
-                } else {
-                    // Возврат к списку узлов
-                    showNotification('Навигация', 'Вы на главном экране', 'info');
-                }
-            });
-        }
-        
-        // Возврат из чата
-        if (elements.backToList) {
-            elements.backToList.addEventListener('click', closeChat);
-        }
-        
-        // ===== ПОИСК И ФИЛЬТРЫ =====
-        // Поиск
-        if (elements.searchInput) {
-            elements.searchInput.addEventListener('input', function() {
-                searchChats(this.value);
-            });
-        }
-        
-        // Фильтры
-        elements.filterBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                applyFilter(this.textContent);
-            });
+        document.getElementById('sendMessageBtn')?.addEventListener('click', sendMessage);
+        document.getElementById('messageInput')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
         });
         
-        // Переключение вида
-        elements.viewBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                toggleView();
-            });
-        });
-        
-        // ===== ЗВОНКИ И КОНФЕРЕНЦИИ =====
-        // Звонки из контактов
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.call-btn')) {
-                const btn = e.target.closest('.call-btn');
+        // Звонки
+        document.querySelectorAll('.call-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const contactId = btn.closest('.contact-item')?.dataset.contactId;
-                const type = btn.classList.contains('video') ? 'video' : 'audio';
-                
-                if (contactId) {
-                    e.stopPropagation();
-                    startCall(contactId, type);
-                }
-            }
+                if (contactId) startCall(contactId);
+            });
         });
         
         // Управление звонком
-        elements.callControls?.forEach(btn => {
-            btn.addEventListener('click', function() {
-                if (this.classList.contains('mute')) {
-                    toggleMute();
-                } else if (this.classList.contains('end')) {
-                    endCall();
-                } else if (this.classList.contains('video')) {
-                    showNotification('Видео', 'Переключение видео (в разработке)', 'info');
-                } else if (this.classList.contains('speaker')) {
-                    toggleSpeaker();
-                }
-            });
+        document.querySelector('.call-control-btn.end')?.addEventListener('click', endCall);
+        document.querySelector('.call-control-btn.mute')?.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('fa-microphone')) {
+                icon.className = 'fas fa-microphone-slash';
+                showNotification('Микрофон выключен', 'info');
+            } else {
+                icon.className = 'fas fa-microphone';
+                showNotification('Микрофон включен', 'info');
+            }
+            this.classList.toggle('active');
         });
         
-        // ===== ПЛАВАЮЩИЕ КНОПКИ =====
-        elements.floatingBtns?.forEach(btn => {
-            btn.addEventListener('click', function() {
-                if (this.classList.contains('contacts')) {
-                    showNotification('Контакты', 'Панель контактов (в разработке)', 'info');
-                } else if (this.classList.contains('theme')) {
-                    toggleTheme();
-                } else if (this.classList.contains('conference')) {
-                    startConference();
-                }
-            });
+        // Конференция
+        document.getElementById('startConferenceBtn')?.addEventListener('click', startConference);
+        
+        // Тема
+        document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+        
+        // Кнопка назад
+        document.getElementById('backBtn')?.addEventListener('click', () => {
+            if (state.activeChat) {
+                closeChat();
+            } else if (state.activeCall) {
+                endCall();
+            } else if (state.activeConference) {
+                endConference();
+            }
         });
         
-        // Переключение темы
-        if (elements.themeToggle) {
-            elements.themeToggle.addEventListener('click', toggleTheme);
-        }
-        
-        // ===== ГОРЯЧИЕ КЛАВИШИ =====
-        document.addEventListener('keydown', function(e) {
-            // Esc - закрытие всего
+        // Горячие клавиши
+        document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (currentChat) {
-                    closeChat();
-                } else if (currentCall) {
-                    endCall();
-                } else if (currentConference) {
-                    endConference();
-                }
+                if (state.activeChat) closeChat();
+                if (state.activeCall) endCall();
+                if (state.activeConference) endConference();
             }
             
-            // Ctrl/Cmd + N - новый чат
-            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-                e.preventDefault();
-                showNotification('Новый чат', 'Создание чата (в разработке)', 'info');
-            }
-            
-            // Ctrl/Cmd + T - переключение темы
             if ((e.ctrlKey || e.metaKey) && e.key === 't') {
                 e.preventDefault();
                 toggleTheme();
-            }
-            
-            // Ctrl/Cmd + F - поиск
-            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-                e.preventDefault();
-                elements.searchInput?.focus();
-            }
-            
-            // Ctrl/Cmd + C - конференция
-            if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
-                e.preventDefault();
-                startConference();
-            }
-        });
-        
-        // ===== ДРУГИЕ =====
-        // Закрытие модалок по клику вне
-        document.addEventListener('click', function(e) {
-            if (e.target === elements.callScreen) {
-                endCall();
-            }
-            
-            if (e.target === elements.conferenceScreen) {
-                endConference();
             }
         });
         
@@ -1286,62 +918,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ===== КОНСОЛЬНЫЕ КОМАНДЫ =====
-    function setupConsoleCommands() {
-        window.TelegramNodes = {
-            // Управление
-            switchNode: updateCurrentNode,
-            openChat: openChat,
-            startCall: startCall,
-            startConference: startConference,
-            
-            // Уведомления
-            notify: showNotification,
-            
-            // Тестирование
-            testCall: () => startCall(1, 'audio'),
-            testVideoCall: () => startCall(2, 'video'),
-            testConference: startConference,
-            testMessage: () => {
-                if (currentChat) {
-                    const input = elements.messageInput;
-                    input.value = 'Тестовое сообщение от консоли';
-                    sendMessage();
-                }
-            },
-            
-            // Информация
-            getState: () => ({
-                currentTheme,
-                currentChat,
-                currentCall,
-                currentConference,
-                nodes: Object.keys(nodes),
-                chats: Object.keys(chats)
-            }),
-            
-            // Утилиты
-            help: () => {
-                console.log('🚀 Telegram Nodes Console Commands:');
-                console.log('TelegramNodes.switchNode("alpha") - переключить узел');
-                console.log('TelegramNodes.openChat("design") - открыть чат');
-                console.log('TelegramNodes.startCall(1, "audio") - звонок контакту');
-                console.log('TelegramNodes.startConference() - начать конференцию');
-                console.log('TelegramNodes.notify("Заголовок", "Текст", "success") - уведомление');
-                console.log('TelegramNodes.testCall() - тестовый звонок');
-                console.log('TelegramNodes.testConference() - тест конференции');
-                console.log('TelegramNodes.getState() - текущее состояние');
-            }
-        };
+    window.TelegramNodes = {
+        switchNode: updateActiveNode,
+        openChat: openChat,
+        startCall: startCall,
+        startConference: startConference,
+        toggleTheme: toggleTheme,
+        showNotification: showNotification,
         
-        console.log('🎮 Telegram Nodes готов к работе!');
-        console.log('Наберите TelegramNodes.help() для списка команд');
-    }
+        test: () => {
+            showNotification('Тест', 'Консольные команды работают!', 'success');
+        },
+        
+        help: () => {
+            console.log('🚀 Telegram Nodes Console:');
+            console.log('TelegramNodes.switchNode("alpha") - переключить узел');
+            console.log('TelegramNodes.openChat("design") - открыть чат');
+            console.log('TelegramNodes.startCall(1) - звонок контакту');
+            console.log('TelegramNodes.startConference() - конференция');
+            console.log('TelegramNodes.toggleTheme() - сменить тему');
+            console.log('TelegramNodes.showNotification("Заголовок", "Текст", "success")');
+        }
+    };
     
-    // ===== ЗАПУСК =====
+    console.log('🎮 Введите TelegramNodes.help() для списка команд');
+    
+    // Запуск
     try {
         init();
     } catch (error) {
-        console.error('❌ Ошибка при запуске:', error);
-        showNotification('Ошибка при запуске', error.message, 'error');
+        console.error('❌ Ошибка запуска:', error);
+        showNotification('Ошибка запуска', error.message, 'error');
     }
 });
