@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Nodes • Современный мессенджер</title>
+    <title>Telegram Nodes • Рабочая версия</title>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -80,12 +80,40 @@
             <div class="section">
                 <div class="section-header">
                     <h3><i class="fas fa-sitemap"></i> Узлы</h3>
-                    <button class="icon-btn" id="add-node-btn" title="Добавить узел">
+                    <button class="icon-btn" id="add-node-btn">
                         <i class="fas fa-plus"></i>
                     </button>
                 </div>
                 <div class="nodes-list scrollable" id="nodes-list">
-                    <!-- Узлы загружаются через JS -->
+                    <div class="node-item active" data-node="alpha">
+                        <div class="node-icon" style="background: #0088cc">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="node-info">
+                            <div class="node-name">AlphaTeam</div>
+                            <div class="node-description">24 участника • 12 онлайн</div>
+                        </div>
+                        <span class="unread-badge">3</span>
+                    </div>
+                    <div class="node-item" data-node="game">
+                        <div class="node-icon" style="background: #af52de">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <div class="node-info">
+                            <div class="node-name">GameZone</div>
+                            <div class="node-description">48 участников • 23 онлайн</div>
+                        </div>
+                    </div>
+                    <div class="node-item" data-node="family">
+                        <div class="node-icon" style="background: #34c759">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="node-info">
+                            <div class="node-name">Family</div>
+                            <div class="node-description">12 участников • 4 онлайн</div>
+                        </div>
+                        <span class="unread-badge">1</span>
+                    </div>
                 </div>
             </div>
 
@@ -93,53 +121,39 @@
             <div class="section">
                 <div class="section-header">
                     <h3><i class="fas fa-users"></i> Контакты</h3>
-                    <button class="icon-btn" id="add-contact-btn" title="Добавить контакт">
+                    <button class="icon-btn" id="add-contact-btn">
                         <i class="fas fa-user-plus"></i>
                     </button>
                 </div>
                 <div class="contacts-list scrollable" id="contacts-list">
-                    <!-- Контакты загружаются через JS -->
-                </div>
-            </div>
-
-            <!-- Активность -->
-            <div class="section">
-                <div class="section-header">
-                    <h3><i class="fas fa-bolt"></i> Активность</h3>
-                    <button class="icon-btn" id="refresh-activity-btn" title="Обновить">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </div>
-                <div class="activity-list scrollable" id="activity-list">
-                    <!-- Активность загружается через JS -->
-                </div>
-            </div>
-
-            <!-- Игры -->
-            <div class="section">
-                <div class="section-header">
-                    <h3><i class="fas fa-gamepad"></i> Игры</h3>
-                    <button class="icon-btn" id="games-btn" title="Все игры">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                </div>
-                <div class="games-list">
-                    <div class="game-item" data-game="cs2">
-                        <div class="game-icon cs2">
-                            <i class="fas fa-crosshairs"></i>
+                    <div class="contact-item">
+                        <div class="contact-avatar" style="background: #0088cc">
+                            А
+                            <div class="contact-status online"></div>
                         </div>
-                        <div class="game-info">
-                            <span class="game-name">CS2</span>
-                            <span class="game-status">3 онлайн</span>
+                        <div class="contact-info">
+                            <div class="contact-name">Алексей</div>
+                            <div class="contact-last-seen">только что</div>
                         </div>
                     </div>
-                    <div class="game-item" data-game="dota">
-                        <div class="game-icon dota">
-                            <i class="fas fa-tower"></i>
+                    <div class="contact-item">
+                        <div class="contact-avatar" style="background: #af52de">
+                            М
+                            <div class="contact-status typing"></div>
                         </div>
-                        <div class="game-info">
-                            <span class="game-name">Dota 2</span>
-                            <span class="game-status">2 онлайн</span>
+                        <div class="contact-info">
+                            <div class="contact-name">Мария</div>
+                            <div class="contact-last-seen">печатает...</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-avatar" style="background: #34c759">
+                            ПД
+                            <div class="contact-status online"></div>
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-name">Павел Дуров <i class="fas fa-check-circle" style="color: #34c759; font-size: 12px;"></i></div>
+                            <div class="contact-last-seen">5 мин назад</div>
                         </div>
                     </div>
                 </div>
@@ -163,7 +177,7 @@
                         <i class="fas fa-arrow-left"></i>
                     </button>
                     <div class="current-node" id="current-node">
-                        <div class="node-icon">
+                        <div class="node-icon" style="background: linear-gradient(135deg, #0088cc, #0088ccdd)">
                             <i class="fas fa-rocket"></i>
                         </div>
                         <div class="node-info">
@@ -174,11 +188,11 @@
                 </div>
                 <div class="header-right">
                     <div class="header-actions">
-                        <button class="header-btn" id="notifications-btn" title="Уведомления">
+                        <button class="header-btn" id="notifications-btn">
                             <i class="fas fa-bell"></i>
                             <span class="badge">3</span>
                         </button>
-                        <button class="header-btn" id="theme-toggle" title="Сменить тему">
+                        <button class="header-btn" id="theme-toggle">
                             <i class="fas fa-moon"></i>
                         </button>
                         <button class="header-btn primary" id="new-chat-btn">
@@ -213,20 +227,88 @@
 
             <!-- Список чатов -->
             <div class="chats-container" id="chats-container">
-                <!-- Чаты загружаются через JS -->
-            </div>
-
-            <!-- Пустое состояние -->
-            <div class="empty-state" id="empty-state">
-                <div class="empty-icon">
-                    <i class="fas fa-comments"></i>
+                <div class="chat-card" data-chat-id="design-team">
+                    <div class="chat-card-header">
+                        <div class="chat-avatar" style="background: #0088cc">
+                            Д
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-title-row">
+                                <h4 class="chat-name">Дизайн-команда</h4>
+                                <span class="chat-time">12:30</span>
+                            </div>
+                            <p class="chat-preview">Обсуждаем новый UI для проекта...</p>
+                        </div>
+                    </div>
+                    <div class="chat-card-footer">
+                        <div class="chat-members">
+                            <div class="member-avatars">
+                                <div class="member-avatar">1</div>
+                                <div class="member-avatar">2</div>
+                                <div class="member-avatar">3</div>
+                                <div class="member-avatar">+5</div>
+                            </div>
+                            <span>8 участников</span>
+                        </div>
+                        <div class="chat-badges">
+                            <i class="fas fa-thumbtack" style="color: #ff9500; margin-right: 8px;"></i>
+                            <span class="unread-badge">3</span>
+                        </div>
+                    </div>
                 </div>
-                <h3>Нет активных чатов</h3>
-                <p>Начните новый разговор или выберите другой узел</p>
-                <button class="btn primary" id="start-chat-btn">
-                    <i class="fas fa-plus"></i>
-                    Начать чат
-                </button>
+
+                <div class="chat-card" data-chat-id="durov-chat">
+                    <div class="chat-card-header">
+                        <div class="chat-avatar" style="background: #0088cc">
+                            ПД
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-title-row">
+                                <h4 class="chat-name">Павел Дуров</h4>
+                                <span class="chat-time">10:30</span>
+                            </div>
+                            <p class="chat-preview">Новый функционал выглядит отлично!</p>
+                        </div>
+                    </div>
+                    <div class="chat-card-footer">
+                        <div class="chat-members">
+                            <span>2 участника</span>
+                        </div>
+                        <div class="chat-badges">
+                            <i class="fas fa-thumbtack" style="color: #ff9500; margin-right: 8px;"></i>
+                            <span class="unread-badge">1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-card" data-chat-id="cs2-tournament">
+                    <div class="chat-card-header">
+                        <div class="chat-avatar" style="background: #af52de">
+                            CS
+                        </div>
+                        <div class="chat-info">
+                            <div class="chat-title-row">
+                                <h4 class="chat-name">CS2 Чемпионат</h4>
+                                <span class="chat-time">Вчера</span>
+                            </div>
+                            <p class="chat-preview">Регистрация до 25 марта</p>
+                        </div>
+                    </div>
+                    <div class="chat-card-footer">
+                        <div class="chat-members">
+                            <div class="member-avatars">
+                                <div class="member-avatar">1</div>
+                                <div class="member-avatar">2</div>
+                                <div class="member-avatar">3</div>
+                                <div class="member-avatar">+29</div>
+                            </div>
+                            <span>32 участника</span>
+                        </div>
+                        <div class="chat-badges">
+                            <span class="unread-badge">5</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
 
@@ -246,20 +328,20 @@
                     </div>
                 </div>
                 <div class="chat-actions">
-                    <button class="chat-action-btn" id="voice-call-btn" title="Аудиозвонок">
+                    <button class="chat-action-btn" id="voice-call-btn">
                         <i class="fas fa-phone"></i>
                     </button>
-                    <button class="chat-action-btn" id="video-call-btn" title="Видеозвонок">
+                    <button class="chat-action-btn" id="video-call-btn">
                         <i class="fas fa-video"></i>
                     </button>
-                    <button class="chat-action-btn" title="Информация">
+                    <button class="chat-action-btn">
                         <i class="fas fa-info-circle"></i>
                     </button>
                 </div>
             </div>
 
             <div class="messages-container" id="messages-container">
-                <!-- Сообщения загружаются через JS -->
+                <!-- Сообщения будут загружены через JS -->
             </div>
 
             <!-- Эмодзи панель -->
@@ -271,12 +353,6 @@
                     <button class="emoji-category" data-category="people">
                         <i class="fas fa-user"></i>
                     </button>
-                    <button class="emoji-category" data-category="nature">
-                        <i class="fas fa-leaf"></i>
-                    </button>
-                    <button class="emoji-category" data-category="objects">
-                        <i class="fas fa-lightbulb"></i>
-                    </button>
                 </div>
                 <div class="emoji-grid" id="emoji-grid">
                     <!-- Эмодзи загружаются через JS -->
@@ -285,16 +361,16 @@
 
             <div class="message-input-container">
                 <div class="input-actions">
-                    <button class="input-btn" title="Прикрепить файл">
+                    <button class="input-btn" id="attach-file-btn">
                         <i class="fas fa-paperclip"></i>
                     </button>
-                    <button class="input-btn" title="Фото/Видео">
+                    <button class="input-btn" id="attach-image-btn">
                         <i class="fas fa-image"></i>
                     </button>
-                    <button class="input-btn" id="emoji-toggle-btn" title="Эмодзи">
+                    <button class="input-btn" id="emoji-toggle-btn">
                         <i class="fas fa-smile"></i>
                     </button>
-                    <button class="input-btn" title="Стикеры">
+                    <button class="input-btn" id="sticker-btn">
                         <i class="fas fa-sticky-note"></i>
                     </button>
                 </div>
@@ -349,119 +425,10 @@
                 </button>
             </div>
         </div>
-
-        <!-- Модальное окно профиля -->
-        <div class="modal-overlay" id="profile-modal-overlay"></div>
-        <div class="modal" id="profile-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Профиль пользователя</h3>
-                    <button class="modal-close" id="close-profile-modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="profile-modal-content">
-                        <div class="profile-modal-avatar">
-                            <div class="avatar-large">Г</div>
-                            <button class="avatar-change-btn">
-                                <i class="fas fa-camera"></i>
-                            </button>
-                        </div>
-                        <div class="profile-modal-info">
-                            <h2>Газман</h2>
-                            <p class="profile-modal-username">@gazman</p>
-                            <p class="profile-modal-bio">Основатель Telegram Nodes • Любитель кофе и технологий</p>
-                            
-                            <div class="profile-modal-stats">
-                                <div class="profile-stat">
-                                    <span class="stat-number">156</span>
-                                    <span class="stat-label">Чатов</span>
-                                </div>
-                                <div class="profile-stat">
-                                    <span class="stat-number">48</span>
-                                    <span class="stat-label">Контактов</span>
-                                </div>
-                                <div class="profile-stat">
-                                    <span class="stat-number">7</span>
-                                    <span class="stat-label">Узлов</span>
-                                </div>
-                            </div>
-                            
-                            <div class="profile-modal-actions">
-                                <button class="btn secondary">Редактировать профиль</button>
-                                <button class="btn primary">Поделиться профилем</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Уведомления -->
     <div class="notifications-container" id="notifications-container"></div>
-
-    <!-- Шаблоны -->
-    <template id="chat-card-template">
-        <div class="chat-card" data-chat-id="">
-            <div class="chat-card-header">
-                <div class="chat-avatar"></div>
-                <div class="chat-info">
-                    <div class="chat-title-row">
-                        <h4 class="chat-name"></h4>
-                        <span class="chat-time"></span>
-                    </div>
-                    <p class="chat-preview"></p>
-                </div>
-            </div>
-            <div class="chat-card-footer">
-                <div class="chat-members">
-                    <div class="member-avatars"></div>
-                    <span class="member-count"></span>
-                </div>
-                <div class="chat-badges">
-                    <span class="unread-badge"></span>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="message-template">
-        <div class="message">
-            <div class="message-avatar"></div>
-            <div class="message-content">
-                <div class="message-header">
-                    <span class="message-sender"></span>
-                    <span class="message-time"></span>
-                </div>
-                <div class="message-text"></div>
-            </div>
-        </div>
-    </template>
-
-    <template id="notification-template">
-        <div class="notification">
-            <div class="notification-icon">
-                <i class="fas fa-bell"></i>
-            </div>
-            <div class="notification-content">
-                <h4 class="notification-title"></h4>
-                <p class="notification-message"></p>
-            </div>
-            <button class="notification-close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    </template>
-
-    <template id="conference-participant-template">
-        <div class="participant-card">
-            <div class="participant-avatar"></div>
-            <div class="participant-name"></div>
-            <div class="participant-status">
-                <i class="fas fa-microphone-slash"></i>
-            </div>
-        </div>
-    </template>
 
     <script src="script.js"></script>
 </body>
