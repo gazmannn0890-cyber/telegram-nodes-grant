@@ -189,8 +189,8 @@ body {
     font-size: 42px;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    color: transparent;
     margin-bottom: 10px;
 }
 
@@ -506,7 +506,7 @@ body {
     text-align: center;
 }
 
-.badge {
+.menu-item .badge {
     position: absolute;
     right: 16px;
     background: var(--danger-color);
@@ -582,7 +582,7 @@ body {
     width: 24px;
 }
 
-.category-btn span:not(.unread-count) {
+.category-btn .category-text {
     flex: 1;
     font-size: 15px;
     font-weight: 500;
@@ -740,8 +740,8 @@ body {
     font-size: 36px;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    color: transparent;
     margin-bottom: 8px;
 }
 
@@ -948,6 +948,10 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.chat-members i {
+    font-size: 14px;
 }
 
 .last-message {
@@ -1651,6 +1655,66 @@ body {
     }
 }
 
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 136, 204, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 136, 204, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 136, 204, 0);
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes messageAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes highlightPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(0, 136, 204, 0);
+    }
+    50% {
+        box-shadow: 0 0 0 20px rgba(0, 136, 204, 0.1);
+    }
+}
+
 /* ===== АДАПТИВНОСТЬ ===== */
 @media (max-width: 1400px) {
     .chats-grid {
@@ -1688,7 +1752,7 @@ body {
     
     .profile-info,
     .profile-menu-btn,
-    .category-btn span:not(.unread-count),
+    .category-btn .category-text,
     .call-btn span,
     .call-info,
     .nav-header h3 span,
@@ -1773,6 +1837,16 @@ body {
     .conference-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+    
+    .call-controls {
+        flex-wrap: wrap;
+    }
+    
+    .notification-center {
+        width: calc(100% - 40px);
+        right: 20px;
+        left: 20px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -1818,23 +1892,25 @@ body {
     animation: pulse 2s infinite;
 }
 
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(0, 136, 204, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(0, 136, 204, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(0, 136, 204, 0);
-    }
-}
-
 /* Стили для кнопки выхода из звонка */
 .leave-call-btn {
     background: linear-gradient(135deg, var(--danger-color), #ff6b81) !important;
     color: white !important;
     margin-top: 30px;
+    padding: 15px 30px;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .leave-call-btn:hover {
@@ -1847,11 +1923,97 @@ body {
     animation: highlightPulse 2s ease;
 }
 
-@keyframes highlightPulse {
-    0%, 100% {
-        box-shadow: 0 0 0 0 rgba(0, 136, 204, 0);
-    }
-    50% {
-        box-shadow: 0 0 0 20px rgba(0, 136, 204, 0.1);
-    }
+/* Дополнительные стили для формы входа */
+.login-success, .login-error {
+    text-align: center;
+    padding: 20px;
+}
+
+.login-success i {
+    font-size: 64px;
+    color: var(--success-color);
+    margin-bottom: 20px;
+}
+
+.login-error i {
+    font-size: 64px;
+    color: var(--danger-color);
+    margin-bottom: 20px;
+}
+
+.demo-credentials {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.demo-credentials p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.retry-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary-color);
+    border: none;
+    border-radius: var(--border-radius);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.retry-btn:hover {
+    background: var(--primary-dark);
+}
+
+.no-chats {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.no-chats i {
+    font-size: 64px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.no-chats h3 {
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.no-chats p {
+    color: var(--text-secondary);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Исправления для анимаций непрочитанных сообщений */
+.unread-message-item {
+    animation: messageAppear 0.5s ease;
+}
+
+/* Убедимся, что все CSS свойства корректны */
+.call-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.video-feed {
+    background: rgba(0,0,0,0.3);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    text-align: center;
 }
