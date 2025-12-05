@@ -1,13 +1,17 @@
-// Telegram Nodes - Полностью исправленная версия
+// Telegram Nodes - Оптимизированная версия с анимациями
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Telegram Nodes запускается...');
     
     // ========== КОНФИГУРАЦИЯ ==========
     const config = {
         appName: 'Telegram Nodes',
-        version: '2.1',
+        version: '2.5',
         developer: 'Газман',
         defaultTheme: 'dark',
+        loginCredentials: {
+            phone: '900123456',
+            password: '111111'
+        },
         features: {
             nodes: true,
             chats: true,
@@ -15,9 +19,190 @@ document.addEventListener('DOMContentLoaded', function() {
             games: true,
             notifications: true,
             emoji: true,
-            conference: true
+            conference: true,
+            animations: true
         }
     };
+    
+    // ========== АНИМАЦИИ И ПЕРЕХОДЫ ==========
+    const animations = {
+        applyCardAnimation(element) {
+            if (!config.features.animations) return;
+            
+            element.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            element.style.transform = 'translateY(0)';
+            element.style.opacity = '1';
+        },
+        
+        fadeIn(element, duration = 300) {
+            if (!config.features.animations) {
+                element.style.opacity = '1';
+                return;
+            }
+            
+            element.style.transition = `opacity ${duration}ms ease`;
+            element.style.opacity = '1';
+        },
+        
+        slideIn(element, direction = 'right', duration = 300) {
+            if (!config.features.animations) {
+                element.style.transform = 'translateX(0)';
+                return;
+            }
+            
+            const transforms = {
+                right: 'translateX(20px)',
+                left: 'translateX(-20px)',
+                up: 'translateY(-20px)',
+                down: 'translateY(20px)'
+            };
+            
+            element.style.transform = transforms[direction] || 'translateX(20px)';
+            element.style.opacity = '0';
+            element.style.transition = `all ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+            
+            requestAnimationFrame(() => {
+                element.style.transform = 'translate(0, 0)';
+                element.style.opacity = '1';
+            });
+        },
+        
+        pulse(element, scale = 1.05) {
+            if (!config.features.animations) return;
+            
+            element.style.transform = `scale(${scale})`;
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+            }, 150);
+        },
+        
+        shake(element) {
+            if (!config.features.animations) return;
+            
+            element.style.animation = 'shake 0.5s ease';
+            setTimeout(() => {
+                element.style.animation = '';
+            }, 500);
+        },
+        
+        ripple(event) {
+            if (!config.features.animations) return;
+            
+            const btn = event.currentTarget;
+            const ripple = document.createElement('span');
+            const rect = btn.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.5);
+                transform: scale(0);
+                animation: ripple-animation 0.6s linear;
+                width: ${size}px;
+                height: ${size}px;
+                top: ${y}px;
+                left: ${x}px;
+                pointer-events: none;
+            `;
+            
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        }
+    };
+    
+    // Добавляем CSS для анимаций
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .chat-card {
+            animation: cardAppear 0.3s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        @keyframes cardAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .node-item, .contact-item, .activity-item, .game-item {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .message {
+            animation: messageAppear 0.3s ease forwards;
+        }
+        
+        .notification {
+            animation: notificationSlideIn 0.3s ease forwards;
+        }
+        
+        @keyframes notificationSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .gradient-border {
+            position: relative;
+            background: var(--bg-card);
+        }
+        
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--primary));
+            border-radius: inherit;
+            z-index: -1;
+            animation: borderRotate 3s linear infinite;
+        }
+        
+        @keyframes borderRotate {
+            100% { filter: hue-rotate(360deg); }
+        }
+    `;
+    document.head.appendChild(style);
     
     // ========== ДАННЫЕ ПРИЛОЖЕНИЯ ==========
     const appData = {
@@ -331,17 +516,25 @@ document.addEventListener('DOMContentLoaded', function() {
         isEmojiPanelOpen: false,
         isConferenceActive: false,
         conferenceTimer: 0,
-        conferenceTimerInterval: null
+        conferenceTimerInterval: null,
+        isLoggedIn: false,
+        isAuthenticating: false
     };
     
     // ========== DOM ЭЛЕМЕНТЫ ==========
     const elements = {
-        // Прелоадер
+        // Прелоадер и вход
         preloader: document.getElementById('preloader'),
         progressFill: document.getElementById('progress-fill'),
         statChats: document.getElementById('stat-chats'),
         statNodes: document.getElementById('stat-nodes'),
         statOnline: document.getElementById('stat-online'),
+        loginForm: document.getElementById('login-form'),
+        loginPhone: document.getElementById('login-phone'),
+        loginPassword: document.getElementById('login-password'),
+        loginButton: document.getElementById('login-button'),
+        demoLogin: document.getElementById('demo-login'),
+        loginError: document.getElementById('login-error'),
         
         // Основные контейнеры
         appContainer: document.getElementById('app-container'),
@@ -417,31 +610,139 @@ document.addEventListener('DOMContentLoaded', function() {
     function init() {
         console.log('🎯 Инициализация Telegram Nodes...');
         
-        // Установка темы
-        setTheme(state.theme);
+        // Инициализация частиц
+        initParticles();
         
-        // Загрузка прелоадера
-        simulatePreloader();
-        
-        // Рендер данных
-        renderProfile();
-        renderNodes();
-        renderContacts();
-        renderActivity();
-        updateCurrentNode();
-        renderChats();
-        renderEmojis();
-        
-        // Настройка обработчиков событий
-        setupEventListeners();
-        
-        // Показать приветственное уведомление
+        // Показываем форму входа
         setTimeout(() => {
-            showNotification('Добро пожаловать, Газман!', 'Telegram Nodes готов к работе', 'success');
+            animations.fadeIn(elements.loginForm);
+            elements.loginForm.classList.add('active');
+            elements.loginPhone.focus();
         }, 1500);
         
-        // Симулировать активность
-        simulateActivity();
+        // Настройка обработчиков событий для входа
+        setupLoginListeners();
+    }
+    
+    // ========== ЧАСТИЦЫ ФОНА ==========
+    function initParticles() {
+        if (typeof particlesJS !== 'undefined') {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: ["#0088cc", "#af52de", "#34c759", "#ff9500"] },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#0088cc",
+                        opacity: 0.2,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: "none",
+                        random: true,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: { enable: true, mode: "repulse" },
+                        onclick: { enable: true, mode: "push" },
+                        resize: true
+                    }
+                },
+                retina_detect: true
+            });
+        }
+    }
+    
+    // ========== СИСТЕМА ВХОДА ==========
+    function setupLoginListeners() {
+        elements.loginButton.addEventListener('click', handleLogin);
+        elements.demoLogin.addEventListener('click', handleDemoLogin);
+        elements.loginPassword.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        });
+        
+        // Добавляем ripple эффект кнопкам
+        elements.loginButton.addEventListener('mousedown', animations.ripple);
+        elements.demoLogin.addEventListener('mousedown', animations.ripple);
+    }
+    
+    function handleLogin() {
+        if (state.isAuthenticating) return;
+        
+        const phone = elements.loginPhone.value.trim();
+        const password = elements.loginPassword.value.trim();
+        
+        if (!phone || !password) {
+            showLoginError('Заполните все поля');
+            return;
+        }
+        
+        if (phone === config.loginCredentials.phone && 
+            password === config.loginCredentials.password) {
+            authenticateUser();
+        } else {
+            showLoginError('Неверный номер телефона или пароль');
+            animations.shake(elements.loginForm);
+        }
+    }
+    
+    function handleDemoLogin() {
+        elements.loginPhone.value = config.loginCredentials.phone;
+        elements.loginPassword.value = config.loginCredentials.password;
+        authenticateUser();
+    }
+    
+    function showLoginError(message) {
+        elements.loginError.textContent = message;
+        elements.loginError.style.display = 'block';
+        setTimeout(() => {
+            elements.loginError.style.display = 'none';
+        }, 3000);
+    }
+    
+    function authenticateUser() {
+        state.isAuthenticating = true;
+        
+        // Анимация загрузки
+        elements.loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Вход...';
+        elements.loginButton.disabled = true;
+        
+        // Имитация задержки сети
+        setTimeout(() => {
+            // Успешный вход
+            state.isLoggedIn = true;
+            elements.loginForm.style.opacity = '0';
+            elements.loginForm.style.transform = 'translateY(-20px)';
+            
+            setTimeout(() => {
+                startApplication();
+            }, 500);
+            
+        }, 1500);
+    }
+    
+    function startApplication() {
+        // Скрываем форму входа
+        elements.loginForm.style.display = 'none';
+        
+        // Запускаем прелоадер приложения
+        simulatePreloader();
+        
+        // Инициализируем основное приложение
+        setTimeout(() => {
+            initApplication();
+        }, 1000);
     }
     
     // ========== ПРЕЛОАДЕР ==========
@@ -453,15 +754,15 @@ document.addEventListener('DOMContentLoaded', function() {
             
             elements.progressFill.style.width = `${progress}%`;
             
-            // Обновление статистики
+            // Обновление статистики с анимацией
             if (progress >= 25) {
-                elements.statChats.textContent = appData.user.stats.chats;
+                animateCounter(elements.statChats, appData.user.stats.chats);
             }
             if (progress >= 50) {
-                elements.statNodes.textContent = appData.user.stats.nodes;
+                animateCounter(elements.statNodes, appData.user.stats.nodes);
             }
             if (progress >= 75) {
-                elements.statOnline.textContent = appData.user.stats.online;
+                animateCounter(elements.statOnline, appData.user.stats.online);
             }
             
             if (progress >= 100) {
@@ -478,29 +779,77 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }
     
-    // ========== РЕНДЕР ФУНКЦИИ ==========
-    function renderProfile() {
-        const user = appData.user;
-        const profileCard = elements.profileCard;
+    function animateCounter(element, targetValue) {
+        let current = parseInt(element.textContent) || 0;
+        const increment = Math.ceil((targetValue - current) / 20);
         
-        if (profileCard) {
-            const avatar = profileCard.querySelector('.avatar');
-            const name = profileCard.querySelector('.profile-name');
-            const status = profileCard.querySelector('.profile-status');
-            
-            if (avatar) avatar.textContent = user.avatar;
-            if (name) name.textContent = user.name;
-            if (status) status.textContent = `${user.username} • ${user.status}`;
-        }
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= targetValue) {
+                current = targetValue;
+                clearInterval(timer);
+            }
+            element.textContent = current;
+        }, 30);
     }
     
+    // ========== ОСНОВНОЕ ПРИЛОЖЕНИЕ ==========
+    function initApplication() {
+        // Установка темы
+        setTheme(state.theme);
+        
+        // Рендер данных с анимациями
+        renderProfile();
+        renderNodes();
+        renderContacts();
+        renderActivity();
+        updateCurrentNode();
+        renderChats();
+        renderEmojis();
+        
+        // Настройка обработчиков событий
+        setupEventListeners();
+        
+        // Показать приветственное уведомление
+        setTimeout(() => {
+            showNotification('Добро пожаловать, Газман!', 'Telegram Nodes готов к работе', 'success');
+            animations.pulse(elements.profileCard);
+        }, 1500);
+        
+        // Симулировать активность
+        simulateActivity();
+        
+        // Добавляем плавные переходы
+        addSmoothTransitions();
+    }
+    
+    // ========== ПЛАВНЫЕ ПЕРЕХОДЫ ==========
+    function addSmoothTransitions() {
+        // Добавляем анимации всем интерактивным элементам
+        document.querySelectorAll('.btn, .header-btn, .icon-btn, .chat-action-btn, .input-btn, .filter-btn, .sort-btn').forEach(btn => {
+            btn.addEventListener('mousedown', animations.ripple);
+            btn.style.transition = 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
+        });
+        
+        // Анимации карточек
+        document.querySelectorAll('.chat-card, .node-item, .contact-item, .activity-item').forEach(card => {
+            card.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        });
+        
+        // Плавный скролл
+        document.querySelectorAll('.scrollable').forEach(container => {
+            container.style.scrollBehavior = 'smooth';
+        });
+    }
+    
+    // ========== РЕНДЕР ФУНКЦИИ С АНИМАЦИЯМИ ==========
     function renderNodes() {
         const container = elements.nodesList;
         if (!container) return;
         
         container.innerHTML = '';
         
-        appData.nodes.forEach(node => {
+        appData.nodes.forEach((node, index) => {
             const nodeElement = document.createElement('div');
             nodeElement.className = `node-item ${state.activeNode === node.id ? 'active' : ''}`;
             nodeElement.dataset.node = node.id;
@@ -516,81 +865,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 ${node.unread > 0 ? `<span class="unread-badge">${node.unread}</span>` : ''}
             `;
             
-            nodeElement.addEventListener('click', () => switchNode(node.id));
+            nodeElement.addEventListener('click', () => {
+                animations.pulse(nodeElement);
+                setTimeout(() => switchNode(node.id), 150);
+            });
+            
             container.appendChild(nodeElement);
+            
+            // Последовательная анимация появления
+            setTimeout(() => {
+                animations.slideIn(nodeElement, 'left');
+            }, index * 50);
         });
-    }
-    
-    function renderContacts() {
-        const container = elements.contactsList;
-        if (!container) return;
-        
-        container.innerHTML = '';
-        
-        appData.contacts.forEach(contact => {
-            const contactElement = document.createElement('div');
-            contactElement.className = 'contact-item';
-            contactElement.dataset.contact = contact.id;
-            
-            contactElement.innerHTML = `
-                <div class="contact-avatar" style="background: ${contact.color}">
-                    ${contact.avatar}
-                    <div class="contact-status ${contact.status}"></div>
-                </div>
-                <div class="contact-info">
-                    <div class="contact-name">${contact.name} ${contact.verified ? '<i class="fas fa-check-circle" style="color: #34c759; font-size: 12px;"></i>' : ''}</div>
-                    <div class="contact-last-seen">${contact.lastSeen}</div>
-                </div>
-            `;
-            
-            contactElement.addEventListener('click', () => showNotification(contact.name, 'Открыть чат с контактом', 'info'));
-            container.appendChild(contactElement);
-        });
-    }
-    
-    function renderActivity() {
-        const container = elements.activityList;
-        if (!container) return;
-        
-        container.innerHTML = '';
-        
-        appData.activity.forEach(activity => {
-            const activityElement = document.createElement('div');
-            activityElement.className = 'activity-item';
-            
-            activityElement.innerHTML = `
-                <div class="activity-icon">
-                    <i class="${activity.icon}"></i>
-                </div>
-                <div class="activity-info">
-                    <div class="activity-text">
-                        <strong>${activity.user}</strong> ${activity.text}
-                    </div>
-                    <div class="activity-time">${activity.time}</div>
-                </div>
-            `;
-            
-            container.appendChild(activityElement);
-        });
-    }
-    
-    function updateCurrentNode() {
-        const node = appData.nodes.find(n => n.id === state.activeNode);
-        if (!node) return;
-        
-        const container = elements.currentNode;
-        if (!container) return;
-        
-        const icon = container.querySelector('.node-icon');
-        const name = container.querySelector('.node-name');
-        const description = container.querySelector('.node-description');
-        
-        if (icon) {
-            icon.innerHTML = `<i class="${node.icon}"></i>`;
-            icon.style.background = `linear-gradient(135deg, ${node.color}, ${node.color}dd)`;
-        }
-        if (name) name.textContent = node.name;
-        if (description) description.textContent = `${node.members} участников • ${node.online} онлайн`;
     }
     
     function renderChats() {
@@ -641,14 +927,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         container.innerHTML = '';
         
-        if (filteredChats.length === 0) {
+        if (filterchedats.length === 0) {
+            animations.fadeIn(emptyState);
             emptyState.classList.add('active');
             return;
         }
         
         emptyState.classList.remove('active');
         
-        filteredChats.forEach(chat => {
+        filteredChats.forEach((chat, index) => {
             const chatCard = document.createElement('div');
             chatCard.className = 'chat-card';
             chatCard.dataset.chatId = chat.id;
@@ -656,7 +943,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Создание миниатюр участников
             const memberAvatars = Array.from(
                 { length: Math.min(3, chat.members) }, 
-                (_, i) => `<div class="member-avatar">${i + 1}</div>`
+                (_, i) => `<div class="member-avatar" style="animation-delay: ${i * 0.1}s">${i + 1}</div>`
             ).join('');
             
             chatCard.innerHTML = `
@@ -681,42 +968,102 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span>${chat.members} участников</span>
                     </div>
                     <div class="chat-badges">
-                        ${chat.pinned ? '<i class="fas fa-thumbtack" style="color: #ff9500; margin-right: 8px;"></i>' : ''}
-                        ${chat.unread > 0 ? `<span class="unread-badge">${chat.unread}</span>` : ''}
+                        ${chat.pinned ? '<i class="fas fa-thumbtack" style="color: #ff9500; margin-right: 8px; animation: float 3s ease-in-out infinite;"></i>' : ''}
+                        ${chat.unread > 0 ? `<span class="unread-badge pulse">${chat.unread}</span>` : ''}
                     </div>
                 </div>
             `;
             
-            chatCard.addEventListener('click', () => openChat(chat.id));
+            chatCard.addEventListener('click', () => {
+                animations.pulse(chatCard);
+                setTimeout(() => openChat(chat.id), 150);
+            });
+            
             container.appendChild(chatCard);
+            
+            // Последовательная анимация появления
+            setTimeout(() => {
+                animations.applyCardAnimation(chatCard);
+            }, index * 50);
         });
     }
     
-    function renderEmojis() {
-        const container = elements.emojiGrid;
+    function renderContacts() {
+        const container = elements.contactsList;
         if (!container) return;
         
         container.innerHTML = '';
         
-        // Рендерим смайлики
-        Object.keys(appData.emojis).forEach(category => {
-            appData.emojis[category].forEach(emoji => {
-                const emojiElement = document.createElement('div');
-                emojiElement.className = 'emoji-item';
-                emojiElement.textContent = emoji;
-                emojiElement.dataset.emoji = emoji;
-                emojiElement.addEventListener('click', () => insertEmoji(emoji));
-                container.appendChild(emojiElement);
+        appData.contacts.forEach((contact, index) => {
+            const contactElement = document.createElement('div');
+            contactElement.className = 'contact-item';
+            contactElement.dataset.contact = contact.id;
+            
+            contactElement.innerHTML = `
+                <div class="contact-avatar" style="background: ${contact.color}">
+                    ${contact.avatar}
+                    <div class="contact-status ${contact.status}"></div>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-name">${contact.name} ${contact.verified ? '<i class="fas fa-check-circle" style="color: #34c759; font-size: 12px;"></i>' : ''}</div>
+                    <div class="contact-last-seen">${contact.lastSeen}</div>
+                </div>
+            `;
+            
+            contactElement.addEventListener('click', () => {
+                animations.pulse(contactElement);
+                showNotification(contact.name, 'Открыть чат с контактом', 'info');
             });
+            
+            container.appendChild(contactElement);
+            
+            // Анимация появления
+            setTimeout(() => {
+                animations.slideIn(contactElement, 'left');
+            }, index * 50);
         });
     }
     
-    // ========== ФУНКЦИИ ЧАТА ==========
+    function renderActivity() {
+        const container = elements.activityList;
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        appData.activity.forEach((activity, index) => {
+            const activityElement = document.createElement('div');
+            activityElement.className = 'activity-item';
+            
+            activityElement.innerHTML = `
+                <div class="activity-icon">
+                    <i class="${activity.icon}"></i>
+                </div>
+                <div class="activity-info">
+                    <div class="activity-text">
+                        <strong>${activity.user}</strong> ${activity.text}
+                    </div>
+                    <div class="activity-time">${activity.time}</div>
+                </div>
+            `;
+            
+            container.appendChild(activityElement);
+            
+            // Анимация появления
+            setTimeout(() => {
+                animations.slideIn(activityElement, 'left');
+            }, index * 50);
+        });
+    }
+    
+    // ========== ФУНКЦИИ ЧАТА С АНИМАЦИЯМИ ==========
     function openChat(chatId) {
         const chat = appData.chats.find(c => c.id === chatId);
         if (!chat) return;
         
         state.activeChat = chatId;
+        
+        // Анимация перехода
+        animations.slideIn(elements.chatPanel, 'right');
         
         // Обновить UI
         elements.mainContent.style.display = 'none';
@@ -725,6 +1072,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Обновить информацию о чате
         elements.chatAvatar.textContent = chat.avatar;
         elements.chatAvatar.style.background = chat.color;
+        animations.pulse(elements.chatAvatar);
         elements.chatTitle.textContent = chat.name;
         elements.chatStatus.textContent = `${chat.members} участников • ${chat.online} онлайн`;
         
@@ -735,20 +1083,25 @@ document.addEventListener('DOMContentLoaded', function() {
         chat.unread = 0;
         renderChats();
         
-        // Фокус на поле ввода
+        // Фокус на поле ввода с анимацией
         setTimeout(() => {
             elements.messageInput.focus();
-        }, 100);
+            animations.pulse(elements.messageInput);
+        }, 300);
         
         showNotification(`Чат "${chat.name}"`, 'Чат открыт', 'info');
     }
     
     function closeChat() {
-        state.activeChat = null;
-        elements.chatPanel.classList.remove('active');
-        elements.mainContent.style.display = 'flex';
-        elements.messageInput.value = '';
-        closeEmojiPanel();
+        animations.slideIn(elements.mainContent, 'left');
+        
+        setTimeout(() => {
+            state.activeChat = null;
+            elements.chatPanel.classList.remove('active');
+            elements.mainContent.style.display = 'flex';
+            elements.messageInput.value = '';
+            closeEmojiPanel();
+        }, 300);
     }
     
     function loadMessages(chatId) {
@@ -762,9 +1115,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const dateElement = document.createElement('div');
         dateElement.className = 'message-date';
         dateElement.innerHTML = '<span>Сегодня</span>';
+        animations.fadeIn(dateElement);
         container.appendChild(dateElement);
         
-        messages.forEach(msg => {
+        messages.forEach((msg, index) => {
             const messageElement = document.createElement('div');
             messageElement.className = `message ${msg.type}`;
             
@@ -794,12 +1148,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             container.appendChild(messageElement);
+            
+            // Анимация появления сообщений с задержкой
+            setTimeout(() => {
+                animations.slideIn(messageElement, msg.type === 'incoming' ? 'left' : 'right');
+            }, index * 100);
         });
         
         // Прокрутить вниз
         setTimeout(() => {
             container.scrollTop = container.scrollHeight;
-        }, 100);
+        }, 300);
     }
     
     function sendMessage() {
@@ -809,6 +1168,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const text = input.value.trim();
         const chatId = state.activeChat;
         const container = elements.messagesContainer;
+        
+        // Анимация отправки
+        animations.pulse(elements.sendBtn);
         
         // Добавить сообщение от пользователя
         const userMessage = {
@@ -835,6 +1197,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         container.appendChild(messageElement);
         input.value = '';
+        
+        // Анимация появления сообщения
+        setTimeout(() => {
+            animations.slideIn(messageElement, 'right');
+        }, 10);
         
         // Добавить в данные
         if (!appData.messages[chatId]) {
@@ -908,6 +1275,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         container.appendChild(messageElement);
         
+        // Анимация появления
+        setTimeout(() => {
+            animations.slideIn(messageElement, 'left');
+        }, 10);
+        
         // Прокрутить вниз
         setTimeout(() => {
             container.scrollTop = container.scrollHeight;
@@ -926,54 +1298,16 @@ document.addEventListener('DOMContentLoaded', function() {
         showNotification(randomSender, randomReply, 'info');
     }
     
-    function updateChatPreview(chatId, lastMessage) {
-        const chat = appData.chats.find(c => c.id === chatId);
-        if (chat) {
-            chat.lastMessage = lastMessage;
-            chat.time = getCurrentTime();
-            renderChats();
-        }
-    }
-    
-    // ========== ЭМОДЗИ ==========
-    function insertEmoji(emoji) {
-        const input = elements.messageInput;
-        if (!input) return;
-        
-        const cursorPos = input.selectionStart;
-        const textBefore = input.value.substring(0, cursorPos);
-        const textAfter = input.value.substring(cursorPos);
-        
-        input.value = textBefore + emoji + textAfter;
-        input.focus();
-        input.setSelectionRange(cursorPos + emoji.length, cursorPos + emoji.length);
-        
-        // Авторазмер textarea
-        input.style.height = 'auto';
-        input.style.height = (input.scrollHeight) + 'px';
-    }
-    
-    function toggleEmojiPanel() {
-        state.isEmojiPanelOpen = !state.isEmojiPanelOpen;
-        
-        if (state.isEmojiPanelOpen) {
-            elements.emojiPanel.classList.add('active');
-            elements.emojiToggleBtn.classList.add('active');
-        } else {
-            closeEmojiPanel();
-        }
-    }
-    
-    function closeEmojiPanel() {
-        state.isEmojiPanelOpen = false;
-        elements.emojiPanel.classList.remove('active');
-        elements.emojiToggleBtn.classList.remove('active');
-    }
-    
-    // ========== ВИДЕОКОНФЕРЕНЦИЯ ==========
+    // ========== ВИДЕОКОНФЕРЕНЦИЯ С АНИМАЦИЯМИ ==========
     function startConference() {
+        // Анимация кнопки
+        animations.pulse(elements.startConferenceBtn);
+        
         state.isConferenceActive = true;
         state.conferenceTimer = 0;
+        
+        // Анимация появления
+        animations.fadeIn(elements.conferencePanel);
         
         // Показать панель конференции
         elements.conferencePanel.classList.add('active');
@@ -995,37 +1329,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Остановить таймер
         stopConferenceTimer();
         
-        // Скрыть панель конференции
-        elements.conferencePanel.classList.remove('active');
-        elements.mainContent.style.display = 'flex';
+        // Анимация закрытия
+        animations.fadeIn(elements.mainContent);
+        
+        setTimeout(() => {
+            // Скрыть панель конференции
+            elements.conferencePanel.classList.remove('active');
+            elements.mainContent.style.display = 'flex';
+        }, 300);
         
         showNotification('Конференция', 'Конференция завершена', 'info');
-    }
-    
-    function startConferenceTimer() {
-        stopConferenceTimer();
-        
-        state.conferenceTimerInterval = setInterval(() => {
-            state.conferenceTimer++;
-            updateConferenceTimer();
-        }, 1000);
-    }
-    
-    function stopConferenceTimer() {
-        if (state.conferenceTimerInterval) {
-            clearInterval(state.conferenceTimerInterval);
-            state.conferenceTimerInterval = null;
-        }
-    }
-    
-    function updateConferenceTimer() {
-        const minutes = Math.floor(state.conferenceTimer / 60);
-        const seconds = state.conferenceTimer % 60;
-        const timerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        
-        if (elements.conferenceTimer) {
-            elements.conferenceTimer.textContent = timerText;
-        }
     }
     
     function renderConferenceParticipants() {
@@ -1047,74 +1360,49 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         container.appendChild(userParticipant);
+        animations.fadeIn(userParticipant);
         
         // Добавить контактов
-        appData.contacts.slice(0, 3).forEach(contact => {
-            const participant = document.createElement('div');
-            participant.className = 'participant-card';
-            participant.innerHTML = `
-                <div class="participant-avatar" style="background: ${contact.color}">
-                    ${contact.avatar}
-                </div>
-                <div class="participant-name">${contact.name}</div>
-                <div class="participant-status">
-                    <i class="fas fa-microphone-slash"></i>
-                </div>
-            `;
-            container.appendChild(participant);
+        appData.contacts.slice(0, 3).forEach((contact, index) => {
+            setTimeout(() => {
+                const participant = document.createElement('div');
+                participant.className = 'participant-card';
+                participant.innerHTML = `
+                    <div class="participant-avatar" style="background: ${contact.color}">
+                        ${contact.avatar}
+                    </div>
+                    <div class="participant-name">${contact.name}</div>
+                    <div class="participant-status">
+                        <i class="fas fa-microphone-slash"></i>
+                    </div>
+                `;
+                container.appendChild(participant);
+                animations.slideIn(participant, 'up');
+            }, index * 200);
         });
     }
     
-    // ========== ПРОФИЛЬ ==========
-    function openProfile() {
-        elements.profileModal.classList.add('active');
-        elements.profileModalOverlay.classList.add('active');
-    }
-    
-    function closeProfile() {
-        elements.profileModal.classList.remove('active');
-        elements.profileModalOverlay.classList.remove('active');
-    }
-    
-    // ========== ТЕМЫ ==========
-    function setTheme(theme) {
-        state.theme = theme;
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-        
-        // Обновить иконку
-        const icon = elements.themeToggle?.querySelector('i');
-        if (icon) {
-            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-        
-        // Обновить фон
-        document.body.style.background = theme === 'dark' ? '#0a0a0f' : '#f5f7ff';
-    }
-    
-    function toggleTheme() {
-        const newTheme = state.theme === 'dark' ? 'light' : 'dark';
-        setTheme(newTheme);
-        showNotification('Тема изменена', `Переключено на ${newTheme === 'dark' ? 'тёмную' : 'светлую'} тему`, 'info');
-    }
-    
-    // ========== УЗЛЫ ==========
+    // ========== ОБНОВЛЕННЫЕ ФУНКЦИИ ==========
     function switchNode(nodeId) {
         state.activeNode = nodeId;
         
-        // Обновить активный класс
+        // Обновить активный класс с анимацией
         document.querySelectorAll('.node-item').forEach(item => {
-            item.classList.remove('active');
             if (item.dataset.node === nodeId) {
                 item.classList.add('active');
+                animations.pulse(item);
+            } else {
+                item.classList.remove('active');
             }
         });
         
         // Обновить текущий узел
         updateCurrentNode();
         
-        // Перерисовать чаты
-        renderChats();
+        // Перерисовать чаты с анимацией
+        setTimeout(() => {
+            renderChats();
+        }, 200);
         
         // Показать уведомление
         const node = appData.nodes.find(n => n.id === nodeId);
@@ -1123,7 +1411,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // ========== УВЕДОМЛЕНИЯ ==========
+    function toggleTheme() {
+        animations.pulse(elements.themeToggle);
+        const newTheme = state.theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        showNotification('Тема изменена', `Переключено на ${newTheme === 'dark' ? 'тёмную' : 'светлую'} тему`, 'info');
+    }
+    
+    // ========== УВЕДОМЛЕНИЯ С АНИМАЦИЯМИ ==========
     function showNotification(title, message, type = 'info') {
         console.log(`📢 ${title}: ${message}`);
         
@@ -1155,6 +1450,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         container.appendChild(notification);
         
+        // Анимация появления
+        animations.slideIn(notification, 'right');
+        
         // Автоудаление через 5 секунд
         setTimeout(() => {
             if (notification.parentNode) {
@@ -1183,76 +1481,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // ========== ПОИСК ==========
-    function handleSearch() {
-        state.searchQuery = elements.globalSearch.value.trim();
-        renderChats();
-        
-        // Показать/скрыть кнопку очистки
-        if (elements.searchClear) {
-            if (state.searchQuery) {
-                elements.searchClear.style.display = 'flex';
-            } else {
-                elements.searchClear.style.display = 'none';
-            }
-        }
-    }
-    
-    function clearSearch() {
-        elements.globalSearch.value = '';
-        state.searchQuery = '';
-        renderChats();
-        if (elements.searchClear) {
-            elements.searchClear.style.display = 'none';
-        }
-    }
-    
-    // ========== ФИЛЬТРЫ И СОРТИРОВКА ==========
-    function setupFilters() {
-        elements.filterButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Убрать активный класс у всех
-                elements.filterButtons.forEach(b => b.classList.remove('active'));
-                // Добавить активный класс нажатой кнопке
-                btn.classList.add('active');
-                // Обновить фильтр
-                state.currentFilter = btn.dataset.filter;
-                // Перерисовать чаты
-                renderChats();
-            });
-        });
-        
-        elements.sortButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Убрать активный класс у всех
-                elements.sortButtons.forEach(b => b.classList.remove('active'));
-                // Добавить активный класс нажатой кнопке
-                btn.classList.add('active');
-                // Обновить сортировку
-                state.currentSort = btn.dataset.sort;
-                // Перерисовать чаты
-                renderChats();
-            });
-        });
-    }
-    
-    // ========== СИМУЛЯЦИЯ АКТИВНОСТИ ==========
-    function simulateActivity() {
-        // Случайные уведомления
-        const notifications = [
-            { title: 'Павел Дуров онлайн', message: 'Только что зашел в сеть', type: 'info' },
-            { title: 'Новое сообщение', message: 'У вас 3 новых сообщения', type: 'info' },
-            { title: 'CS2 Турнир', message: 'Регистрация заканчивается через 2 дня', type: 'warning' }
-        ];
-        
-        // Показать случайное уведомление каждые 30-60 секунд
-        setInterval(() => {
-            const randomNotif = notifications[Math.floor(Math.random() * notifications.length)];
-            showNotification(randomNotif.title, randomNotif.message, randomNotif.type);
-        }, 30000 + Math.random() * 30000);
-    }
-    
-    // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
+    // ========== ОБНОВЛЕННЫЕ ОБРАБОТЧИКИ ==========
     function setupEventListeners() {
         // Поиск
         if (elements.globalSearch) {
@@ -1274,11 +1503,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Кнопка закрытия чата
-        if (elements.closeChatBtn) {
-            elements.closeChatBtn.addEventListener('click', closeChat);
-        }
-        
         // Тема
         if (elements.themeToggle) {
             elements.themeToggle.addEventListener('click', toggleTheme);
@@ -1287,20 +1511,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Уведомления
         if (elements.notificationsBtn) {
             elements.notificationsBtn.addEventListener('click', () => {
+                animations.pulse(elements.notificationsBtn);
                 showNotification('Уведомления', 'У вас 3 новых уведомления', 'info');
-            });
-        }
-        
-        // Новый чат
-        if (elements.newChatBtn) {
-            elements.newChatBtn.addEventListener('click', () => {
-                showNotification('Новый чат', 'Выберите контакты для начала разговора', 'info');
-            });
-        }
-        
-        if (elements.startChatBtn) {
-            elements.startChatBtn.addEventListener('click', () => {
-                showNotification('Новый чат', 'Выберите контакты для начала разговора', 'info');
             });
         }
         
@@ -1316,39 +1528,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     sendMessage();
                 }
             });
-            
-            // Авторазмер textarea
-            elements.messageInput.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = (this.scrollHeight) + 'px';
-            });
         }
-        
-        // Эмодзи
-        if (elements.emojiToggleBtn) {
-            elements.emojiToggleBtn.addEventListener('click', toggleEmojiPanel);
-        }
-        
-        // Категории эмодзи
-        elements.emojiCategories?.forEach(category => {
-            category.addEventListener('click', function() {
-                elements.emojiCategories.forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                // Здесь можно реализовать фильтрацию эмодзи по категориям
-            });
-        });
         
         // Видеоконференция
         if (elements.startConferenceBtn) {
             elements.startConferenceBtn.addEventListener('click', startConference);
-        }
-        
-        if (elements.closeConferenceBtn) {
-            elements.closeConferenceBtn.addEventListener('click', closeConference);
-        }
-        
-        if (elements.confEndBtn) {
-            elements.confEndBtn.addEventListener('click', closeConference);
         }
         
         // Профиль
@@ -1356,49 +1540,9 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.profileCard.addEventListener('click', openProfile);
         }
         
-        if (elements.profileMenuBtn) {
-            elements.profileMenuBtn.addEventListener('click', openProfile);
-        }
-        
-        if (elements.closeProfileModal) {
-            elements.closeProfileModal.addEventListener('click', closeProfile);
-        }
-        
-        if (elements.profileModalOverlay) {
-            elements.profileModalOverlay.addEventListener('click', closeProfile);
-        }
-        
-        // Обновление активности
-        if (elements.refreshActivityBtn) {
-            elements.refreshActivityBtn.addEventListener('click', () => {
-                renderActivity();
-                showNotification('Активность', 'Список активности обновлен', 'info');
-            });
-        }
-        
-        // Фильтры и сортировка
-        setupFilters();
-        
-        // Клик вне элементов
-        document.addEventListener('click', (e) => {
-            // Закрытие панели эмодзи при клике вне
-            if (!e.target.closest('.emoji-panel') && !e.target.closest('#emoji-toggle-btn')) {
-                closeEmojiPanel();
-            }
-            
-            // Закрытие уведомлений при клике вне
-            if (!e.target.closest('.notification')) {
-                document.querySelectorAll('.notification').forEach(notif => {
-                    if (!notif.contains(e.target)) {
-                        notif.style.opacity = '0';
-                        setTimeout(() => {
-                            if (notif.parentNode) {
-                                notif.parentNode.removeChild(notif);
-                            }
-                        }, 300);
-                    }
-                });
-            }
+        // Добавляем ripple эффект ко всем кнопкам
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', animations.ripple);
         });
         
         // Адаптивность
@@ -1406,18 +1550,192 @@ document.addEventListener('DOMContentLoaded', function() {
         handleResize();
     }
     
-    function handleResize() {
-        state.isSidebarVisible = window.innerWidth > 768;
-        if (elements.sidebar) {
-            if (state.isSidebarVisible) {
-                elements.sidebar.style.transform = 'translateY(0)';
+    // ========== ОСТАЛЬНЫЕ ФУНКЦИИ ==========
+    function renderProfile() {
+        const user = appData.user;
+        const profileCard = elements.profileCard;
+        
+        if (profileCard) {
+            const avatar = profileCard.querySelector('.avatar');
+            const name = profileCard.querySelector('.profile-name');
+            const status = profileCard.querySelector('.profile-status');
+            
+            if (avatar) avatar.textContent = user.avatar;
+            if (name) name.textContent = user.name;
+            if (status) status.textContent = `${user.username} • ${user.status}`;
+        }
+    }
+    
+    function updateCurrentNode() {
+        const node = appData.nodes.find(n => n.id === state.activeNode);
+        if (!node) return;
+        
+        const container = elements.currentNode;
+        if (!container) return;
+        
+        const icon = container.querySelector('.node-icon');
+        const name = container.querySelector('.node-name');
+        const description = container.querySelector('.node-description');
+        
+        if (icon) {
+            icon.innerHTML = `<i class="${node.icon}"></i>`;
+            icon.style.background = `linear-gradient(135deg, ${node.color}, ${node.color}dd)`;
+            animations.pulse(icon);
+        }
+        if (name) name.textContent = node.name;
+        if (description) description.textContent = `${node.members} участников • ${node.online} онлайн`;
+    }
+    
+    function renderEmojis() {
+        const container = elements.emojiGrid;
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        Object.keys(appData.emojis).forEach(category => {
+            appData.emojis[category].forEach(emoji => {
+                const emojiElement = document.createElement('div');
+                emojiElement.className = 'emoji-item';
+                emojiElement.textContent = emoji;
+                emojiElement.dataset.emoji = emoji;
+                emojiElement.addEventListener('click', () => {
+                    animations.pulse(emojiElement);
+                    setTimeout(() => insertEmoji(emoji), 150);
+                });
+                container.appendChild(emojiElement);
+            });
+        });
+    }
+    
+    function updateChatPreview(chatId, lastMessage) {
+        const chat = appData.chats.find(c => c.id === chatId);
+        if (chat) {
+            chat.lastMessage = lastMessage;
+            chat.time = getCurrentTime();
+            renderChats();
+        }
+    }
+    
+    function insertEmoji(emoji) {
+        const input = elements.messageInput;
+        if (!input) return;
+        
+        const cursorPos = input.selectionStart;
+        const textBefore = input.value.substring(0, cursorPos);
+        const textAfter = input.value.substring(cursorPos);
+        
+        input.value = textBefore + emoji + textAfter;
+        input.focus();
+        input.setSelectionRange(cursorPos + emoji.length, cursorPos + emoji.length);
+        
+        // Авторазмер textarea
+        input.style.height = 'auto';
+        input.style.height = (input.scrollHeight) + 'px';
+    }
+    
+    function toggleEmojiPanel() {
+        state.isEmojiPanelOpen = !state.isEmojiPanelOpen;
+        
+        if (state.isEmojiPanelOpen) {
+            elements.emojiPanel.classList.add('active');
+            elements.emojiToggleBtn.classList.add('active');
+            animations.slideIn(elements.emojiPanel, 'up');
+        } else {
+            closeEmojiPanel();
+        }
+    }
+    
+    function closeEmojiPanel() {
+        state.isEmojiPanelOpen = false;
+        elements.emojiPanel.classList.remove('active');
+        elements.emojiToggleBtn.classList.remove('active');
+    }
+    
+    function startConferenceTimer() {
+        stopConferenceTimer();
+        
+        state.conferenceTimerInterval = setInterval(() => {
+            state.conferenceTimer++;
+            updateConferenceTimer();
+        }, 1000);
+    }
+    
+    function stopConferenceTimer() {
+        if (state.conferenceTimerInterval) {
+            clearInterval(state.conferenceTimerInterval);
+            state.conferenceTimerInterval = null;
+        }
+    }
+    
+    function updateConferenceTimer() {
+        const minutes = Math.floor(state.conferenceTimer / 60);
+        const seconds = state.conferenceTimer % 60;
+        const timerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (elements.conferenceTimer) {
+            elements.conferenceTimer.textContent = timerText;
+        }
+    }
+    
+    function openProfile() {
+        elements.profileModal.classList.add('active');
+        elements.profileModalOverlay.classList.add('active');
+        animations.fadeIn(elements.profileModal);
+        animations.fadeIn(elements.profileModalOverlay);
+    }
+    
+    function closeProfile() {
+        elements.profileModal.classList.remove('active');
+        elements.profileModalOverlay.classList.remove('active');
+    }
+    
+    function setTheme(theme) {
+        state.theme = theme;
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        
+        const icon = elements.themeToggle?.querySelector('i');
+        if (icon) {
+            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+    }
+    
+    function handleSearch() {
+        state.searchQuery = elements.globalSearch.value.trim();
+        renderChats();
+        
+        if (elements.searchClear) {
+            if (state.searchQuery) {
+                elements.searchClear.style.display = 'flex';
+                animations.fadeIn(elements.searchClear);
             } else {
-                elements.sidebar.style.transform = 'translateY(-100%)';
+                elements.searchClear.style.display = 'none';
             }
         }
     }
     
-    // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+    function clearSearch() {
+        elements.globalSearch.value = '';
+        state.searchQuery = '';
+        renderChats();
+        if (elements.searchClear) {
+            elements.searchClear.style.display = 'none';
+        }
+    }
+    
+    function simulateActivity() {
+        const notifications = [
+            { title: 'Павел Дуров онлайн', message: 'Только что зашел в сеть', type: 'info' },
+            { title: 'Новое сообщение', message: 'У вас 3 новых сообщения', type: 'info' },
+            { title: 'CS2 Турнир', message: 'Регистрация заканчивается через 2 дня', type: 'warning' }
+        ];
+        
+        setInterval(() => {
+            const randomNotif = notifications[Math.floor(Math.random() * notifications.length)];
+            showNotification(randomNotif.title, randomNotif.message, randomNotif.type);
+        }, 30000 + Math.random() * 30000);
+    }
+    
     function getCurrentTime() {
         const now = new Date();
         const hours = now.getHours().toString().padStart(2, '0');
@@ -1444,9 +1762,19 @@ document.addEventListener('DOMContentLoaded', function() {
         return colors[type] || colors.info;
     }
     
+    function handleResize() {
+        state.isSidebarVisible = window.innerWidth > 768;
+        if (elements.sidebar) {
+            if (state.isSidebarVisible) {
+                elements.sidebar.style.transform = 'translateY(0)';
+            } else {
+                elements.sidebar.style.transform = 'translateY(-100%)';
+            }
+        }
+    }
+    
     // ========== ГЛОБАЛЬНЫЕ ФУНКЦИИ ==========
     window.TelegramNodes = {
-        // Основные функции
         openChat: openChat,
         closeChat: closeChat,
         switchNode: switchNode,
@@ -1455,11 +1783,9 @@ document.addEventListener('DOMContentLoaded', function() {
         startConference: startConference,
         closeConference: closeConference,
         
-        // Данные
         getAppData: () => appData,
         getState: () => state,
         
-        // Тестовые функции
         test: () => {
             showNotification('Тест', 'Консольные команды работают!', 'success');
             console.log('📊 Состояние приложения:', state);
@@ -1483,17 +1809,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========== ЗАПУСК ==========
     try {
         init();
-        console.log('✅ Telegram Nodes успешно запущен!');
-        console.log('👤 Пользователь:', appData.user.name);
-        console.log('📱 Узлов:', appData.nodes.length);
-        console.log('💬 Чатов:', appData.chats.length);
-        console.log('🎮 Эмодзи:', Object.values(appData.emojis).flat().length);
-        console.log('🔧 Версия:', config.version);
-        
-        // Показать справку в консоли
-        setTimeout(() => {
-            console.log('💡 Используйте TelegramNodes.help() для списка команд');
-        }, 2000);
+        console.log('✅ Telegram Nodes успешно инициализирован!');
+        console.log('💡 Используйте TelegramNodes.help() для списка команд');
         
     } catch (error) {
         console.error('❌ Ошибка запуска:', error);
