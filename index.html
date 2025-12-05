@@ -751,5 +751,39 @@
     <!-- Скрипт -->
     <script src="script.js"></script>
     <script src="debug.js"></script>
+
+<!-- Кнопка для принудительного запуска -->
+<div style="position: fixed; bottom: 20px; right: 20px; z-index: 999999;">
+    <button onclick="forceStartApp()" style="background: #ff3b30; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+        🔧 Принудительный запуск
+    </button>
+</div>
+
+<script>
+function forceStartApp() {
+    console.log('🔧 Принудительный запуск приложения');
+    
+    // Скрываем прелоадер
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+        preloader.style.display = 'none';
+    }
+    
+    // Показываем форму входа
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.style.display = 'block';
+        loginForm.style.opacity = '1';
+    }
+    
+    // Пробуем запустить приложение
+    if (typeof initLoginSystem === 'function') {
+        initLoginSystem();
+    } else {
+        alert('Функция initLoginSystem не найдена');
+    }
+}
+</script>
+    
 </body>
 </html>
