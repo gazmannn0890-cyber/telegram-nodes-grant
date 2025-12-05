@@ -1,606 +1,566 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Nodes - Полная версия</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Telegram Nodes - Улучшенная версия Telegram</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
 </head>
 <body>
+    <!-- Частицы фона -->
+    <div id="particles-js"></div>
+    
     <!-- Прелоадер -->
-    <div id="preloader">
+    <div id="preloader" class="preloader active">
         <div class="preloader-content">
-            <div class="logo">
-                <div class="logo-icon">📱</div>
-                <h1>Telegram Nodes</h1>
+            <div class="preloader-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-sitemap"></i>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">Telegram</span>
+                    <span class="logo-subtitle">Nodes</span>
+                </div>
             </div>
-            <div class="loading-bar">
-                <div class="loading-progress" id="progress-fill"></div>
+            
+            <div class="loading-progress">
+                <div id="progress-fill" class="progress-fill"></div>
             </div>
+            
             <div class="loading-stats">
-                <div class="stat">
-                    <span class="stat-value" id="stat-chats">0</span>
-                    <span class="stat-label">Чатов</span>
+                <div class="stat-item">
+                    <i class="fas fa-comments"></i>
+                    <span id="stat-chats">0</span> чатов
                 </div>
-                <div class="stat">
-                    <span class="stat-value" id="stat-nodes">0</span>
-                    <span class="stat-label">Узлов</span>
+                <div class="stat-item">
+                    <i class="fas fa-sitemap"></i>
+                    <span id="stat-nodes">0</span> узлов
                 </div>
-                <div class="stat">
-                    <span class="stat-value" id="stat-online">0</span>
-                    <span class="stat-label">Онлайн</span>
+                <div class="stat-item">
+                    <i class="fas fa-wifi"></i>
+                    <span id="stat-online">0</span> онлайн
                 </div>
             </div>
+            
             <div class="loading-text">
-                <p>Загрузка ваших сообщений...</p>
-                <p class="version">v2.1 • Разработчик: Газман</p>
+                Загрузка ваших сообщений...
             </div>
         </div>
     </div>
-
-    <!-- Частицы для фона входа -->
-    <div id="particles-js" class="particles-container"></div>
-
+    
     <!-- Форма входа -->
-    <div id="login-form" class="login-form">
-        <div class="login-container">
+    <div id="login-form" class="login-container">
+        <div class="login-card">
             <div class="login-header">
-                <div class="logo">
-                    <div class="logo-icon">📱</div>
-                    <h1>Telegram Nodes</h1>
+                <div class="login-logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-sitemap"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">Telegram</span>
+                        <span class="logo-subtitle">Nodes</span>
+                    </div>
                 </div>
-                <p class="login-subtitle">Продвинутый мессенджер с системой узлов</p>
+                <div class="login-subtitle">
+                    Улучшенная версия Telegram с расширенными возможностями
+                </div>
             </div>
             
             <div class="login-body">
-                <div class="form-group">
-                    <label for="login-phone">Номер телефона</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-phone"></i>
-                        <input type="tel" id="login-phone" placeholder="+7 (900) 123-45-67" autocomplete="tel">
-                    </div>
+                <div class="input-group">
+                    <label for="login-phone">
+                        <i class="fas fa-phone"></i> Номер телефона
+                    </label>
+                    <input type="tel" id="login-phone" placeholder="+7 (900) 123-45-67" maxlength="18">
                 </div>
                 
-                <div class="form-group">
-                    <label for="login-password">Пароль</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="login-password" placeholder="Введите пароль" autocomplete="current-password">
-                        <button type="button" class="show-password" id="toggle-password">
+                <div class="input-group">
+                    <label for="login-password">
+                        <i class="fas fa-lock"></i> Пароль
+                    </label>
+                    <div class="password-wrapper">
+                        <input type="password" id="login-password" placeholder="Введите ваш пароль">
+                        <button type="button" id="toggle-password" class="btn-icon">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
                 </div>
                 
-                <div class="login-error" id="login-error"></div>
+                <div id="login-error" class="error-message" style="display: none;"></div>
                 
-                <button class="btn btn-primary btn-block" id="login-button">
-                    <i class="fab fa-telegram-plane"></i>
-                    Войти через Telegram
+                <button id="login-button" class="btn btn-primary btn-block">
+                    <i class="fab fa-telegram-plane"></i> Войти через Telegram
                 </button>
                 
-                <button class="btn btn-secondary btn-block" id="demo-login">
-                    <i class="fas fa-rocket"></i>
-                    Демо-вход (рекомендуется)
+                <div class="login-divider">
+                    <span>или</span>
+                </div>
+                
+                <button id="demo-login" class="btn btn-secondary btn-block">
+                    <i class="fas fa-rocket"></i> Демо-вход
                 </button>
                 
-                <div class="login-links">
-                    <a href="#" id="forgot-password">Забыли пароль?</a>
-                    <a href="#" id="register-link">Регистрация</a>
+                <div class="login-footer">
+                    <p>Впервые в Telegram Nodes? <a href="#">Зарегистрироваться</a></p>
+                    <p><a href="#">Забыли пароль?</a></p>
                 </div>
             </div>
             
-            <div class="login-footer">
-                <p class="login-info">
-                    <i class="fas fa-info-circle"></i>
-                    Для демо-входа используйте:<br>
-                    Телефон: <strong>+7 (900) 123-45-67</strong><br>
-                    Пароль: <strong>111111</strong>
-                </p>
+            <div id="login-loading" class="login-loading">
+                <div class="loading-progress">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="loading-text">Аутентификация...</div>
             </div>
         </div>
         
-        <!-- Индикатор загрузки входа -->
-        <div class="login-loading" id="login-loading">
-            <div class="loading-content">
-                <div class="loading-spinner">
-                    <i class="fas fa-spinner fa-spin"></i>
-                </div>
-                <p>Проверка авторизации...</p>
-                <div class="loading-bar">
-                    <div class="loading-progress"></div>
-                </div>
+        <div class="login-features">
+            <div class="feature">
+                <i class="fas fa-sitemap"></i>
+                <h3>Узлы</h3>
+                <p>Организуйте сообщества с помощью узлов</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-video"></i>
+                <h3>Конференции</h3>
+                <p>Групповые видеозвонки до 100 участников</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-robot"></i>
+                <h3>Боты</h3>
+                <p>Расширенные возможности с ботами</p>
             </div>
         </div>
     </div>
-
+    
     <!-- Основное приложение -->
-    <div id="app-container" class="app-container">
-        <!-- Сайдбар -->
+    <div id="app-container" class="app-container" style="display: none;">
+        <!-- Боковая панель -->
         <div id="sidebar" class="sidebar">
-            <!-- Профиль -->
-            <div class="profile-card" id="profile-card">
+            <!-- Профиль пользователя -->
+            <div id="profile-card" class="profile-card">
+                <div class="profile-avatar" style="background-color: #0088cc;">
+                    Г
+                </div>
                 <div class="profile-info">
-                    <div class="avatar">Г</div>
-                    <div class="profile-details">
-                        <h3 class="profile-name">Газман</h3>
-                        <p class="profile-status">@gazman • Основатель Telegram Nodes</p>
-                    </div>
-                    <button class="btn-icon profile-menu-btn" id="profile-menu-btn">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
+                    <div class="profile-name">Газман</div>
+                    <div class="profile-status">В сети</div>
                 </div>
-                <div class="profile-stats">
-                    <div class="stat-item">
-                        <span class="stat-value">156</span>
-                        <span class="stat-label">Чатов</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">7</span>
-                        <span class="stat-label">Узлов</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">1</span>
-                        <span class="stat-label">Онлайн</span>
-                    </div>
-                </div>
+                <button id="profile-menu-btn" class="btn-icon">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
             </div>
-
+            
             <!-- Поиск -->
-            <div class="search-container">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="global-search" placeholder="Поиск чатов, сообщений, файлов...">
-                    <button class="btn-icon" id="search-clear">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="search-results" id="search-results"></div>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="global-search" placeholder="Поиск...">
+                <button id="search-clear" class="btn-icon">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-
-            <!-- Узлы -->
-            <div class="sidebar-section">
+            <div id="search-results" class="search-results"></div>
+            
+            <!-- Текущий узел -->
+            <div id="current-node" class="current-node">
+                <div class="current-node-icon" style="background-color: #0088cc;">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="current-node-info">
+                    <div class="current-node-name">AlphaTeam</div>
+                    <div class="current-node-details">
+                        <span class="node-members">24 участников</span>
+                        <span class="node-online">12 онлайн</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Список узлов -->
+            <div class="nodes-section">
                 <div class="section-header">
-                    <h3>Узлы</h3>
-                    <button class="btn-icon" id="add-node-btn">
+                    <h3>Ваши узлы</h3>
+                    <button class="btn-icon">
                         <i class="fas fa-plus"></i>
                     </button>
                 </div>
-                <div class="nodes-list" id="nodes-list"></div>
+                <div id="nodes-list" class="nodes-list"></div>
             </div>
-
-            <!-- Текущий узел -->
-            <div class="current-node" id="current-node">
-                <div class="node-header">
-                    <div class="node-icon" style="background: #0088cc">
-                        <i class="fas fa-rocket"></i>
-                    </div>
-                    <div class="node-info">
-                        <h4 class="node-name">AlphaTeam</h4>
-                        <p class="node-description">Рабочая команда разработки</p>
-                    </div>
-                </div>
-                <div class="node-stats">
-                    <div class="node-stat">
-                        <i class="fas fa-users"></i>
-                        <span>24</span>
-                    </div>
-                    <div class="node-stat">
-                        <i class="fas fa-circle online-dot"></i>
-                        <span>12</span>
-                    </div>
-                    <div class="node-stat">
-                        <i class="fas fa-comment"></i>
-                        <span>3</span>
-                    </div>
-                </div>
-            </div>
-
+            
             <!-- Контакты -->
-            <div class="sidebar-section">
+            <div class="contacts-section">
                 <div class="section-header">
                     <h3>Контакты</h3>
-                    <button class="btn-icon" id="add-contact-btn">
-                        <i class="fas fa-plus"></i>
-                    </button>
+                    <span class="online-count">24 онлайн</span>
                 </div>
-                <div class="contacts-list" id="contacts-list"></div>
+                <div id="contacts-list" class="contacts-list"></div>
             </div>
-
+            
             <!-- Активность -->
-            <div class="sidebar-section">
+            <div class="activity-section">
                 <div class="section-header">
                     <h3>Активность</h3>
-                    <button class="btn-icon" id="refresh-activity-btn">
+                    <button id="refresh-activity-btn" class="btn-icon">
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </div>
-                <div class="activity-list" id="activity-list"></div>
+                <div id="activity-list" class="activity-list"></div>
             </div>
+            
+            <!-- Навигация -->
+            <nav class="main-nav">
+                <button id="nav-chats" class="nav-item active">
+                    <i class="fas fa-comments"></i>
+                    <span>Чаты</span>
+                </button>
+                <button id="nav-contacts" class="nav-item">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Контакты</span>
+                </button>
+                <button id="nav-calls" class="nav-item">
+                    <i class="fas fa-phone"></i>
+                    <span>Звонки</span>
+                </button>
+                <button id="nav-files" class="nav-item">
+                    <i class="fas fa-folder"></i>
+                    <span>Файлы</span>
+                </button>
+                <button id="settings-btn" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Настройки</span>
+                </button>
+            </nav>
         </div>
-
-        <!-- Основное содержимое -->
+        
+        <!-- Основной контент -->
         <div id="main-content" class="main-content">
-            <!-- Верхняя панель -->
-            <div class="top-bar">
-                <button class="btn-icon back-btn" id="back-btn">
+            <!-- Хедер -->
+            <header class="content-header">
+                <button id="back-btn" class="btn-icon">
                     <i class="fas fa-arrow-left"></i>
                 </button>
                 
-                <div class="top-bar-title">
-                    <h2 id="page-title">Чаты</h2>
-                    <p id="page-subtitle">Активный узел: AlphaTeam</p>
+                <div class="header-title">
+                    <h2 id="chats-title">Чаты</h2>
+                    <span id="chats-count" class="badge">156</span>
                 </div>
                 
-                <div class="top-bar-actions">
-                    <button class="btn-icon" id="theme-toggle" title="Сменить тему">
+                <div class="header-actions">
+                    <button id="notifications-btn" class="btn-icon">
+                        <i class="fas fa-bell"></i>
+                        <span id="notifications-badge" class="badge">3</span>
+                    </button>
+                    <button id="theme-toggle" class="btn-icon">
                         <i class="fas fa-moon"></i>
                     </button>
-                    <button class="btn-icon notification-btn" id="notifications-btn" title="Уведомления">
-                        <i class="fas fa-bell"></i>
-                    </button>
-                    <button class="btn-icon" id="new-chat-btn" title="Новый чат">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-primary" id="start-chat-btn">
-                        <i class="fas fa-comment-medical"></i>
-                        Начать чат
+                    <button id="new-chat-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Новый чат
                     </button>
                 </div>
-            </div>
-
+            </header>
+            
             <!-- Фильтры и сортировка -->
-            <div class="filters-container">
-                <div class="filters-row">
-                    <div class="filter-buttons">
-                        <button class="filter-btn active" data-filter="all">Все</button>
-                        <button class="filter-btn" data-filter="unread">Непрочитанные</button>
-                        <button class="filter-btn" data-filter="personal">Личные</button>
-                        <button class="filter-btn" data-filter="group">Группы</button>
-                        <button class="filter-btn" data-filter="channel">Каналы</button>
-                        <button class="filter-btn" data-filter="pinned">Закрепленные</button>
-                        <button class="filter-btn" data-filter="muted">Отключен звук</button>
-                    </div>
-                    
-                    <div class="sort-buttons">
-                        <button class="sort-btn active" data-sort="time">
-                            <i class="fas fa-clock"></i> По времени
-                        </button>
-                        <button class="sort-btn" data-sort="unread">
-                            <i class="fas fa-envelope"></i> По непрочитанным
-                        </button>
-                        <button class="sort-btn" data-sort="members">
-                            <i class="fas fa-users"></i> По участникам
-                        </button>
-                        <button class="sort-btn" data-sort="name">
-                            <i class="fas fa-sort-alpha-down"></i> По имени
-                        </button>
-                    </div>
+            <div class="content-filters">
+                <div class="filter-tabs">
+                    <button class="filter-btn active" data-filter="all">Все</button>
+                    <button class="filter-btn" data-filter="personal">Личные</button>
+                    <button class="filter-btn" data-filter="group">Группы</button>
+                    <button class="filter-btn" data-filter="unread">Непрочитанные</button>
+                    <button class="filter-btn" data-filter="archived">Архив</button>
+                </div>
+                
+                <div class="sort-options">
+                    <button class="sort-btn active" data-sort="time">
+                        <i class="fas fa-clock"></i> По времени
+                    </button>
+                    <button class="sort-btn" data-sort="unread">
+                        <i class="fas fa-envelope"></i> По непрочитанным
+                    </button>
                 </div>
             </div>
-
-            <!-- Чат-лист -->
-            <div class="chats-container" id="chats-container">
-                <!-- Чаты будут загружены здесь -->
-            </div>
-
-            <!-- Состояние пустого списка -->
-            <div class="empty-state" id="empty-state">
-                <div class="empty-state-content">
+            
+            <!-- Пустое состояние -->
+            <div id="empty-state" class="empty-state">
+                <div class="empty-state-icon">
                     <i class="fas fa-comments"></i>
-                    <h3>Нет чатов</h3>
-                    <p>Создайте новый чат или присоединитесь к существующему</p>
-                    <button class="btn btn-primary" id="create-first-chat">Создать чат</button>
                 </div>
+                <div class="empty-state-title">Чатов пока нет</div>
+                <div class="empty-state-subtitle">Создайте новый чат или дождитесь сообщений</div>
+                <button id="start-chat-btn" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Начать чат
+                </button>
             </div>
-
-            <!-- Разные вью (контакты, звонки, файлы) -->
+            
+            <!-- Список чатов -->
+            <div id="chats-container" class="chats-container"></div>
+            
+            <!-- Представления -->
             <div id="chats-view" class="content-view active"></div>
             <div id="contacts-view" class="content-view"></div>
             <div id="calls-view" class="content-view"></div>
             <div id="files-view" class="content-view"></div>
         </div>
-
+        
         <!-- Панель чата -->
         <div id="chat-panel" class="chat-panel">
-            <!-- Заголовок чата -->
+            <!-- Хедер чата -->
             <div class="chat-header">
-                <button class="btn-icon" id="close-chat-btn">
+                <button id="close-chat-btn" class="btn-icon">
                     <i class="fas fa-arrow-left"></i>
                 </button>
                 
                 <div class="chat-info">
-                    <div class="chat-avatar" id="chat-avatar">Д</div>
+                    <div id="chat-avatar" class="chat-avatar" style="background-color: #0088cc;">
+                        Д
+                    </div>
                     <div class="chat-details">
-                        <h3 id="chat-title">Дизайн-команда</h3>
-                        <p id="chat-status">8 участников • 5 онлайн</p>
+                        <div id="chat-title" class="chat-title">Дизайн-команда</div>
+                        <div id="chat-status" class="chat-status">8 участников, 5 онлайн</div>
                     </div>
                 </div>
                 
                 <div class="chat-actions">
-                    <button class="btn-icon" title="Позвонить">
+                    <button class="btn-icon">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="btn-icon">
                         <i class="fas fa-phone"></i>
                     </button>
-                    <button class="btn-icon" title="Видеозвонок">
+                    <button id="start-conference-btn" class="btn-icon">
                         <i class="fas fa-video"></i>
                     </button>
-                    <button class="btn-icon" title="Информация о чате">
-                        <i class="fas fa-info-circle"></i>
-                    </button>
-                    <button class="btn-icon" title="Меню">
+                    <button class="btn-icon">
                         <i class="fas fa-ellipsis-v"></i>
                     </button>
                 </div>
             </div>
-
-            <!-- Сообщения -->
-            <div class="messages-container" id="messages-container">
-                <!-- Сообщения будут загружены здесь -->
-            </div>
-
-            <!-- Панель ввода сообщения -->
-            <div class="message-input-container">
-                <div class="input-actions">
-                    <button class="btn-icon" id="file-upload-btn" title="Прикрепить файл">
+            
+            <!-- Контейнер сообщений -->
+            <div id="messages-container" class="messages-container"></div>
+            
+            <!-- Панель ввода -->
+            <div class="input-panel">
+                <!-- Панель ответа -->
+                <div class="reply-panel"></div>
+                
+                <div class="input-tools">
+                    <button id="file-upload-btn" class="btn-icon">
                         <i class="fas fa-paperclip"></i>
                     </button>
                     <input type="file" id="file-input" multiple style="display: none;">
                     
-                    <button class="btn-icon" id="voice-record-btn" title="Голосовое сообщение">
+                    <button id="voice-record-btn" class="btn-icon">
                         <i class="fas fa-microphone"></i>
                     </button>
                     
-                    <button class="btn-icon" id="poll-create-btn" title="Создать опрос">
-                        <i class="fas fa-poll"></i>
-                    </button>
-                    
-                    <button class="btn-icon" id="emoji-toggle-btn" title="Эмодзи">
+                    <button id="emoji-toggle-btn" class="btn-icon">
                         <i class="fas fa-smile"></i>
                     </button>
                     
-                    <button class="btn-icon" id="sticker-toggle-btn" title="Стикеры">
+                    <button id="sticker-toggle-btn" class="btn-icon">
                         <i class="fas fa-sticky-note"></i>
+                    </button>
+                    
+                    <button id="poll-create-btn" class="btn-icon">
+                        <i class="fas fa-poll"></i>
                     </button>
                 </div>
                 
                 <div class="message-input-wrapper">
                     <textarea 
                         id="message-input" 
-                        placeholder="Введите сообщение..." 
+                        class="message-input" 
+                        placeholder="Введите сообщение..."
                         rows="1"
-                        maxlength="4000"
                     ></textarea>
-                    
-                    <div class="input-tools">
-                        <span class="char-counter" id="char-counter">0/4000</span>
-                        <button class="btn-icon" id="send-btn" title="Отправить">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
+                    <button id="send-btn" class="btn-icon send-btn">
+                        <i class="fab fa-telegram-plane"></i>
+                    </button>
                 </div>
             </div>
-
+            
             <!-- Панель эмодзи -->
             <div id="emoji-panel" class="emoji-panel">
                 <div class="emoji-categories">
                     <button class="emoji-category active" data-category="smileys">
-                        <i class="fas fa-smile"></i>
+                        <i class="far fa-smile"></i>
                     </button>
                     <button class="emoji-category" data-category="people">
-                        <i class="fas fa-user"></i>
+                        <i class="far fa-user"></i>
                     </button>
                     <button class="emoji-category" data-category="nature">
-                        <i class="fas fa-leaf"></i>
+                        <i class="far fa-leaf"></i>
                     </button>
                     <button class="emoji-category" data-category="objects">
-                        <i class="fas fa-lightbulb"></i>
+                        <i class="far fa-lightbulb"></i>
                     </button>
                     <button class="emoji-category" data-category="symbols">
-                        <i class="fas fa-heart"></i>
-                    </button>
-                    <button class="emoji-category" data-category="flags">
-                        <i class="fas fa-flag"></i>
+                        <i class="far fa-heart"></i>
                     </button>
                 </div>
-                <div class="emoji-grid" id="emoji-grid"></div>
+                <div id="emoji-grid" class="emoji-grid"></div>
             </div>
-
+            
             <!-- Панель стикеров -->
             <div id="sticker-panel" class="sticker-panel">
-                <div class="sticker-grid" id="sticker-grid"></div>
+                <div class="sticker-categories">
+                    <button class="sticker-category active">Популярные</button>
+                    <button class="sticker-category">Недавние</button>
+                </div>
+                <div id="sticker-grid" class="sticker-grid"></div>
             </div>
-
+            
             <!-- Панель записи голоса -->
             <div id="voice-record-panel" class="voice-record-panel">
                 <div class="voice-record-content">
-                    <div class="record-indicator">
-                        <div class="pulsing-circle"></div>
+                    <div class="voice-record-icon">
                         <i class="fas fa-microphone"></i>
                     </div>
-                    <div class="record-timer" id="voice-record-timer">00:00</div>
-                    <div class="record-actions">
-                        <button class="btn-icon cancel-record" title="Отмена">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        <button class="btn-icon confirm-record" title="Отправить">
-                            <i class="fas fa-check"></i>
-                        </button>
-                    </div>
+                    <div id="voice-record-timer" class="voice-record-timer">00:00</div>
+                    <div class="voice-record-hint">Отпустите для отправки</div>
                 </div>
             </div>
         </div>
-
-        <!-- Панель видеоконференции -->
+        
+        <!-- Панель конференции -->
         <div id="conference-panel" class="conference-panel">
             <div class="conference-header">
                 <div class="conference-info">
-                    <h3>Видеоконференция</h3>
-                    <div class="conference-timer" id="conference-timer">00:00</div>
+                    <div id="conference-timer" class="conference-timer">00:00</div>
+                    <div class="conference-title">Видеоконференция</div>
                 </div>
-                <div class="conference-actions">
-                    <button class="btn-icon" id="conf-mute-btn" title="Вкл/Выкл микрофон">
-                        <i class="fas fa-microphone"></i>
-                    </button>
-                    <button class="btn-icon" id="conf-video-btn" title="Вкл/Выкл видео">
-                        <i class="fas fa-video"></i>
-                    </button>
-                    <button class="btn-icon" id="conf-end-btn" title="Завершить конференцию">
-                        <i class="fas fa-phone-slash"></i>
-                    </button>
-                    <button class="btn-icon" id="close-conference-btn" title="Свернуть">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="conference-grid" id="conference-grid">
-                <!-- Участники конференции будут здесь -->
-            </div>
-        </div>
-
-        <!-- Панель уведомлений -->
-        <div id="notifications-panel" class="notifications-panel">
-            <div class="notifications-header">
-                <h3>Уведомления</h3>
-                <button class="btn-icon close-notifications">
+                <button id="close-conference-btn" class="btn-icon">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="notifications-container" id="notifications-container">
-                <!-- Уведомления будут здесь -->
+            
+            <div id="conference-grid" class="conference-grid"></div>
+            
+            <div class="conference-controls">
+                <button id="conf-mute-btn" class="btn-icon btn-control">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button id="conf-video-btn" class="btn-icon btn-control active">
+                    <i class="fas fa-video"></i>
+                </button>
+                <button id="conf-end-btn" class="btn-icon btn-control btn-end">
+                    <i class="fas fa-phone-slash"></i>
+                </button>
             </div>
         </div>
-
-        <!-- Нижняя навигация (для мобильных устройств) -->
-        <div class="bottom-nav">
-            <button class="nav-btn active" id="nav-chats">
-                <i class="fas fa-comments"></i>
-                <span>Чаты</span>
-            </button>
-            <button class="nav-btn" id="nav-contacts">
-                <i class="fas fa-users"></i>
-                <span>Контакты</span>
-            </button>
-            <button class="nav-btn" id="nav-calls">
-                <i class="fas fa-phone"></i>
-                <span>Звонки</span>
-            </button>
-            <button class="nav-btn" id="nav-files">
-                <i class="fas fa-folder"></i>
-                <span>Файлы</span>
-            </button>
-            <button class="nav-btn" id="settings-btn">
-                <i class="fas fa-cog"></i>
-                <span>Настройки</span>
-            </button>
-        </div>
     </div>
-
+    
     <!-- Модальное окно профиля -->
-    <div id="profile-modal" class="modal">
-        <div class="modal-content">
+    <div id="profile-modal" class="modal-overlay">
+        <div class="modal profile-modal">
             <div class="modal-header">
-                <h3>Профиль пользователя</h3>
-                <button class="btn-icon close-modal" id="close-profile-modal">
+                <h2>Профиль</h2>
+                <button id="close-profile-modal" class="btn-icon">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="profile-modal-content">
-                    <div class="profile-modal-avatar">Г</div>
-                    <h2 class="profile-modal-name">Газман</h2>
-                    <p class="profile-modal-username">@gazman</p>
-                    <p class="profile-modal-status">Основатель Telegram Nodes</p>
-                    
-                    <div class="profile-section">
-                        <h4>О себе</h4>
-                        <p class="profile-modal-bio">Любитель кофе и технологий • Разработчик • Геймер • Дизайнер</p>
+            <div class="modal-content">
+                <div class="profile-modal-header">
+                    <div class="profile-modal-avatar" style="background-color: #0088cc;">
+                        Г
                     </div>
-                    
-                    <div class="profile-section">
-                        <h4>Контактная информация</h4>
-                        <div class="contact-info">
-                            <div class="contact-item">
-                                <i class="fas fa-phone"></i>
-                                <span class="profile-phone">+7 (900) 123-45-67</span>
-                            </div>
-                            <div class="contact-item">
-                                <i class="fas fa-envelope"></i>
-                                <span class="profile-email">gazman@telegram-nodes.com</span>
-                            </div>
-                            <div class="contact-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span class="profile-location">Москва, Россия</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="profile-section">
-                        <h4>Статистика</h4>
-                        <div class="profile-stats-grid">
-                            <!-- Статистика будет загружена здесь -->
-                        </div>
-                    </div>
-                    
-                    <div class="profile-section">
-                        <h4>Достижения</h4>
-                        <div class="achievements-grid">
-                            <!-- Достижения будут загружены здесь -->
+                    <div class="profile-modal-info">
+                        <div class="profile-modal-name">Газман</div>
+                        <div class="profile-modal-username">@gazman</div>
+                        <div class="profile-modal-status">
+                            <i class="fas fa-circle online"></i> В сети
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary">Редактировать профиль</button>
-                <button class="btn btn-primary">Сохранить изменения</button>
+                
+                <div class="profile-section">
+                    <h3>Информация</h3>
+                    <div class="profile-info-item">
+                        <i class="fas fa-id-card"></i>
+                        <div>
+                            <div class="info-label">Имя</div>
+                            <div class="info-value">Газман</div>
+                        </div>
+                    </div>
+                    <div class="profile-info-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <div class="info-label">Телефон</div>
+                            <div class="info-value">+7 (900) 123-45-67</div>
+                        </div>
+                    </div>
+                    <div class="profile-info-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <div class="info-label">Email</div>
+                            <div class="info-value">gazman@telegram-nodes.com</div>
+                        </div>
+                    </div>
+                    <div class="profile-info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <div class="info-label">Местоположение</div>
+                            <div class="info-value">Москва, Россия</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-section">
+                    <h3>Статистика</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">156</div>
+                            <div class="stat-label">Чатов</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Узлов</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">342</div>
+                            <div class="stat-label">Звонков</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">2.4 GB</div>
+                            <div class="stat-label">Хранилище</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-block btn-secondary">
+                    <i class="fas fa-edit"></i> Редактировать профиль
+                </button>
             </div>
         </div>
     </div>
-
+    
     <!-- Модальное окно настроек -->
-    <div id="settings-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Настройки</h3>
-                <button class="btn-icon close-modal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="settings-tabs">
-                    <button class="settings-tab active" data-tab="general">
-                        <i class="fas fa-cog"></i> Общие
-                    </button>
-                    <button class="settings-tab" data-tab="notifications">
-                        <i class="fas fa-bell"></i> Уведомления
-                    </button>
-                    <button class="settings-tab" data-tab="privacy">
-                        <i class="fas fa-shield-alt"></i> Приватность
-                    </button>
-                    <button class="settings-tab" data-tab="chat">
-                        <i class="fas fa-comments"></i> Чаты
-                    </button>
-                    <button class="settings-tab" data-tab="data">
-                        <i class="fas fa-database"></i> Данные
-                    </button>
-                </div>
-                <div class="settings-content">
-                    <!-- Содержимое настроек будет загружено здесь -->
-                </div>
-            </div>
-        </div>
+    <div id="settings-modal" class="modal-overlay">
+        <!-- Содержимое будет генерироваться через JavaScript -->
     </div>
-
-    <!-- Вспомогательные элементы -->
-    <div id="profile-modal-overlay" class="modal-overlay"></div>
-    <div id="reactions-panel" class="reactions-panel"></div>
+    
+    <!-- Уведомления -->
+    <div id="notifications-container" class="notifications-container"></div>
+    
+    <!-- Загрузки -->
     <div id="uploads-panel" class="uploads-panel"></div>
     <div id="downloads-panel" class="downloads-panel"></div>
-
+    
+    <!-- Реакции -->
+    <div id="reactions-panel" class="reactions-panel"></div>
+    
+    <!-- Опросы -->
+    <div id="poll-modal" class="modal-overlay">
+        <!-- Содержимое будет генерироваться через JavaScript -->
+    </div>
+    
     <!-- Скрипты -->
-    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script src="app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
