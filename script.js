@@ -1,1587 +1,883 @@
-// Telegram Nodes - Полностью исправленная версия с эффектами
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Telegram Nodes запускается...');
-    
-    // ========== КОНФИГУРАЦИЯ ==========
-    const config = {
-        appName: 'Telegram Nodes',
-        version: '2.1',
-        developer: 'Газман',
-        defaultTheme: 'dark',
-        features: {
-            nodes: true,
-            chats: true,
-            calls: true,
-            games: true,
-            notifications: true,
-            emoji: true,
-            conference: true
-        }
-    };
-    
-    // ========== ВИЗУАЛЬНЫЕ ЭФФЕКТЫ ==========
-    function createParticles() {
-        const particlesContainer = document.createElement('div');
-        particlesContainer.className = 'particles';
-        document.body.appendChild(particlesContainer);
-        
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            
-            const size = Math.random() * 4 + 1;
-            const colors = [
-                'var(--primary)',
-                'var(--secondary)',
-                'var(--cyan)',
-                'var(--pink)',
-                'var(--success)'
-            ];
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            particle.style.background = color;
-            particle.style.left = `${Math.random() * 100}%`;
-            particle.style.top = `${Math.random() * 100}%`;
-            particle.style.animationDelay = `${Math.random() * 20}s`;
-            
-            particlesContainer.appendChild(particle);
-        }
-    }
-    
-    function initParallax() {
-        const parallaxElements = document.querySelectorAll('.parallax');
-        
-        window.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth) - 0.5;
-            const y = (e.clientY / window.innerHeight) - 0.5;
-            
-            parallaxElements.forEach(el => {
-                const speed = parseFloat(el.dataset.speed) || 0.02;
-                el.style.transform = `translate(${x * speed * 100}px, ${y * speed * 100}px)`;
-            });
-        });
-    }
-    
-    function typeWriterEffect() {
-        const subtitle = document.querySelector('.preloader-subtitle');
-        if (!subtitle) return;
-        
-        const text = subtitle.textContent;
-        subtitle.textContent = '';
-        let i = 0;
-        
-        function typeChar() {
-            if (i < text.length) {
-                subtitle.textContent += text.charAt(i);
-                i++;
-                setTimeout(typeChar, 50);
-            }
+    // Инициализация приложения
+    class TelegramNodsApp {
+        constructor() {
+            this.initElements();
+            this.initData();
+            this.initEventListeners();
+            this.setupBackgroundEffects();
         }
         
-        setTimeout(typeChar, 1000);
-    }
-    
-    // ========== ДАННЫЕ ПРИЛОЖЕНИЯ ==========
-    const appData = {
-        user: {
-            id: 1,
-            name: 'Газман',
-            username: '@gazman',
-            avatar: 'Г',
-            status: 'Основатель Telegram Nodes',
-            online: true,
-            bio: 'Любитель кофе и технологий • Разработчик',
-            stats: {
-                chats: 156,
-                contacts: 48,
-                nodes: 7,
-                online: 1
-            }
-        },
+        initElements() {
+            // Основные элементы
+            this.preloader = document.getElementById('preloader');
+            this.loaderPlane = document.getElementById('loaderPlane');
+            this.loginForm = document.getElementById('loginForm');
+            this.loginBtn = document.getElementById('loginBtn');
+            this.loginInput = document.getElementById('loginInput');
+            this.passwordInput = document.getElementById('passwordInput');
+            this.mainContainer = document.getElementById('mainContainer');
+            this.chatsContainer = document.getElementById('chatsContainer');
+            
+            // Навигация
+            this.chatTypes = document.querySelectorAll('.chat-type');
+            this.currentChatType = document.getElementById('currentChatType');
+            this.chatCount = document.getElementById('chatCount');
+            this.searchInput = document.getElementById('searchInput');
+            
+            // Профиль и настройки
+            this.profileBtn = document.getElementById('profileBtn');
+            this.profileModal = document.getElementById('profileModal');
+            this.closeProfile = document.getElementById('closeProfile');
+            this.settingsBtn = document.getElementById('settingsBtn');
+            this.settingsModal = document.getElementById('settingsModal');
+            
+            // Непрочитанные сообщения
+            this.unreadSidebar = document.getElementById('unreadSidebar');
+            this.closeUnread = document.getElementById('closeUnread');
+            this.unreadMessagesList = document.getElementById('unreadMessagesList');
+            this.markAllRead = document.getElementById('markAllRead');
+            this.totalUnreadCount = document.getElementById('totalUnreadCount');
+            this.unreadSidebarCount = document.getElementById('unreadSidebarCount');
+            
+            // Текущее состояние
+            this.currentFilter = 'all';
+            this.currentSearch = '';
+            this.activeChatId = null;
+            this.isLoggedIn = false;
+            this.unreadMessages = {};
+        }
         
-        nodes: [
-            {
-                id: 'alpha',
-                name: 'AlphaTeam',
-                icon: 'fas fa-rocket',
-                color: '#0088cc',
-                description: 'Рабочая команда разработки',
-                members: 24,
-                online: 12,
-                unread: 3,
-                created: '2024-01-15'
-            },
-            {
-                id: 'game',
-                name: 'GameZone',
-                icon: 'fas fa-gamepad',
-                color: '#af52de',
-                description: 'Игровое сообщество',
-                members: 48,
-                online: 23,
-                unread: 0,
-                created: '2024-02-20'
-            },
-            {
-                id: 'family',
-                name: 'Family',
-                icon: 'fas fa-heart',
-                color: '#34c759',
-                description: 'Семейный чат',
-                members: 12,
-                online: 4,
-                unread: 1,
-                created: '2024-03-05'
-            },
-            {
-                id: 'design',
-                name: 'DesignHub',
-                icon: 'fas fa-palette',
-                color: '#ff9500',
-                description: 'Дизайн и креатив',
-                members: 18,
-                online: 8,
-                unread: 0,
-                created: '2024-03-10'
-            }
-        ],
-        
-        chats: [
-            {
-                id: 'design-team',
-                node: 'alpha',
-                name: 'Дизайн-команда',
-                type: 'group',
-                avatar: 'Д',
-                color: '#0088cc',
-                lastMessage: 'Обсуждаем новый UI для проекта...',
-                time: '12:30',
-                unread: 3,
-                members: 8,
-                online: 5,
-                pinned: true,
-                verified: false
-            },
-            {
-                id: 'reports-q3',
-                node: 'alpha',
-                name: 'Отчеты Q3',
-                type: 'channel',
-                avatar: 'О',
-                color: '#0088cc',
-                lastMessage: 'Все отчеты готовы к отправке',
-                time: 'Пт',
-                unread: 0,
-                members: 2,
-                online: 1,
-                pinned: false,
-                verified: true
-            },
-            {
-                id: 'cybersport',
-                node: 'game',
-                name: 'Киберспорт турнир',
-                type: 'group',
-                avatar: 'К',
-                color: '#af52de',
-                lastMessage: 'Стартуем в 20:00, не опаздывайте!',
-                time: '11:45',
-                unread: 0,
-                members: 24,
-                online: 16,
-                pinned: true,
-                verified: false
-            },
-            {
-                id: 'durov-chat',
-                node: 'alpha',
-                name: 'Павел Дуров',
-                type: 'personal',
-                avatar: 'ПД',
-                color: '#0088cc',
-                lastMessage: 'Новый функционал выглядит отлично!',
-                time: '10:30',
-                unread: 1,
-                members: 2,
-                online: 1,
-                pinned: true,
-                verified: true
-            },
-            {
-                id: 'cs2-tournament',
-                node: 'game',
-                name: 'CS2 Чемпионат',
-                type: 'group',
-                avatar: 'CS',
-                color: '#af52de',
-                lastMessage: 'Регистрация до 25 марта',
-                time: 'Вчера',
-                unread: 5,
-                members: 32,
-                online: 12,
-                pinned: false,
-                verified: true
-            },
-            {
-                id: 'family-chat',
-                node: 'family',
-                name: 'Семейный чат',
-                type: 'group',
-                avatar: 'С',
-                color: '#34c759',
-                lastMessage: 'Кто за пиццей сегодня?',
-                time: '09:15',
-                unread: 0,
-                members: 12,
-                online: 3,
-                pinned: false,
-                verified: false
-            }
-        ],
-        
-        contacts: [
-            {
-                id: 1,
-                name: 'Алексей',
-                avatar: 'А',
-                status: 'online',
-                lastSeen: 'только что',
-                activity: 'В звонке',
-                color: '#0088cc'
-            },
-            {
-                id: 2,
-                name: 'Мария',
-                avatar: 'М',
-                status: 'typing',
-                lastSeen: 'печатает...',
-                activity: 'Онлайн',
-                color: '#af52de'
-            },
-            {
-                id: 3,
-                name: 'Павел Дуров',
-                avatar: 'ПД',
-                status: 'online',
-                lastSeen: '5 мин назад',
-                activity: 'В конференции',
-                color: '#34c759',
-                verified: true
-            },
-            {
-                id: 4,
-                name: 'Дмитрий',
-                avatar: 'Д',
-                status: 'online',
-                lastSeen: '2 ч назад',
-                activity: 'CS2 онлайн',
-                color: '#ff9500'
-            },
-            {
-                id: 5,
-                name: 'Екатерина',
-                avatar: 'Е',
-                status: 'offline',
-                lastSeen: 'вчера',
-                activity: 'Был(-а) 2 дня назад',
-                color: '#ff3b30'
-            }
-        ],
-        
-        activity: [
-            {
-                id: 1,
-                user: 'Алексей',
-                action: 'calling',
-                text: 'Начинает звонок',
-                time: '2 мин назад',
-                icon: 'fas fa-phone'
-            },
-            {
-                id: 2,
-                user: 'Мария',
-                action: 'typing',
-                text: 'Печатает сообщение',
-                time: '5 мин назад',
-                icon: 'fas fa-keyboard'
-            },
-            {
-                id: 3,
-                user: 'Дмитрий',
-                action: 'gaming',
-                text: 'Играет в CS2',
-                time: '15 мин назад',
-                icon: 'fas fa-gamepad'
-            },
-            {
-                id: 4,
-                user: 'Павел Дуров',
-                action: 'conference',
-                text: 'В групповой конференции',
-                time: '30 мин назад',
-                icon: 'fas fa-users'
-            }
-        ],
-        
-        emojis: {
-            smileys: ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯'],
-            people: ['👋', '🤚', '🖐', '✋', '🖖', '👌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '👇', '☝️', '👍', '👎', '✊', '👊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✍️', '💅', '🤳', '💪', '🦵', '🦶', '👂', '🦻', '👃', '🧠', '🦷', '🦴', '👀', '👁️', '👅', '👄'],
-            nature: ['🐵', '🐒', '🦍', '🐶', '🐕', '🦮', '🐕‍🦺', '🐩', '🐺', '🦊', '🦝', '🐱', '🐈', '🦁', '🐯', '🐅', '🐆', '🐴', '🐎', '🦄', '🦓', '🦌', '🐮', '🐂', '🐃', '🐄', '🐷', '🐖', '🐗', '🐽', '🐏', '🐑', '🐐', '🐪', '🐫', '🦙', '🦒', '🐘', '🦏', '🦛', '🐭', '🐁', '🐀', '🐹', '🐰', '🐇', '🐿️'],
-            objects: ['⌚', '📱', '📲', '💻', '⌨️', '🖥️', '🖨️', '🖱️', '🖲️', '🎮', '🕹️', '🗜️', '💽', '💾', '💿', '📀', '📼', '📷', '📸', '📹', '🎥', '📽️', '🎞️', '📞', '☎️', '📟', '📠', '📺', '📻', '🎙️', '🎚️', '🎛️', '🧭', '⏱️', '⏲️', '⏰', '🕰️', '⌛', '⏳', '📡', '🔋', '🔌', '💡', '🔦', '🕯️', '🧯']
-        },
-        
-        messages: {
-            'design-team': [
+        initData() {
+            // Данные чатов
+            this.chatsData = [
                 {
                     id: 1,
-                    sender: 'Мария',
-                    text: 'Привет! Как продвигается работа над новым дизайном?',
-                    time: '12:15',
-                    type: 'incoming',
-                    status: 'read'
+                    title: "Alpha Team",
+                    type: "group",
+                    icon: "fas fa-users",
+                    description: "Основная команда разработки и управления нодами. Обсуждение технических вопросов и координация работы.",
+                    members: 24,
+                    lastActivity: "2 мин назад",
+                    unread: 3,
+                    unreadMessages: [
+                        { 
+                            id: 1,
+                            from: "Alex", 
+                            text: "Обновил конфигурацию нод, проверьте логи. На узлах 3-7 замечена повышенная нагрузка.", 
+                            time: "10:45",
+                            avatarColor: "#0088cc"
+                        },
+                        { 
+                            id: 2,
+                            from: "Maria", 
+                            text: "Новая версия клиента готова к тестированию. Нужны волонтеры для stress-тестов.", 
+                            time: "10:30",
+                            avatarColor: "#ff4757"
+                        },
+                        { 
+                            id: 3,
+                            from: "System", 
+                            text: "Обнаружена повышенная нагрузка на узлы 5-8. Рекомендуется проверить конфигурацию балансировки.", 
+                            time: "09:15",
+                            avatarColor: "#2ed573"
+                        }
+                    ],
+                    isPinned: true,
+                    isMuted: false
                 },
                 {
                     id: 2,
-                    sender: 'Вы',
-                    text: 'Почти закончили! Осталось сделать анимации переходов',
-                    time: '12:20',
-                    type: 'outgoing',
-                    status: 'read'
+                    title: "Beta Testers",
+                    type: "group",
+                    icon: "fas fa-vial",
+                    description: "Тестирование новых функций и отчеты об ошибках. Только для проверенных тестировщиков.",
+                    members: 156,
+                    lastActivity: "1 час назад",
+                    unread: 0,
+                    isPinned: false,
+                    isMuted: true
                 },
                 {
                     id: 3,
-                    sender: 'Алексей',
-                    text: 'Отлично! Когда сможете показать прототип?',
-                    time: '12:25',
-                    type: 'incoming',
-                    status: 'read'
-                }
-            ],
-            'durov-chat': [
-                {
-                    id: 1,
-                    sender: 'Павел Дуров',
-                    text: 'Привет! Вижу ты работаешь над новым интерфейсом для Telegram.',
-                    time: '18:45',
-                    type: 'incoming',
-                    status: 'read',
-                    verified: true
+                    title: "Security Alerts",
+                    type: "channel",
+                    icon: "fas fa-shield-alt",
+                    description: "Обновления безопасности и мониторинг угроз. Экстренные оповещения о vulnerabilities.",
+                    members: 89,
+                    lastActivity: "5 часов назад",
+                    unread: 1,
+                    unreadMessages: [
+                        { 
+                            id: 4,
+                            from: "Security Bot", 
+                            text: "Зафиксирована попытка несанкционированного доступа к ноде #12. IP заблокирован, инцидент расследуется.", 
+                            time: "08:20",
+                            avatarColor: "#ffa502"
+                        }
+                    ],
+                    isPinned: true,
+                    isMuted: false
                 },
                 {
-                    id: 2,
-                    sender: 'Вы',
-                    text: 'Да, Павел! Делаю улучшенную версию с узлами и конференциями.',
-                    time: '19:20',
-                    type: 'outgoing',
-                    status: 'read'
+                    id: 4,
+                    title: "Личные сообщения",
+                    type: "personal",
+                    icon: "fas fa-user",
+                    description: "Приватные обсуждения и конфиденциальные данные. Шифрование end-to-end.",
+                    members: 2,
+                    lastActivity: "Только что",
+                    unread: 5,
+                    unreadMessages: [
+                        { 
+                            id: 5,
+                            from: "Admin", 
+                            text: "Ваш запрос на повышение лимитов одобрен. Новые квоты вступят в силу с завтрашнего дня.", 
+                            time: "11:30",
+                            avatarColor: "#8ab4f8"
+                        },
+                        { 
+                            id: 6,
+                            from: "Support", 
+                            text: "Ответ на ваш тикет #4567: Проблема с синхронизацией нод решена. Перезапустите клиент для применения исправлений.", 
+                            time: "10:15",
+                            avatarColor: "#2ed573"
+                        },
+                        { 
+                            id: 7,
+                            from: "Partner", 
+                            text: "Предложение о сотрудничестве: готовы предоставить дополнительные ресурсы для вашей сети нод.", 
+                            time: "Вчера, 16:45",
+                            avatarColor: "#ff4757"
+                        },
+                        { 
+                            id: 8,
+                            from: "System", 
+                            text: "Ежемесячный отчет по активности нод готов. Ваши ноды обработали 45ТБ данных за последний месяц.", 
+                            time: "Вчера, 14:20",
+                            avatarColor: "#a0a0a0"
+                        },
+                        { 
+                            id: 9,
+                            from: "Notification", 
+                            text: "Запланированное обновление в 03:00. Ожидаются кратковременные перебои в работе некоторых нод.", 
+                            time: "Вчера, 12:10",
+                            avatarColor: "#ffa502"
+                        }
+                    ],
+                    isPinned: true,
+                    isMuted: false
+                },
+                {
+                    id: 5,
+                    title: "Техподдержка",
+                    type: "group",
+                    icon: "fas fa-headset",
+                    description: "Решение технических вопросов и консультации. Среднее время ответа: 15 минут.",
+                    members: 342,
+                    lastActivity: "3 часа назад",
+                    unread: 0,
+                    isPinned: false,
+                    isMuted: false
+                },
+                {
+                    id: 6,
+                    title: "Новости проекта",
+                    type: "channel",
+                    icon: "fas fa-bullhorn",
+                    description: "Официальные анонсы и обновления проекта. Подписка обязательна для всех участников.",
+                    members: 1245,
+                    lastActivity: "Вчера",
+                    unread: 2,
+                    unreadMessages: [
+                        { 
+                            id: 10,
+                            from: "News Bot", 
+                            text: "Выпущено обновление v2.3.1 с исправлениями критических уязвимостей. Обновление обязательно для всех нод.", 
+                            time: "Вчера, 18:30",
+                            avatarColor: "#0088cc"
+                        },
+                        { 
+                            id: 11,
+                            from: "News Bot", 
+                            text: "Запланированы технические работы на 15 декабря с 02:00 до 06:00. В это время возможны перебои в работе.", 
+                            time: "Вчера, 15:45",
+                            avatarColor: "#0088cc"
+                        }
+                    ],
+                    isPinned: false,
+                    isMuted: true
+                },
+                {
+                    id: 7,
+                    title: "Разработчики Core",
+                    type: "group",
+                    icon: "fas fa-code",
+                    description: "Обсуждение архитектуры и разработки ядра системы. Только для core разработчиков.",
+                    members: 12,
+                    lastActivity: "2 дня назад",
+                    unread: 0,
+                    isPinned: true,
+                    isMuted: false
+                },
+                {
+                    id: 8,
+                    title: "Мониторинг сети",
+                    type: "channel",
+                    icon: "fas fa-chart-line",
+                    description: "Графики нагрузки и статистика работы сети в реальном времени.",
+                    members: 67,
+                    lastActivity: "30 мин назад",
+                    unread: 1,
+                    unreadMessages: [
+                        { 
+                            id: 12,
+                            from: "Monitor Bot", 
+                            text: "Пиковая нагрузка на сеть достигла 85%. Рекомендуется добавить дополнительные ноды в кластер 3.", 
+                            time: "11:55",
+                            avatarColor: "#ffa502"
+                        }
+                    ],
+                    isPinned: false,
+                    isMuted: false
                 }
-            ]
+            ];
+            
+            // Инициализация непрочитанных сообщений
+            this.initializeUnreadMessages();
         }
-    };
-    
-    // ========== СОСТОЯНИЕ ПРИЛОЖЕНИЯ ==========
-    let state = {
-        theme: localStorage.getItem('theme') || config.defaultTheme,
-        activeNode: 'alpha',
-        activeChat: null,
-        searchQuery: '',
-        currentFilter: 'all',
-        currentSort: 'time',
-        notifications: [],
-        isSidebarVisible: window.innerWidth > 768,
-        isTyping: false,
-        isEmojiPanelOpen: false,
-        isConferenceActive: false,
-        conferenceTimer: 0,
-        conferenceTimerInterval: null
-    };
-    
-    // ========== DOM ЭЛЕМЕНТЫ ==========
-    const elements = {
-        // Прелоадер
-        preloader: document.getElementById('preloader'),
-        progressFill: document.getElementById('progress-fill'),
-        statChats: document.getElementById('stat-chats'),
-        statNodes: document.getElementById('stat-nodes'),
-        statOnline: document.getElementById('stat-online'),
         
-        // Основные контейнеры
-        appContainer: document.getElementById('app-container'),
-        sidebar: document.getElementById('sidebar'),
-        mainContent: document.getElementById('main-content'),
-        chatPanel: document.getElementById('chat-panel'),
-        conferencePanel: document.getElementById('conference-panel'),
-        
-        // Профиль
-        profileCard: document.getElementById('profile-card'),
-        profileMenuBtn: document.getElementById('profile-menu-btn'),
-        profileModal: document.getElementById('profile-modal'),
-        profileModalOverlay: document.getElementById('profile-modal-overlay'),
-        closeProfileModal: document.getElementById('close-profile-modal'),
-        
-        // Поиск
-        globalSearch: document.getElementById('global-search'),
-        searchClear: document.getElementById('search-clear'),
-        
-        // Узлы
-        nodesList: document.getElementById('nodes-list'),
-        currentNode: document.getElementById('current-node'),
-        
-        // Контакты
-        contactsList: document.getElementById('contacts-list'),
-        
-        // Активность
-        activityList: document.getElementById('activity-list'),
-        refreshActivityBtn: document.getElementById('refresh-activity-btn'),
-        
-        // Чаты
-        chatsContainer: document.getElementById('chats-container'),
-        emptyState: document.getElementById('empty-state'),
-        
-        // Хедер
-        backBtn: document.getElementById('back-btn'),
-        notificationsBtn: document.getElementById('notifications-btn'),
-        themeToggle: document.getElementById('theme-toggle'),
-        newChatBtn: document.getElementById('new-chat-btn'),
-        startChatBtn: document.getElementById('start-chat-btn'),
-        
-        // Фильтры
-        filterButtons: document.querySelectorAll('.filter-btn'),
-        sortButtons: document.querySelectorAll('.sort-btn'),
-        
-        // Чат панель
-        closeChatBtn: document.getElementById('close-chat-btn'),
-        chatAvatar: document.getElementById('chat-avatar'),
-        chatTitle: document.getElementById('chat-title'),
-        chatStatus: document.getElementById('chat-status'),
-        messagesContainer: document.getElementById('messages-container'),
-        messageInput: document.getElementById('message-input'),
-        sendBtn: document.getElementById('send-btn'),
-        emojiToggleBtn: document.getElementById('emoji-toggle-btn'),
-        emojiPanel: document.getElementById('emoji-panel'),
-        emojiGrid: document.getElementById('emoji-grid'),
-        emojiCategories: document.querySelectorAll('.emoji-category'),
-        
-        // Видеоконференция
-        startConferenceBtn: document.getElementById('start-conference-btn'),
-        closeConferenceBtn: document.getElementById('close-conference-btn'),
-        conferenceTimer: document.getElementById('conference-timer'),
-        conferenceGrid: document.getElementById('conference-grid'),
-        confMuteBtn: document.getElementById('conf-mute-btn'),
-        confVideoBtn: document.getElementById('conf-video-btn'),
-        confEndBtn: document.getElementById('conf-end-btn'),
-        
-        // Уведомления
-        notificationsContainer: document.getElementById('notifications-container')
-    };
-    
-    // ========== ИНИЦИАЛИЗАЦИЯ ==========
-    function init() {
-        console.log('🎯 Инициализация Telegram Nodes...');
-        
-        // Установка темы
-        setTheme(state.theme);
-        
-        // Создание фоновых эффектов
-        createParticles();
-        initParallax();
-        
-        // Загрузка прелоадера
-        simulatePreloader();
-        
-        // Рендер данных
-        renderProfile();
-        renderNodes();
-        renderContacts();
-        renderActivity();
-        updateCurrentNode();
-        renderChats();
-        renderEmojis();
-        
-        // Настройка обработчиков событий
-        setupEventListeners();
-        
-        // Показать приветственное уведомление
-        setTimeout(() => {
-            showNotification('Добро пожаловать, Газман!', 'Telegram Nodes готов к работе', 'success');
-        }, 1500);
-        
-        // Симулировать активность
-        simulateActivity();
-        
-        // Добавить эффект печатания в прелоадере
-        typeWriterEffect();
-    }
-    
-    // ========== ПРЕЛОАДЕР ==========
-    function simulatePreloader() {
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.random() * 15;
-            if (progress > 100) progress = 100;
+        initializeUnreadMessages() {
+            this.unreadMessages = {};
+            let totalUnread = 0;
             
-            elements.progressFill.style.width = `${progress}%`;
+            this.chatsData.forEach(chat => {
+                if (chat.unread > 0 && chat.unreadMessages) {
+                    this.unreadMessages[chat.id] = chat.unreadMessages;
+                    totalUnread += chat.unread;
+                }
+            });
             
-            // Обновление статистики
-            if (progress >= 25) {
-                elements.statChats.textContent = appData.user.stats.chats;
-            }
-            if (progress >= 50) {
-                elements.statNodes.textContent = appData.user.stats.nodes;
-            }
-            if (progress >= 75) {
-                elements.statOnline.textContent = appData.user.stats.online;
-            }
+            this.updateUnreadCount(totalUnread);
+        }
+        
+        initEventListeners() {
+            // Анимация загрузки
+            this.loaderPlane.addEventListener('click', () => this.handlePlaneClick());
             
-            if (progress >= 100) {
-                clearInterval(interval);
+            // Логин
+            this.loginBtn.addEventListener('click', () => this.handleLogin());
+            this.loginInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.handleLogin();
+            });
+            this.passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.handleLogin();
+            });
+            
+            // Фильтрация чатов
+            this.chatTypes.forEach(type => {
+                type.addEventListener('click', (e) => this.handleChatTypeFilter(e));
+            });
+            
+            // Поиск
+            this.searchInput.addEventListener('input', (e) => this.handleSearch(e));
+            
+            // Профиль
+            this.profileBtn.addEventListener('click', () => this.openProfileModal());
+            this.closeProfile.addEventListener('click', () => this.closeProfileModal());
+            this.profileModal.addEventListener('click', (e) => {
+                if (e.target === this.profileModal) this.closeProfileModal();
+            });
+            
+            // Настройки
+            this.settingsBtn.addEventListener('click', () => this.openSettingsModal());
+            
+            // Непрочитанные сообщения
+            this.closeUnread.addEventListener('click', () => this.closeUnreadSidebar());
+            this.markAllRead.addEventListener('click', () => this.markAllAsRead());
+            
+            // Закрытие модальных окон по ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    this.closeProfileModal();
+                    this.closeUnreadSidebar();
+                    if (this.settingsModal.classList.contains('active')) {
+                        this.settingsModal.classList.remove('active');
+                    }
+                }
+            });
+            
+            // Автоматический запуск анимации
+            setTimeout(() => {
+                if (!this.isLoggedIn) {
+                    this.loaderPlane.click();
+                }
+            }, 2000);
+        }
+        
+        setupBackgroundEffects() {
+            // Создаем анимированный фон
+            const bgEffects = document.createElement('div');
+            bgEffects.className = 'background-effects';
+            bgEffects.innerHTML = `
+                <div class="gradient-bg"></div>
+                <div class="floating-shapes">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            `;
+            document.body.insertBefore(bgEffects, document.body.firstChild);
+        }
+        
+        handlePlaneClick() {
+            // Анимация улетания самолетика
+            this.loaderPlane.style.animation = 'planeTakeoff 1s forwards';
+            this.loaderPlane.style.pointerEvents = 'none';
+            
+            // Показ формы входа
+            setTimeout(() => {
+                this.loginForm.classList.add('visible');
+                this.loginForm.style.opacity = '1';
+                this.loginForm.style.transform = 'translateY(0)';
+            }, 800);
+        }
+        
+        handleLogin() {
+            const login = this.loginInput.value.trim();
+            const password = this.passwordInput.value.trim();
+            
+            if (login === '900123456' && password === '111111') {
+                this.showSuccessLogin();
+            } else {
+                this.showErrorLogin();
+            }
+        }
+        
+        showSuccessLogin() {
+            this.loginForm.innerHTML = `
+                <div class="login-success">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Успешный вход!</h3>
+                    <p>Загрузка Telegram Nods...</p>
+                </div>
+            `;
+            
+            // Имитация загрузки
+            setTimeout(() => {
+                this.preloader.style.opacity = '0';
+                
                 setTimeout(() => {
-                    elements.preloader.classList.add('fade-out');
+                    this.preloader.classList.add('hidden');
+                    this.mainContainer.style.display = 'block';
+                    this.isLoggedIn = true;
+                    
+                    // Рендерим интерфейс
+                    this.renderChats();
+                    this.updateChatCount();
+                    
+                    // Плавное появление
                     setTimeout(() => {
-                        elements.preloader.style.display = 'none';
-                        elements.appContainer.style.opacity = '1';
-                        console.log('✅ Приложение загружено');
-                    }, 300);
+                        this.mainContainer.classList.add('active');
+                    }, 50);
+                    
+                    // Обновляем фон
+                    this.setupBackgroundEffects();
                 }, 500);
-            }
-        }, 100);
-    }
-    
-    // ========== РЕНДЕР ФУНКЦИИ ==========
-    function renderProfile() {
-        const user = appData.user;
-        const profileCard = elements.profileCard;
-        
-        if (profileCard) {
-            const avatar = profileCard.querySelector('.avatar');
-            const name = profileCard.querySelector('.profile-name');
-            const status = profileCard.querySelector('.profile-status');
-            
-            if (avatar) avatar.textContent = user.avatar;
-            if (name) name.textContent = user.name;
-            if (status) status.textContent = `${user.username} • ${user.status}`;
+            }, 1500);
         }
-    }
-    
-    function renderNodes() {
-        const container = elements.nodesList;
-        if (!container) return;
         
-        container.innerHTML = '';
-        
-        appData.nodes.forEach(node => {
-            const nodeElement = document.createElement('div');
-            nodeElement.className = `node-item glass-effect parallax ${state.activeNode === node.id ? 'active' : ''}`;
-            nodeElement.dataset.node = node.id;
-            nodeElement.dataset.speed = '0.01';
+        showErrorLogin() {
+            const originalHTML = this.loginForm.innerHTML;
             
-            nodeElement.innerHTML = `
-                <div class="node-icon" style="background: ${node.color}">
-                    <i class="${node.icon}"></i>
-                </div>
-                <div class="node-info">
-                    <div class="node-name">${node.name}</div>
-                    <div class="node-description">${node.members} участников • ${node.online} онлайн</div>
-                </div>
-                ${node.unread > 0 ? `<span class="unread-badge">${node.unread}</span>` : ''}
-            `;
+            // Эффект ошибки
+            this.loginForm.style.animation = 'none';
+            void this.loginForm.offsetWidth; // Trigger reflow
+            this.loginForm.style.animation = 'shake 0.5s ease';
             
-            nodeElement.addEventListener('click', () => switchNode(node.id));
-            container.appendChild(nodeElement);
-        });
-    }
-    
-    function renderContacts() {
-        const container = elements.contactsList;
-        if (!container) return;
-        
-        container.innerHTML = '';
-        
-        appData.contacts.forEach(contact => {
-            const contactElement = document.createElement('div');
-            contactElement.className = 'contact-item glass-effect ripple';
-            contactElement.dataset.contact = contact.id;
-            
-            contactElement.innerHTML = `
-                <div class="contact-avatar" style="background: ${contact.color}">
-                    ${contact.avatar}
-                    <div class="contact-status ${contact.status}"></div>
-                </div>
-                <div class="contact-info">
-                    <div class="contact-name">${contact.name} ${contact.verified ? '<i class="fas fa-check-circle" style="color: #34c759; font-size: 12px;"></i>' : ''}</div>
-                    <div class="contact-last-seen">${contact.lastSeen}</div>
-                </div>
-            `;
-            
-            contactElement.addEventListener('click', () => showNotification(contact.name, 'Открыть чат с контактом', 'info'));
-            container.appendChild(contactElement);
-        });
-    }
-    
-    function renderActivity() {
-        const container = elements.activityList;
-        if (!container) return;
-        
-        container.innerHTML = '';
-        
-        appData.activity.forEach(activity => {
-            const activityElement = document.createElement('div');
-            activityElement.className = 'activity-item glass-effect';
-            
-            activityElement.innerHTML = `
-                <div class="activity-icon">
-                    <i class="${activity.icon}"></i>
-                </div>
-                <div class="activity-info">
-                    <div class="activity-text">
-                        <strong>${activity.user}</strong> ${activity.text}
+            // Сообщение об ошибке
+            setTimeout(() => {
+                this.loginForm.innerHTML = `
+                    <div class="login-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Ошибка входа</h3>
+                        <p>Неверный логин или пароль</p>
+                        <button class="retry-btn" id="retryBtn">Попробовать снова</button>
                     </div>
-                    <div class="activity-time">${activity.time}</div>
-                </div>
-            `;
-            
-            container.appendChild(activityElement);
-        });
-    }
-    
-    function updateCurrentNode() {
-        const node = appData.nodes.find(n => n.id === state.activeNode);
-        if (!node) return;
-        
-        const container = elements.currentNode;
-        if (!container) return;
-        
-        const icon = container.querySelector('.node-icon');
-        const name = container.querySelector('.node-name');
-        const description = container.querySelector('.node-description');
-        
-        if (icon) {
-            icon.innerHTML = `<i class="${node.icon}"></i>`;
-            icon.style.background = `linear-gradient(135deg, ${node.color}, ${node.color}dd)`;
-        }
-        if (name) name.textContent = node.name;
-        if (description) description.textContent = `${node.members} участников • ${node.online} онлайн`;
-    }
-    
-    function renderChats() {
-        const container = elements.chatsContainer;
-        const emptyState = elements.emptyState;
-        
-        if (!container || !emptyState) return;
-        
-        // Фильтрация чатов
-        let filteredChats = appData.chats.filter(chat => {
-            // Фильтр по узлу
-            if (chat.node !== state.activeNode) return false;
-            
-            // Фильтр по поиску
-            if (state.searchQuery) {
-                const query = state.searchQuery.toLowerCase();
-                return chat.name.toLowerCase().includes(query) || 
-                       chat.lastMessage.toLowerCase().includes(query);
-            }
-            
-            // Индивидуальные фильтры
-            switch (state.currentFilter) {
-                case 'unread':
-                    return chat.unread > 0;
-                case 'personal':
-                    return chat.type === 'personal';
-                case 'group':
-                    return chat.type === 'group';
-                case 'channel':
-                    return chat.type === 'channel';
-                case 'pinned':
-                    return chat.pinned === true;
-                default:
-                    return true;
-            }
-        });
-        
-        // Сортировка
-        filteredChats.sort((a, b) => {
-            if (state.currentSort === 'unread') {
-                return b.unread - a.unread;
-            } else {
-                // Сортировка по времени
-                const timeOrder = { '12:30': 1, '11:45': 2, '10:30': 3, 'Пт': 4, 'Вчера': 5, '09:15': 6 };
-                return (timeOrder[a.time] || 99) - (timeOrder[b.time] || 99);
-            }
-        });
-        
-        container.innerHTML = '';
-        
-        if (filteredChats.length === 0) {
-            emptyState.classList.add('active');
-            return;
+                `;
+                
+                document.getElementById('retryBtn').addEventListener('click', () => {
+                    this.loginForm.innerHTML = originalHTML;
+                    this.initEventListeners(); // Re-attach listeners
+                });
+            }, 500);
         }
         
-        emptyState.classList.remove('active');
+        handleChatTypeFilter(e) {
+            const typeElement = e.currentTarget;
+            const type = typeElement.dataset.type;
+            
+            // Обновляем активный элемент
+            this.chatTypes.forEach(t => t.classList.remove('active'));
+            typeElement.classList.add('active');
+            
+            // Анимация перехода
+            this.chatsContainer.classList.add('fade-in');
+            
+            setTimeout(() => {
+                this.currentFilter = type;
+                this.renderChats();
+                this.updateChatCount();
+                
+                // Обновляем заголовок
+                const typeNames = {
+                    'all': 'Все чаты',
+                    'unread': 'Непрочитанные',
+                    'personal': 'Личные сообщения',
+                    'groups': 'Группы',
+                    'channels': 'Каналы'
+                };
+                
+                this.currentChatType.textContent = typeNames[type];
+                this.chatsContainer.classList.remove('fade-in');
+            }, 300);
+        }
         
-        filteredChats.forEach(chat => {
-            const chatCard = document.createElement('div');
-            chatCard.className = 'chat-card glass-effect parallax ripple';
-            chatCard.dataset.chatId = chat.id;
-            chatCard.dataset.speed = '0.02';
+        handleSearch(e) {
+            this.currentSearch = e.target.value.toLowerCase();
             
-            // Создание миниатюр участников
-            const memberAvatars = Array.from(
-                { length: Math.min(3, chat.members) }, 
-                (_, i) => `<div class="member-avatar">${i + 1}</div>`
-            ).join('');
+            // Дебаунс поиска
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(() => {
+                this.renderChats();
+                this.updateChatCount();
+            }, 300);
+        }
+        
+        renderChats() {
+            // Фильтрация чатов
+            let filteredChats = this.chatsData.filter(chat => {
+                // Фильтр по типу
+                if (this.currentFilter === 'unread' && chat.unread === 0) return false;
+                if (this.currentFilter === 'personal' && chat.type !== 'personal') return false;
+                if (this.currentFilter === 'groups' && chat.type !== 'group') return false;
+                if (this.currentFilter === 'channels' && chat.type !== 'channel') return false;
+                
+                // Фильтр по поиску
+                if (this.currentSearch) {
+                    const searchTerm = this.currentSearch.toLowerCase();
+                    return chat.title.toLowerCase().includes(searchTerm) ||
+                           chat.description.toLowerCase().includes(searchTerm);
+                }
+                
+                return true;
+            });
             
-            chatCard.innerHTML = `
-                <div class="chat-card-header">
-                    <div class="chat-avatar" style="background: ${chat.color}">
-                        ${chat.avatar}
+            // Сортировка: закрепленные сверху, затем по непрочитанным, затем по активности
+            filteredChats.sort((a, b) => {
+                if (a.isPinned !== b.isPinned) return b.isPinned - a.isPinned;
+                if (a.unread !== b.unread) return b.unread - a.unread;
+                return b.id - a.id; // Просто для демо, обычно по времени последнего сообщения
+            });
+            
+            // Очищаем контейнер
+            this.chatsContainer.innerHTML = '';
+            
+            // Рендерим чаты
+            filteredChats.forEach(chat => {
+                const chatElement = this.createChatElement(chat);
+                this.chatsContainer.appendChild(chatElement);
+            });
+            
+            // Анимация появления
+            this.animateChatsAppearance();
+        }
+        
+        createChatElement(chat) {
+            const chatElement = document.createElement('div');
+            chatElement.className = `chat-card ${this.activeChatId === chat.id ? 'active' : ''}`;
+            chatElement.dataset.id = chat.id;
+            
+            // Определяем иконку типа
+            const typeIcons = {
+                'group': 'fas fa-users',
+                'channel': 'fas fa-bullhorn',
+                'personal': 'fas fa-user'
+            };
+            
+            const typeNames = {
+                'group': 'Группа',
+                'channel': 'Канал',
+                'personal': 'Личные'
+            };
+            
+            chatElement.innerHTML = `
+                ${chat.isPinned ? '<div class="pinned-indicator"><i class="fas fa-thumbtack"></i></div>' : ''}
+                ${chat.isMuted ? '<div class="muted-indicator"><i class="fas fa-volume-mute"></i></div>' : ''}
+                
+                <div class="chat-header">
+                    <div class="chat-type-indicator">
+                        <i class="${typeIcons[chat.type] || 'fas fa-comment'}"></i>
+                        <span>${typeNames[chat.type]}</span>
                     </div>
-                    <div class="chat-info">
-                        <div class="chat-title-row">
-                            <h4 class="chat-name">${chat.name}</h4>
-                            <span class="chat-time">${chat.time}</span>
+                    ${chat.unread > 0 ? `
+                        <div class="unread-badge" data-chat-id="${chat.id}">
+                            ${chat.unread}
                         </div>
-                        <p class="chat-preview">${chat.lastMessage}</p>
-                    </div>
+                    ` : ''}
                 </div>
-                <div class="chat-card-footer">
+                
+                <h3 class="chat-title">${chat.title}</h3>
+                <p class="chat-description">${chat.description}</p>
+                
+                <div class="chat-meta">
                     <div class="chat-members">
-                        <div class="member-avatars">
-                            ${memberAvatars}
-                            ${chat.members > 3 ? `<div class="member-avatar">+${chat.members - 3}</div>` : ''}
-                        </div>
-                        <span>${chat.members} участников</span>
+                        <i class="fas fa-user-friends"></i>
+                        <span>${chat.members}</span>
                     </div>
-                    <div class="chat-badges">
-                        ${chat.pinned ? '<i class="fas fa-thumbtack" style="color: #ff9500; margin-right: 8px;"></i>' : ''}
-                        ${chat.unread > 0 ? `<span class="unread-badge">${chat.unread}</span>` : ''}
+                    <div class="last-activity">
+                        ${chat.lastActivity}
                     </div>
                 </div>
             `;
             
-            chatCard.addEventListener('click', () => openChat(chat.id));
-            container.appendChild(chatCard);
-        });
-    }
-    
-    function renderEmojis() {
-        const container = elements.emojiGrid;
-        if (!container) return;
-        
-        container.innerHTML = '';
-        
-        // Рендерим смайлики
-        Object.keys(appData.emojis).forEach(category => {
-            appData.emojis[category].forEach(emoji => {
-                const emojiElement = document.createElement('div');
-                emojiElement.className = 'emoji-item';
-                emojiElement.textContent = emoji;
-                emojiElement.dataset.emoji = emoji;
-                emojiElement.addEventListener('click', () => insertEmoji(emoji));
-                container.appendChild(emojiElement);
-            });
-        });
-    }
-    
-    // ========== ФУНКЦИИ ЧАТА ==========
-    function openChat(chatId) {
-        const chat = appData.chats.find(c => c.id === chatId);
-        if (!chat) return;
-        
-        state.activeChat = chatId;
-        
-        // Обновить UI
-        elements.mainContent.style.display = 'none';
-        elements.chatPanel.classList.add('active');
-        
-        // Обновить информацию о чате
-        elements.chatAvatar.textContent = chat.avatar;
-        elements.chatAvatar.style.background = chat.color;
-        elements.chatTitle.textContent = chat.name;
-        elements.chatStatus.textContent = `${chat.members} участников • ${chat.online} онлайн`;
-        
-        // Загрузить сообщения
-        loadMessages(chatId);
-        
-        // Сбросить непрочитанные
-        chat.unread = 0;
-        renderChats();
-        
-        // Фокус на поле ввода
-        setTimeout(() => {
-            elements.messageInput.focus();
-        }, 100);
-        
-        showNotification(`Чат "${chat.name}"`, 'Чат открыт', 'info');
-    }
-    
-    function closeChat() {
-        state.activeChat = null;
-        elements.chatPanel.classList.remove('active');
-        elements.mainContent.style.display = 'flex';
-        elements.messageInput.value = '';
-        closeEmojiPanel();
-    }
-    
-    function loadMessages(chatId) {
-        const container = elements.messagesContainer;
-        if (!container) return;
-        
-        const messages = appData.messages[chatId] || [];
-        container.innerHTML = '';
-        
-        // Добавить дату
-        const dateElement = document.createElement('div');
-        dateElement.className = 'message-date';
-        dateElement.innerHTML = '<span>Сегодня</span>';
-        container.appendChild(dateElement);
-        
-        messages.forEach(msg => {
-            const messageElement = document.createElement('div');
-            messageElement.className = `message ${msg.type}`;
+            // Обработчики событий
+            chatElement.addEventListener('click', (e) => this.handleChatClick(e, chat));
             
-            if (msg.type === 'incoming') {
-                messageElement.innerHTML = `
-                    <div class="message-avatar" style="background: ${getColorForName(msg.sender)}">
-                        ${msg.sender.charAt(0)}
-                    </div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="message-sender">${msg.sender} ${msg.verified ? '<i class="fas fa-check-circle" style="color: #34c759; font-size: 10px;"></i>' : ''}</span>
-                            <span class="message-time">${msg.time}</span>
-                        </div>
-                        <div class="message-text">${msg.text}</div>
-                    </div>
-                `;
-            } else {
-                messageElement.innerHTML = `
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="message-sender">Вы</span>
-                            <span class="message-time">${msg.time}</span>
-                        </div>
-                        <div class="message-text">${msg.text}</div>
-                    </div>
-                `;
-            }
-            
-            container.appendChild(messageElement);
-        });
-        
-        // Прокрутить вниз
-        setTimeout(() => {
-            container.scrollTop = container.scrollHeight;
-        }, 100);
-    }
-    
-    function sendMessage() {
-        const input = elements.messageInput;
-        if (!input || !input.value.trim() || !state.activeChat) return;
-        
-        const text = input.value.trim();
-        const chatId = state.activeChat;
-        const container = elements.messagesContainer;
-        
-        // Добавить сообщение от пользователя
-        const userMessage = {
-            id: Date.now(),
-            sender: 'Вы',
-            text: text,
-            time: getCurrentTime(),
-            type: 'outgoing',
-            status: 'sent'
-        };
-        
-        // Добавить в UI
-        const messageElement = document.createElement('div');
-        messageElement.className = 'message outgoing';
-        messageElement.innerHTML = `
-            <div class="message-content">
-                <div class="message-header">
-                    <span class="message-sender">Вы</span>
-                    <span class="message-time">${userMessage.time}</span>
-                </div>
-                <div class="message-text">${userMessage.text}</div>
-            </div>
-        `;
-        
-        container.appendChild(messageElement);
-        input.value = '';
-        
-        // Добавить в данные
-        if (!appData.messages[chatId]) {
-            appData.messages[chatId] = [];
-        }
-        appData.messages[chatId].push(userMessage);
-        
-        // Прокрутить вниз
-        setTimeout(() => {
-            container.scrollTop = container.scrollHeight;
-        }, 100);
-        
-        // Симулировать ответ
-        setTimeout(() => {
-            simulateReply(chatId);
-        }, 1000 + Math.random() * 2000);
-        
-        // Обновить список чатов
-        updateChatPreview(chatId, text);
-        
-        // Закрыть панель эмодзи
-        closeEmojiPanel();
-    }
-    
-    function simulateReply(chatId) {
-        const replies = [
-            'Понял вас!',
-            'Отличная идея!',
-            'Давайте обсудим подробнее',
-            'Согласен с вами',
-            'Интересный вопрос',
-            'Спасибо за информацию!',
-            'Жду продолжения'
-        ];
-        
-        const senders = ['Алексей', 'Мария', 'Павел Дуров', 'Дмитрий'];
-        const randomSender = senders[Math.floor(Math.random() * senders.length)];
-        const randomReply = replies[Math.floor(Math.random() * replies.length)];
-        
-        const replyMessage = {
-            id: Date.now(),
-            sender: randomSender,
-            text: randomReply,
-            time: getCurrentTime(),
-            type: 'incoming',
-            status: 'delivered'
-        };
-        
-        // Добавить в данные
-        if (!appData.messages[chatId]) {
-            appData.messages[chatId] = [];
-        }
-        appData.messages[chatId].push(replyMessage);
-        
-        // Добавить в UI
-        const container = elements.messagesContainer;
-        const messageElement = document.createElement('div');
-        messageElement.className = 'message incoming';
-        messageElement.innerHTML = `
-            <div class="message-avatar" style="background: ${getColorForName(randomSender)}">
-                ${randomSender.charAt(0)}
-            </div>
-            <div class="message-content">
-                <div class="message-header">
-                    <span class="message-sender">${randomSender}</span>
-                    <span class="message-time">${replyMessage.time}</span>
-                </div>
-                <div class="message-text">${replyMessage.text}</div>
-            </div>
-        `;
-        
-        container.appendChild(messageElement);
-        
-        // Прокрутить вниз
-        setTimeout(() => {
-            container.scrollTop = container.scrollHeight;
-        }, 100);
-        
-        // Обновить список чатов
-        const chat = appData.chats.find(c => c.id === chatId);
-        if (chat) {
-            chat.lastMessage = randomReply;
-            chat.time = replyMessage.time;
-            chat.unread = (chat.unread || 0) + 1;
-            renderChats();
-        }
-        
-        // Показать уведомление
-        showNotification(randomSender, randomReply, 'info');
-    }
-    
-    function updateChatPreview(chatId, lastMessage) {
-        const chat = appData.chats.find(c => c.id === chatId);
-        if (chat) {
-            chat.lastMessage = lastMessage;
-            chat.time = getCurrentTime();
-            renderChats();
-        }
-    }
-    
-    // ========== ЭМОДЗИ ==========
-    function insertEmoji(emoji) {
-        const input = elements.messageInput;
-        if (!input) return;
-        
-        const cursorPos = input.selectionStart;
-        const textBefore = input.value.substring(0, cursorPos);
-        const textAfter = input.value.substring(cursorPos);
-        
-        input.value = textBefore + emoji + textAfter;
-        input.focus();
-        input.setSelectionRange(cursorPos + emoji.length, cursorPos + emoji.length);
-        
-        // Авторазмер textarea
-        input.style.height = 'auto';
-        input.style.height = (input.scrollHeight) + 'px';
-    }
-    
-    function toggleEmojiPanel() {
-        state.isEmojiPanelOpen = !state.isEmojiPanelOpen;
-        
-        if (state.isEmojiPanelOpen) {
-            elements.emojiPanel.classList.add('active');
-            elements.emojiToggleBtn.classList.add('active');
-        } else {
-            closeEmojiPanel();
-        }
-    }
-    
-    function closeEmojiPanel() {
-        state.isEmojiPanelOpen = false;
-        elements.emojiPanel.classList.remove('active');
-        elements.emojiToggleBtn.classList.remove('active');
-    }
-    
-    // ========== ВИДЕОКОНФЕРЕНЦИЯ ==========
-    function startConference() {
-        state.isConferenceActive = true;
-        state.conferenceTimer = 0;
-        
-        // Показать панель конференции
-        elements.conferencePanel.classList.add('active');
-        elements.mainContent.style.display = 'none';
-        elements.chatPanel.classList.remove('active');
-        
-        // Запустить таймер
-        startConferenceTimer();
-        
-        // Загрузить участников
-        renderConferenceParticipants();
-        
-        showNotification('Конференция', 'Конференция началась', 'success');
-    }
-    
-    function closeConference() {
-        state.isConferenceActive = false;
-        
-        // Остановить таймер
-        stopConferenceTimer();
-        
-        // Скрыть панель конференции
-        elements.conferencePanel.classList.remove('active');
-        elements.mainContent.style.display = 'flex';
-        
-        showNotification('Конференция', 'Конференция завершена', 'info');
-    }
-    
-    function startConferenceTimer() {
-        stopConferenceTimer();
-        
-        state.conferenceTimerInterval = setInterval(() => {
-            state.conferenceTimer++;
-            updateConferenceTimer();
-        }, 1000);
-    }
-    
-    function stopConferenceTimer() {
-        if (state.conferenceTimerInterval) {
-            clearInterval(state.conferenceTimerInterval);
-            state.conferenceTimerInterval = null;
-        }
-    }
-    
-    function updateConferenceTimer() {
-        const minutes = Math.floor(state.conferenceTimer / 60);
-        const seconds = state.conferenceTimer % 60;
-        const timerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        
-        if (elements.conferenceTimer) {
-            elements.conferenceTimer.textContent = timerText;
-        }
-    }
-    
-    function renderConferenceParticipants() {
-        const container = elements.conferenceGrid;
-        if (!container) return;
-        
-        container.innerHTML = '';
-        
-        // Добавить пользователя
-        const userParticipant = document.createElement('div');
-        userParticipant.className = 'participant-card glass-effect active-speaker';
-        userParticipant.innerHTML = `
-            <div class="participant-avatar" style="background: var(--gradient-primary)">
-                Г
-            </div>
-            <div class="participant-name">Вы (Ведущий)</div>
-            <div class="participant-status">
-                <i class="fas fa-microphone"></i>
-            </div>
-        `;
-        container.appendChild(userParticipant);
-        
-        // Добавить контактов
-        appData.contacts.slice(0, 3).forEach(contact => {
-            const participant = document.createElement('div');
-            participant.className = 'participant-card glass-effect';
-            participant.innerHTML = `
-                <div class="participant-avatar" style="background: ${contact.color}">
-                    ${contact.avatar}
-                </div>
-                <div class="participant-name">${contact.name}</div>
-                <div class="participant-status">
-                    <i class="fas fa-microphone-slash"></i>
-                </div>
-            `;
-            container.appendChild(participant);
-        });
-    }
-    
-    // ========== ПРОФИЛЬ ==========
-    function openProfile() {
-        elements.profileModal.classList.add('active');
-        elements.profileModalOverlay.classList.add('active');
-    }
-    
-    function closeProfile() {
-        elements.profileModal.classList.remove('active');
-        elements.profileModalOverlay.classList.remove('active');
-    }
-    
-    // ========== ТЕМЫ ==========
-    function setTheme(theme) {
-        state.theme = theme;
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-        
-        // Обновить иконку
-        const icon = elements.themeToggle?.querySelector('i');
-        if (icon) {
-            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-        
-        // Обновить фон
-        document.body.style.background = theme === 'dark' ? '#0a0a0f' : '#f5f7ff';
-    }
-    
-    function toggleTheme() {
-        const newTheme = state.theme === 'dark' ? 'light' : 'dark';
-        setTheme(newTheme);
-        showNotification('Тема изменена', `Переключено на ${newTheme === 'dark' ? 'тёмную' : 'светлую'} тему`, 'info');
-    }
-    
-    // ========== УЗЛЫ ==========
-    function switchNode(nodeId) {
-        state.activeNode = nodeId;
-        
-        // Обновить активный класс
-        document.querySelectorAll('.node-item').forEach(item => {
-            item.classList.remove('active');
-            if (item.dataset.node === nodeId) {
-                item.classList.add('active');
-            }
-        });
-        
-        // Обновить текущий узел
-        updateCurrentNode();
-        
-        // Перерисовать чаты
-        renderChats();
-        
-        // Показать уведомление
-        const node = appData.nodes.find(n => n.id === nodeId);
-        if (node) {
-            showNotification(`Узел "${node.name}"`, node.description, 'info');
-        }
-    }
-    
-    // ========== УВЕДОМЛЕНИЯ ==========
-    function showNotification(title, message, type = 'info') {
-        console.log(`📢 ${title}: ${message}`);
-        
-        const container = elements.notificationsContainer;
-        if (!container) return;
-        
-        const notification = document.createElement('div');
-        notification.className = 'notification';
-        
-        const iconMap = {
-            'info': 'fas fa-info-circle',
-            'success': 'fas fa-check-circle',
-            'warning': 'fas fa-exclamation-circle',
-            'error': 'fas fa-times-circle'
-        };
-        
-        notification.innerHTML = `
-            <div class="notification-icon" style="background: ${getColorForType(type)}">
-                <i class="${iconMap[type] || iconMap.info}"></i>
-            </div>
-            <div class="notification-content">
-                <h4 class="notification-title">${title}</h4>
-                <p class="notification-message">${message}</p>
-            </div>
-            <button class="notification-close glass-effect ripple">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-        
-        container.appendChild(notification);
-        
-        // Автоудаление через 5 секунд
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateX(100px)';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }
-        }, 5000);
-        
-        // Обработчик закрытия
-        const closeBtn = notification.querySelector('.notification-close');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateX(100px)';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            });
-        }
-    }
-    
-    // ========== ПОИСК ==========
-    function handleSearch() {
-        state.searchQuery = elements.globalSearch.value.trim();
-        renderChats();
-        
-        // Показать/скрыть кнопку очистки
-        if (elements.searchClear) {
-            if (state.searchQuery) {
-                elements.searchClear.style.display = 'flex';
-            } else {
-                elements.searchClear.style.display = 'none';
-            }
-        }
-    }
-    
-    function clearSearch() {
-        elements.globalSearch.value = '';
-        state.searchQuery = '';
-        renderChats();
-        if (elements.searchClear) {
-            elements.searchClear.style.display = 'none';
-        }
-    }
-    
-    // ========== ФИЛЬТРЫ И СОРТИРОВКА ==========
-    function setupFilters() {
-        elements.filterButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Убрать активный класс у всех
-                elements.filterButtons.forEach(b => b.classList.remove('active'));
-                // Добавить активный класс нажатой кнопке
-                btn.classList.add('active');
-                // Обновить фильтр
-                state.currentFilter = btn.dataset.filter;
-                // Перерисовать чаты
-                renderChats();
-            });
-        });
-        
-        elements.sortButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Убрать активный класс у всех
-                elements.sortButtons.forEach(b => b.classList.remove('active'));
-                // Добавить активный класс нажатой кнопке
-                btn.classList.add('active');
-                // Обновить сортировку
-                state.currentSort = btn.dataset.sort;
-                // Перерисовать чаты
-                renderChats();
-            });
-        });
-    }
-    
-    // ========== СИМУЛЯЦИЯ АКТИВНОСТИ ==========
-    function simulateActivity() {
-        // Случайные уведомления
-        const notifications = [
-            { title: 'Павел Дуров онлайн', message: 'Только что зашел в сеть', type: 'info' },
-            { title: 'Новое сообщение', message: 'У вас 3 новых сообщения', type: 'info' },
-            { title: 'CS2 Турнир', message: 'Регистрация заканчивается через 2 дня', type: 'warning' }
-        ];
-        
-        // Показать случайное уведомление каждые 30-60 секунд
-        setInterval(() => {
-            const randomNotif = notifications[Math.floor(Math.random() * notifications.length)];
-            showNotification(randomNotif.title, randomNotif.message, randomNotif.type);
-        }, 30000 + Math.random() * 30000);
-    }
-    
-    // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
-    function setupEventListeners() {
-        // Поиск
-        if (elements.globalSearch) {
-            elements.globalSearch.addEventListener('input', handleSearch);
-        }
-        
-        if (elements.searchClear) {
-            elements.searchClear.addEventListener('click', clearSearch);
-        }
-        
-        // Кнопка "Назад"
-        if (elements.backBtn) {
-            elements.backBtn.addEventListener('click', () => {
-                if (state.activeChat) {
-                    closeChat();
-                } else if (state.isConferenceActive) {
-                    closeConference();
-                }
-            });
-        }
-        
-        // Кнопка закрытия чата
-        if (elements.closeChatBtn) {
-            elements.closeChatBtn.addEventListener('click', closeChat);
-        }
-        
-        // Тема
-        if (elements.themeToggle) {
-            elements.themeToggle.addEventListener('click', toggleTheme);
-        }
-        
-        // Уведомления
-        if (elements.notificationsBtn) {
-            elements.notificationsBtn.addEventListener('click', () => {
-                showNotification('Уведомления', 'У вас 3 новых уведомления', 'info');
-            });
-        }
-        
-        // Новый чат
-        if (elements.newChatBtn) {
-            elements.newChatBtn.addEventListener('click', () => {
-                showNotification('Новый чат', 'Выберите контакты для начала разговора', 'info');
-            });
-        }
-        
-        if (elements.startChatBtn) {
-            elements.startChatBtn.addEventListener('click', () => {
-                showNotification('Новый чат', 'Выберите контакты для начала разговора', 'info');
-            });
-        }
-        
-        // Отправка сообщения
-        if (elements.sendBtn) {
-            elements.sendBtn.addEventListener('click', sendMessage);
-        }
-        
-        if (elements.messageInput) {
-            elements.messageInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-            
-            // Авторазмер textarea
-            elements.messageInput.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = (this.scrollHeight) + 'px';
-            });
-        }
-        
-        // Эмодзи
-        if (elements.emojiToggleBtn) {
-            elements.emojiToggleBtn.addEventListener('click', toggleEmojiPanel);
-        }
-        
-        // Категории эмодзи
-        elements.emojiCategories?.forEach(category => {
-            category.addEventListener('click', function() {
-                elements.emojiCategories.forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                // Здесь можно реализовать фильтрацию эмодзи по категориям
-            });
-        });
-        
-        // Видеоконференция
-        if (elements.startConferenceBtn) {
-            elements.startConferenceBtn.addEventListener('click', startConference);
-        }
-        
-        if (elements.closeConferenceBtn) {
-            elements.closeConferenceBtn.addEventListener('click', closeConference);
-        }
-        
-        if (elements.confEndBtn) {
-            elements.confEndBtn.addEventListener('click', closeConference);
-        }
-        
-        // Профиль
-        if (elements.profileCard) {
-            elements.profileCard.addEventListener('click', openProfile);
-        }
-        
-        if (elements.profileMenuBtn) {
-            elements.profileMenuBtn.addEventListener('click', openProfile);
-        }
-        
-        if (elements.closeProfileModal) {
-            elements.closeProfileModal.addEventListener('click', closeProfile);
-        }
-        
-        if (elements.profileModalOverlay) {
-            elements.profileModalOverlay.addEventListener('click', closeProfile);
-        }
-        
-        // Обновление активности
-        if (elements.refreshActivityBtn) {
-            elements.refreshActivityBtn.addEventListener('click', () => {
-                renderActivity();
-                showNotification('Активность', 'Список активности обновлен', 'info');
-            });
-        }
-        
-        // Фильтры и сортировка
-        setupFilters();
-        
-        // Клик вне элементов
-        document.addEventListener('click', (e) => {
-            // Закрытие панели эмодзи при клике вне
-            if (!e.target.closest('.emoji-panel') && !e.target.closest('#emoji-toggle-btn')) {
-                closeEmojiPanel();
-            }
-            
-            // Закрытие уведомлений при клике вне
-            if (!e.target.closest('.notification')) {
-                document.querySelectorAll('.notification').forEach(notif => {
-                    if (!notif.contains(e.target)) {
-                        notif.style.opacity = '0';
-                        setTimeout(() => {
-                            if (notif.parentNode) {
-                                notif.parentNode.removeChild(notif);
-                            }
-                        }, 300);
-                    }
+            // Обработчик для бейджа непрочитанных
+            const unreadBadge = chatElement.querySelector('.unread-badge');
+            if (unreadBadge) {
+                unreadBadge.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.showUnreadMessages(chat.id);
                 });
             }
-        });
+            
+            return chatElement;
+        }
         
-        // Адаптивность
-        window.addEventListener('resize', handleResize);
-        handleResize();
-    }
-    
-    function handleResize() {
-        state.isSidebarVisible = window.innerWidth > 768;
-        if (elements.sidebar) {
-            if (state.isSidebarVisible) {
-                elements.sidebar.style.transform = 'translateY(0)';
-            } else {
-                elements.sidebar.style.transform = 'translateY(-100%)';
+        animateChatsAppearance() {
+            const chatCards = this.chatsContainer.querySelectorAll('.chat-card');
+            
+            chatCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
+        
+        handleChatClick(e, chat) {
+            // Не обрабатываем клик по бейджу
+            if (e.target.closest('.unread-badge')) return;
+            
+            // Снимаем активность с предыдущего чата
+            document.querySelectorAll('.chat-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Активируем текущий чат
+            const chatElement = e.currentTarget;
+            chatElement.classList.add('active');
+            this.activeChatId = chat.id;
+            
+            // Анимация активации
+            chatElement.style.boxShadow = '0 0 0 5px rgba(0, 136, 204, 0.3)';
+            setTimeout(() => {
+                chatElement.style.boxShadow = '';
+            }, 500);
+            
+            // Если есть непрочитанные - отмечаем как прочитанные
+            if (chat.unread > 0) {
+                this.markChatAsRead(chat.id);
             }
         }
-    }
-    
-    // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
-    function getCurrentTime() {
-        const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        return `${hours}:${minutes}`;
-    }
-    
-    function getColorForName(name) {
-        const colors = ['#0088cc', '#af52de', '#34c759', '#ff9500', '#ff3b30', '#5ac8fa'];
-        let hash = 0;
-        for (let i = 0; i < name.length; i++) {
-            hash = name.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        return colors[Math.abs(hash) % colors.length];
-    }
-    
-    function getColorForType(type) {
-        const colors = {
-            'info': '#0088cc',
-            'success': '#34c759',
-            'warning': '#ff9500',
-            'error': '#ff3b30'
-        };
-        return colors[type] || colors.info;
-    }
-    
-    // ========== ГЛОБАЛЬНЫЕ ФУНКЦИИ ==========
-    window.TelegramNodes = {
-        // Основные функции
-        openChat: openChat,
-        closeChat: closeChat,
-        switchNode: switchNode,
-        toggleTheme: toggleTheme,
-        showNotification: showNotification,
-        startConference: startConference,
-        closeConference: closeConference,
         
-        // Данные
-        getAppData: () => appData,
-        getState: () => state,
-        
-        // Тестовые функции
-        test: () => {
-            showNotification('Тест', 'Консольные команды работают!', 'success');
-            console.log('📊 Состояние приложения:', state);
-            console.log('📁 Данные приложения:', appData);
-        },
-        
-        help: () => {
-            console.log('🚀 Telegram Nodes Console:');
-            console.log('TelegramNodes.openChat("design-team") - открыть чат');
-            console.log('TelegramNodes.switchNode("game") - переключить узел');
-            console.log('TelegramNodes.toggleTheme() - сменить тему');
-            console.log('TelegramNodes.showNotification("Заголовок", "Текст", "type")');
-            console.log('TelegramNodes.startConference() - начать конференцию');
-            console.log('TelegramNodes.getAppData() - получить все данные');
-            console.log('TelegramNodes.getState() - получить состояние');
-            console.log('TelegramNodes.test() - тестовая команда');
-            console.log('TelegramNodes.help() - эта справка');
-        }
-    };
-    
-    // ========== ЗАПУСК ==========
-    try {
-        init();
-        console.log('✅ Telegram Nodes успешно запущен!');
-        console.log('👤 Пользователь:', appData.user.name);
-        console.log('📱 Узлов:', appData.nodes.length);
-        console.log('💬 Чатов:', appData.chats.length);
-        console.log('🎮 Эмодзи:', Object.values(appData.emojis).flat().length);
-        console.log('🔧 Версия:', config.version);
-        
-        // Добавляем эффекты при загрузке
-        setTimeout(() => {
-            document.querySelectorAll('.node-item, .chat-card, .contact-item').forEach(el => {
-                el.classList.add('hover-lift');
+        showUnreadMessages(chatId) {
+            const chat = this.chatsData.find(c => c.id === chatId);
+            if (!chat || !chat.unreadMessages) return;
+            
+            // Обновляем счетчик в сайдбаре
+            this.unreadSidebarCount.textContent = `${chat.unreadMessages.length} сообщений`;
+            
+            // Очищаем список
+            this.unreadMessagesList.innerHTML = '';
+            
+            // Добавляем сообщения
+            chat.unreadMessages.forEach(msg => {
+                const messageElement = this.createUnreadMessageElement(msg);
+                this.unreadMessagesList.appendChild(messageElement);
             });
-        }, 1000);
+            
+            // Открываем сайдбар
+            this.unreadSidebar.classList.add('active');
+        }
         
-        // Добавляем ripple эффект ко всем кнопкам
-        document.querySelectorAll('button').forEach(btn => {
-            btn.classList.add('ripple');
-        });
+        createUnreadMessageElement(message) {
+            const element = document.createElement('div');
+            element.className = 'unread-message';
+            element.dataset.id = message.id;
+            
+            element.innerHTML = `
+                <div class="message-header">
+                    <div class="message-sender">
+                        <div class="sender-avatar" style="background: ${message.avatarColor}">
+                            ${message.from.charAt(0)}
+                        </div>
+                        <span>${message.from}</span>
+                    </div>
+                    <div class="message-time">${message.time}</div>
+                </div>
+                <div class="message-text">${message.text}</div>
+            `;
+            
+            element.addEventListener('click', () => {
+                this.markMessageAsRead(message.id);
+                element.classList.add('read');
+                setTimeout(() => {
+                    element.remove();
+                    this.updateUnreadSidebarCount();
+                }, 300);
+            });
+            
+            return element;
+        }
         
-        // Показать справку в консоли
-        setTimeout(() => {
-            console.log('💡 Используйте TelegramNodes.help() для списка команд');
-        }, 2000);
+        markMessageAsRead(messageId) {
+            // Находим чат, содержащий это сообщение
+            for (const chat of this.chatsData) {
+                if (chat.unreadMessages) {
+                    const messageIndex = chat.unreadMessages.findIndex(m => m.id === messageId);
+                    if (messageIndex > -1) {
+                        chat.unreadMessages.splice(messageIndex, 1);
+                        chat.unread = Math.max(0, chat.unread - 1);
+                        
+                        // Обновляем интерфейс
+                        this.updateUnreadCount();
+                        this.renderChats();
+                        break;
+                    }
+                }
+            }
+        }
         
-    } catch (error) {
-        console.error('❌ Ошибка запуска:', error);
-        showNotification('Ошибка запуска', error.message, 'error');
+        markChatAsRead(chatId) {
+            const chat = this.chatsData.find(c => c.id === chatId);
+            if (chat && chat.unread > 0) {
+                chat.unread = 0;
+                chat.unreadMessages = [];
+                
+                // Обновляем интерфейс
+                this.updateUnreadCount();
+                this.renderChats();
+                
+                // Закрываем сайдбар, если он открыт для этого чата
+                if (this.unreadSidebar.classList.contains('active')) {
+                    const currentChatId = parseInt(this.unreadSidebar.dataset.chatId || '0');
+                    if (currentChatId === chatId) {
+                        this.closeUnreadSidebar();
+                    }
+                }
+            }
+        }
+        
+        markAllAsRead() {
+            let totalMarked = 0;
+            
+            this.chatsData.forEach(chat => {
+                if (chat.unread > 0) {
+                    totalMarked += chat.unread;
+                    chat.unread = 0;
+                    chat.unreadMessages = [];
+                }
+            });
+            
+            // Обновляем интерфейс
+            this.updateUnreadCount();
+            this.renderChats();
+            this.closeUnreadSidebar();
+            
+            // Показываем уведомление
+            this.showNotification(`${totalMarked} сообщений отмечены как прочитанные`);
+        }
+        
+        updateUnreadCount(total = null) {
+            if (total === null) {
+                total = this.chatsData.reduce((sum, chat) => sum + chat.unread, 0);
+            }
+            
+            this.totalUnreadCount.textContent = total;
+            
+            // Анимация обновления счетчика
+            if (total > 0) {
+                this.totalUnreadCount.classList.add('pulse');
+            } else {
+                this.totalUnreadCount.classList.remove('pulse');
+            }
+        }
+        
+        updateUnreadSidebarCount() {
+            const count = this.unreadMessagesList.children.length;
+            this.unreadSidebarCount.textContent = `${count} сообщений`;
+            
+            if (count === 0) {
+                setTimeout(() => this.closeUnreadSidebar(), 1000);
+            }
+        }
+        
+        updateChatCount() {
+            const visibleChats = this.chatsContainer.children.length;
+            this.chatCount.textContent = `${visibleChats} чатов`;
+        }
+        
+        openProfileModal() {
+            this.profileModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        closeProfileModal() {
+            this.profileModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        openSettingsModal() {
+            this.settingsModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        closeUnreadSidebar() {
+            this.unreadSidebar.classList.remove('active');
+        }
+        
+        showNotification(message) {
+            // Создаем уведомление
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Анимация появления
+            setTimeout(() => notification.classList.add('show'), 10);
+            
+            // Автоматическое скрытие
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
     }
+    
+    // Запуск приложения
+    const app = new TelegramNodsApp();
+    
+    // Добавляем стили для уведомлений
+    const notificationStyles = document.createElement('style');
+    notificationStyles.textContent = `
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--success-color), #32d489);
+            color: white;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 3000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .notification i {
+            font-size: 20px;
+        }
+        
+        .pinned-indicator {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: var(--warning-color);
+            font-size: 14px;
+        }
+        
+        .muted-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        .sender-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 8px;
+            font-size: 12px;
+        }
+        
+        .login-success, .login-error {
+            text-align: center;
+            animation: formAppear 0.5s ease;
+        }
+        
+        .login-success i {
+            font-size: 64px;
+            color: var(--success-color);
+            margin-bottom: 20px;
+        }
+        
+        .login-error i {
+            font-size: 64px;
+            color: var(--danger-color);
+            margin-bottom: 20px;
+        }
+        
+        .login-success h3, .login-error h3 {
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+        
+        .login-success p, .login-error p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+        
+        .retry-btn {
+            padding: 12px 24px;
+            background: var(--primary-color);
+            border: none;
+            border-radius: var(--radius);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .retry-btn:hover {
+            background: var(--primary-dark);
+        }
+    `;
+    document.head.appendChild(notificationStyles);
 });
