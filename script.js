@@ -309,10 +309,14 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Клик вне модальных окон
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.call-modal') && this.callModal.classList.contains('active')) {
+                if (this.callModal.classList.contains('active') && 
+                    !e.target.closest('.call-container') && 
+                    !e.target.closest('.call-control-btn')) {
                     this.endCall();
                 }
-                if (!e.target.closest('.conference-modal') && this.conferenceModal.classList.contains('active')) {
+                if (this.conferenceModal.classList.contains('active') && 
+                    !e.target.closest('.conference-container') && 
+                    !e.target.closest('.conference-control-btn')) {
                     this.leaveConference();
                 }
             });
@@ -436,9 +440,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 document.getElementById('retryLoginBtn').addEventListener('click', () => {
                     this.loginScreen.querySelector('.login-form').innerHTML = originalContent;
-                    this.initEventListeners(); // Переинициализируем обработчики
                     this.loginInput.value = '900123456';
                     this.passwordInput.value = '111111';
+                    this.loginBtn.addEventListener('click', () => this.handleLogin());
                 });
             }, 500);
         }
@@ -534,7 +538,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span>${this.getCategoryName(chat.category)}</span>
                     </div>
                     ${chat.unread > 0 ? `
-                        <div class="chat-urgency" onclick="app.showUnreadSidebar(event, ${chat.id})">
+                        <div class="chat-urgency">
                             ${chat.unread} непрочитанных
                         </div>
                     ` : ''}
@@ -556,10 +560,8 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             
             // Добавляем обработчик клика
-            element.addEventListener('click', (e) => {
-                if (!e.target.closest('.chat-urgency')) {
-                    this.openChat(chat);
-                }
+            element.addEventListener('click', () => {
+                this.openChat(chat);
             });
             
             return element;
@@ -727,30 +729,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="call-status">Идет видеозвонок...</div>
                     <div class="call-timer" id="callTimer">00:00</div>
                     
-                    <div class="call-grid" style="
-                        display: grid;
-                        grid-template-columns: repeat(2, 1fr);
-                        gap: 20px;
-                        margin: 30px 0;
-                    ">
-                        <div class="video-feed" style="
-                            background: rgba(0,0,0,0.3);
-                            border-radius: var(--border-radius);
-                            padding: 20px;
-                            text-align: center;
-                        ">
+                    <div class="call-grid">
+                        <div class="video-feed">
                             <div style="font-size: 48px; margin-bottom: 10px;">
                                 <i class="fas fa-user"></i>
                             </div>
                             <div>Security Team</div>
                         </div>
                         
-                        <div class="video-feed" style="
-                            background: rgba(0,0,0,0.3);
-                            border-radius: var(--border-radius);
-                            padding: 20px;
-                            text-align: center;
-                        ">
+                        <div class="video-feed">
                             <div style="font-size: 48px; margin-bottom: 10px;">
                                 <i class="fas fa-user"></i>
                             </div>
@@ -860,7 +847,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Симуляция смены активного говорящего
                 setInterval(() => {
-                    this.simulateActiveSpeaker();
+                    if (this.isInConference) {
+                        this.simulateActiveSpeaker();
+                    }
                 }, 3000);
             }, 100);
             
@@ -873,6 +862,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         renderConferenceParticipants() {
             const grid = document.getElementById('conferenceGrid');
+            if (!grid) return;
+            
             grid.innerHTML = '';
             
             this.conferenceParticipants.forEach(participant => {
@@ -916,7 +907,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             randomParticipant.classList.add('active-speaker');
-            randomParticipant.querySelector('.participant-status').textContent = 'Говорит';
+            const statusElement = randomParticipant.querySelector('.participant-status');
+            if (statusElement) {
+                statusElement.textContent = 'Говорит';
+            }
         }
         
         startCallTimer() {
@@ -974,17 +968,13 @@ document.addEventListener('DOMContentLoaded', function() {
             );
         }
         
-        showUnreadSidebar(event, chatId) {
-            event.stopPropagation();
-            this.rightSidebar.classList.add('active');
-            this.renderUnreadMessages();
-        }
-        
         closeUnreadSidebar() {
             this.rightSidebar.classList.remove('active');
         }
         
         renderUnreadMessages() {
+            if (!this.unreadMessages) return;
+            
             this.unreadMessages.innerHTML = '';
             
             this.unreadData.forEach((message, index) => {
@@ -1005,14 +995,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="message-content">${message.message}</div>
                     
                     <div class="message-actions">
-                        <button class="message-action-btn reply" onclick="app.replyToMessage(${message.id})">
+                        <button class="message-action-btn reply">
                             <i class="fas fa-reply"></i> Ответить
                         </button>
-                        <button class="message-action-btn mark-read" onclick="app.markMessageAsRead(${message.id})">
+                        <button class="message-action-btn mark-read">
                             <i class="fas fa-check"></i> Прочитано
                         </button>
                     </div>
                 `;
+                
+                // Добавляем обработчики
+                const replyBtn = messageElement.querySelector('.reply');
+                const markReadBtn = messageElement.querySelector('.mark-read');
+                
+                replyBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.replyToMessage(message.id);
+                });
+                
+                markReadBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.markMessageAsRead(message.id);
+                });
                 
                 this.unreadMessages.appendChild(messageElement);
             });
@@ -1090,6 +1094,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         renderNotifications() {
+            if (!this.notificationsList) return;
+            
             this.notificationsList.innerHTML = '';
             
             this.notifications.forEach(notification => {
@@ -1162,7 +1168,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Автоматическое скрытие
             setTimeout(() => {
                 notification.style.animation = 'slideOutRight 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
             }, 4000);
         }
         
@@ -1230,127 +1240,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Инициализация приложения
     window.app = new TelegramNodsApp();
-    
-    // Добавляем недостающие стили анимаций
-    const additionalStyles = document.createElement('style');
-    additionalStyles.textContent = `
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-        
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideOutRight {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-        
-        .login-success, .login-error {
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .login-success i {
-            font-size: 64px;
-            color: var(--success-color);
-            margin-bottom: 20px;
-        }
-        
-        .login-error i {
-            font-size: 64px;
-            color: var(--danger-color);
-            margin-bottom: 20px;
-        }
-        
-        .demo-credentials {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: var(--border-radius);
-            padding: 15px;
-            margin: 20px 0;
-            text-align: left;
-        }
-        
-        .demo-credentials p {
-            margin: 5px 0;
-            font-size: 14px;
-        }
-        
-        .retry-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary-color);
-            border: none;
-            border-radius: var(--border-radius);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-top: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .retry-btn:hover {
-            background: var(--primary-dark);
-        }
-        
-        .no-chats {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-        }
-        
-        .no-chats i {
-            font-size: 64px;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-        
-        .no-chats h3 {
-            color: var(--text-primary);
-            margin-bottom: 10px;
-        }
-        
-        .no-chats p {
-            color: var(--text-secondary);
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        
-        /* Анимация для непрочитанных сообщений */
-        .unread-message-item {
-            animation: messageAppear 0.5s ease;
-        }
-        
-        @keyframes messageAppear {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    `;
-    document.head.appendChild(additionalStyles);
 });
