@@ -18,7 +18,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
     
     <style>
-        /* Временные стили для прелоадера */
+        /* Временные стили для прелоадера и входа */
         #particles-js {
             position: fixed;
             width: 100%;
@@ -28,22 +28,26 @@
         }
         
         .login-form {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px);
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 40px;
             width: 90%;
-            max-width: 400px;
+            max-width: 420px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            transform: translateY(20px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            transform: translate(-50%, -40%);
             opacity: 0;
-            transition: all 0.5s ease;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             z-index: 10000;
         }
         
         .login-form.active {
-            transform: translateY(0);
+            transform: translate(-50%, -50%);
             opacity: 1;
         }
         
@@ -51,8 +55,8 @@
             background: linear-gradient(135deg, #0088cc, #24a1de);
             color: white;
             border: none;
-            border-radius: 12px;
-            padding: 16px 24px;
+            border-radius: 14px;
+            padding: 18px 24px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -61,31 +65,54 @@
             justify-content: center;
             gap: 12px;
             width: 100%;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             margin-top: 20px;
+            position: relative;
+            overflow: hidden;
         }
         
         .telegram-login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 136, 204, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 136, 204, 0.4);
+        }
+        
+        .telegram-login-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .telegram-login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+        
+        .telegram-login-btn:hover::before {
+            left: 100%;
         }
         
         .login-input {
             width: 100%;
-            padding: 16px;
+            padding: 18px;
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            border-radius: 14px;
             color: white;
             font-size: 16px;
             margin-bottom: 16px;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Inter', sans-serif;
         }
         
         .login-input:focus {
             outline: none;
             border-color: #0088cc;
             box-shadow: 0 0 0 3px rgba(0, 136, 204, 0.2);
+            transform: translateY(-2px);
         }
         
         .login-input-group {
@@ -94,9 +121,10 @@
         
         .login-label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: rgba(255, 255, 255, 0.8);
             font-size: 14px;
+            font-weight: 500;
         }
         
         .login-error {
@@ -104,29 +132,40 @@
             font-size: 14px;
             margin-top: 8px;
             display: none;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
         
         .login-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 12px;
             background: linear-gradient(135deg, #0088cc, #af52de);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-align: center;
         }
         
         .login-subtitle {
             color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 30px;
-            font-size: 14px;
+            margin-bottom: 32px;
+            font-size: 15px;
+            text-align: center;
+            line-height: 1.5;
         }
         
         .or-divider {
             display: flex;
             align-items: center;
-            margin: 24px 0;
+            margin: 28px 0;
             color: rgba(255, 255, 255, 0.3);
             font-size: 14px;
+            position: relative;
         }
         
         .or-divider::before,
@@ -134,18 +173,155 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: rgba(255, 255, 255, 0.1);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
         }
         
         .or-divider span {
-            padding: 0 15px;
+            padding: 0 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
         }
         
         .login-footer {
-            margin-top: 24px;
-            font-size: 12px;
+            margin-top: 30px;
+            font-size: 13px;
             color: rgba(255, 255, 255, 0.4);
             text-align: center;
+            line-height: 1.5;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .login-footer a {
+            color: #0088cc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .login-footer a:hover {
+            color: #24a1de;
+            text-decoration: underline;
+        }
+        
+        .demo-login-btn {
+            width: 100%;
+            height: 52px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .demo-login-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .demo-login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .login-remember {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+        
+        .login-remember input {
+            width: 18px;
+            height: 18px;
+            accent-color: #0088cc;
+        }
+        
+        .login-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        .login-links a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .login-links a:hover {
+            color: #0088cc;
+        }
+        
+        /* Анимация загрузки */
+        .login-loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .login-loading.active {
+            display: block;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #0088cc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        .loading-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+        
+        /* Эффект ripple для кнопок */
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        /* Дополнительные анимации */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 136, 204, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(0, 136, 204, 0.6); }
         }
     </style>
 </head>
@@ -186,7 +362,7 @@
         <!-- Форма входа -->
         <div class="login-form" id="login-form">
             <h2 class="login-title">Вход в Telegram Nodes</h2>
-            <p class="login-subtitle">Войдите, чтобы продолжить</p>
+            <p class="login-subtitle">Войдите, чтобы продолжить работу с улучшенной версией Telegram</p>
             
             <div class="login-input-group">
                 <label class="login-label">Номер телефона</label>
@@ -196,7 +372,12 @@
             <div class="login-input-group">
                 <label class="login-label">Пароль</label>
                 <input type="password" class="login-input" id="login-password" placeholder="111111" value="111111">
-                <div class="login-error" id="login-error">Неверный номер или пароль</div>
+                <div class="login-error" id="login-error">Неверный номер телефона или пароль</div>
+            </div>
+            
+            <div class="login-remember">
+                <input type="checkbox" id="remember-me">
+                <label for="remember-me">Запомнить меня</label>
             </div>
             
             <button class="telegram-login-btn" id="login-button">
@@ -204,16 +385,27 @@
                 Войти через Telegram
             </button>
             
+            <div class="login-loading" id="login-loading">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Выполняется вход...</div>
+            </div>
+            
             <div class="or-divider">
                 <span>или</span>
             </div>
             
-            <button class="btn secondary" id="demo-login">
+            <button class="demo-login-btn" id="demo-login">
+                <i class="fas fa-user-secret"></i>
                 Продолжить как демо-пользователь
             </button>
             
+            <div class="login-links">
+                <a href="#" id="forgot-password">Забыли пароль?</a>
+                <a href="#" id="register-link">Регистрация</a>
+            </div>
+            
             <div class="login-footer">
-                Продолжая, вы соглашаетесь с условиями использования
+                Продолжая, вы соглашаетесь с <a href="#">условиями использования</a> и <a href="#">политикой конфиденциальности</a>
             </div>
         </div>
     </div>
