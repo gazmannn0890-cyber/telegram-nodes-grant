@@ -38,6 +38,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     };
+
+// sw.js в корне проекта
+self.addEventListener('install', e => {
+    e.waitUntil(
+        caches.open('telegram-nodes-v1').then(cache => {
+            return cache.addAll([
+                './',
+                './index.html',
+                './style.css',
+                './login.css',
+                './script.js'
+            ]);
+        })
+    );
+});
     
     // ========== ДАННЫЕ ПРИЛОЖЕНИЯ ==========
     const appData = {
@@ -1634,6 +1649,21 @@ document.addEventListener('DOMContentLoaded', function() {
             initApplication();
         }, 1000);
     }
+
+// Добавить в script.js в функцию initApplication()
+function showLoadingIndicator(show = true) {
+    const loader = document.getElementById('global-loader');
+    if (!loader && show) {
+        const loaderEl = document.createElement('div');
+        loaderEl.id = 'global-loader';
+        loaderEl.className = 'global-loader';
+        loaderEl.innerHTML = '<div class="loader-spinner"></div>';
+        document.body.appendChild(loaderEl);
+    }
+    if (loader) {
+        loader.style.display = show ? 'flex' : 'none';
+    }
+}
     
     // ========== ПРЕЛОАДЕР ==========
     function simulatePreloader() {
@@ -2052,6 +2082,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.body.removeChild(menu);
             });
         });
+
+// В script.js в функции handleNodeAction и подобных
+function provideHapticFeedback() {
+    if (navigator.vibrate) {
+        navigator.vibrate(50); // Короткая вибрация
+    }
+}
         
         // Закрыть меню при клике вне
         setTimeout(() => {
