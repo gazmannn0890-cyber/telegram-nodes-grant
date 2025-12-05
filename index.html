@@ -11,11 +11,149 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
+    <!-- Particle.js для фона -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+    
+    <style>
+        /* Временные стили для прелоадера */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0f 0%, #121218 50%, #1a1a24 100%);
+            z-index: 9998;
+        }
+        
+        .login-form {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.5s ease;
+            z-index: 10000;
+        }
+        
+        .login-form.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .telegram-login-btn {
+            background: linear-gradient(135deg, #0088cc, #24a1de);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .telegram-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 136, 204, 0.4);
+        }
+        
+        .login-input {
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .login-input:focus {
+            outline: none;
+            border-color: #0088cc;
+            box-shadow: 0 0 0 3px rgba(0, 136, 204, 0.2);
+        }
+        
+        .login-input-group {
+            margin-bottom: 24px;
+        }
+        
+        .login-label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+        
+        .login-error {
+            color: #ff3b30;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .login-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #0088cc, #af52de);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .login-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .or-divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+        }
+        
+        .or-divider::before,
+        .or-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .or-divider span {
+            padding: 0 15px;
+        }
+        
+        .login-footer {
+            margin-top: 24px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <!-- Прелоадер -->
+    <!-- Фон с частицами -->
+    <div id="particles-js"></div>
+    
+    <!-- Прелоадер с формой входа -->
     <div class="preloader" id="preloader">
         <div class="preloader-content">
             <div class="logo-animated">
@@ -42,6 +180,40 @@
                     <span class="stat-value" id="stat-online">1</span>
                     <span class="stat-label">онлайн</span>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Форма входа -->
+        <div class="login-form" id="login-form">
+            <h2 class="login-title">Вход в Telegram Nodes</h2>
+            <p class="login-subtitle">Войдите, чтобы продолжить</p>
+            
+            <div class="login-input-group">
+                <label class="login-label">Номер телефона</label>
+                <input type="text" class="login-input" id="login-phone" placeholder="900123456" value="900123456">
+            </div>
+            
+            <div class="login-input-group">
+                <label class="login-label">Пароль</label>
+                <input type="password" class="login-input" id="login-password" placeholder="111111" value="111111">
+                <div class="login-error" id="login-error">Неверный номер или пароль</div>
+            </div>
+            
+            <button class="telegram-login-btn" id="login-button">
+                <i class="fab fa-telegram-plane"></i>
+                Войти через Telegram
+            </button>
+            
+            <div class="or-divider">
+                <span>или</span>
+            </div>
+            
+            <button class="btn secondary" id="demo-login">
+                Продолжить как демо-пользователь
+            </button>
+            
+            <div class="login-footer">
+                Продолжая, вы соглашаетесь с условиями использования
             </div>
         </div>
     </div>
