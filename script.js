@@ -1,4 +1,4 @@
-// Telegram Nodes - Полностью исправленная версия с эффектами
+// Telegram Nodes - Полностью исправленная версия
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Telegram Nodes запускается...');
     
@@ -18,188 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
             conference: true
         }
     };
-
-    // ===== ВИЗУАЛЬНЫЕ ЭФФЕКТЫ =====
-
-// Создание частиц фона
-function createParticles() {
-    const container = document.createElement('div');
-    container.className = 'particles';
-    document.body.insertBefore(container, document.body.firstChild);
-    
-    for (let i = 0; i < 40; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        
-        const size = Math.random() * 3 + 1;
-        const colors = ['#0088cc', '#af52de', '#34c759', '#5ac8fa'];
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        
-        particle.style.cssText = `
-            width: ${size}px;
-            height: ${size}px;
-            background: ${color};
-            left: ${Math.random() * 100}%;
-            top: ${Math.random() * 100}%;
-            animation-delay: ${Math.random() * 20}s;
-        `;
-        
-        container.appendChild(particle);
-    }
-}
-
-// Параллакс эффект при движении мыши
-function initParallax() {
-    const cards = document.querySelectorAll('.chat-card, .node-item');
-    
-    window.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth) - 0.5;
-        const y = (e.clientY / window.innerHeight) - 0.5;
-        
-        cards.forEach(card => {
-            const speed = 0.02;
-            card.style.transform = `translate(${x * speed * 100}px, ${y * speed * 100}px)`;
-        });
-    });
-}
-
-// Применить стеклянные эффекты ко всем элементам
-function applyGlassEffects() {
-    // Добавить классы элементам
-    const elements = [
-        '.profile-card',
-        '.node-item',
-        '.contact-item',
-        '.game-item',
-        '.chat-card',
-        '.icon-btn',
-        '.header-btn',
-        '.filter-btn',
-        '.sort-btn',
-        '.input-btn',
-        '.chat-action-btn'
-    ];
-    
-    elements.forEach(selector => {
-        document.querySelectorAll(selector).forEach(el => {
-            el.classList.add('glass-effect', 'ripple');
-        });
-    });
-}
-
-// Анимировать появление элементов
-function animateElements() {
-    const cards = document.querySelectorAll('.chat-card, .node-item, .contact-item');
-    
-    cards.forEach((card, index) => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        
-        setTimeout(() => {
-            card.style.transition = 'all 0.5s ease';
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        }, index * 100);
-    });
-}
-
-// Инициализация эффектов (вызовите эту функцию в конце init())
-function initEffects() {
-    createParticles();
-    initParallax();
-    applyGlassEffects();
-    animateElements();
-    
-    // Добавить hover эффекты
-    document.querySelectorAll('.chat-card, .node-item, .contact-item').forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            el.style.transform = 'translateY(-6px) scale(1.02)';
-        });
-        
-        el.addEventListener('mouseleave', () => {
-            el.style.transform = 'translateY(0) scale(1)';
-        });
-    });
-}
-
-    function init() {
-    console.log('🎯 Инициализация Telegram Nodes...');
-    
-    // Установка темы
-    setTheme(state.theme);
-    
-    // ЗАПУСТИТЬ ВИЗУАЛЬНЫЕ ЭФФЕКТЫ
-    initEffects();
-    
-    // Загрузка прелоадера
-    simulatePreloader();
-    
-    // ... остальной код остается таким же
-}
-    
-    // ========== ВИЗУАЛЬНЫЕ ЭФФЕКТЫ ==========
-    function createParticles() {
-        const particlesContainer = document.createElement('div');
-        particlesContainer.className = 'particles';
-        document.body.appendChild(particlesContainer);
-        
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            
-            const size = Math.random() * 4 + 1;
-            const colors = [
-                'var(--primary)',
-                'var(--secondary)',
-                'var(--cyan)',
-                'var(--pink)',
-                'var(--success)'
-            ];
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            particle.style.background = color;
-            particle.style.left = `${Math.random() * 100}%`;
-            particle.style.top = `${Math.random() * 100}%`;
-            particle.style.animationDelay = `${Math.random() * 20}s`;
-            
-            particlesContainer.appendChild(particle);
-        }
-    }
-    
-    function initParallax() {
-        const parallaxElements = document.querySelectorAll('.parallax');
-        
-        window.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth) - 0.5;
-            const y = (e.clientY / window.innerHeight) - 0.5;
-            
-            parallaxElements.forEach(el => {
-                const speed = parseFloat(el.dataset.speed) || 0.02;
-                el.style.transform = `translate(${x * speed * 100}px, ${y * speed * 100}px)`;
-            });
-        });
-    }
-    
-    function typeWriterEffect() {
-        const subtitle = document.querySelector('.preloader-subtitle');
-        if (!subtitle) return;
-        
-        const text = subtitle.textContent;
-        subtitle.textContent = '';
-        let i = 0;
-        
-        function typeChar() {
-            if (i < text.length) {
-                subtitle.textContent += text.charAt(i);
-                i++;
-                setTimeout(typeChar, 50);
-            }
-        }
-        
-        setTimeout(typeChar, 1000);
-    }
     
     // ========== ДАННЫЕ ПРИЛОЖЕНИЯ ==========
     const appData = {
@@ -602,10 +420,6 @@ function initEffects() {
         // Установка темы
         setTheme(state.theme);
         
-        // Создание фоновых эффектов
-        createParticles();
-        initParallax();
-        
         // Загрузка прелоадера
         simulatePreloader();
         
@@ -628,9 +442,6 @@ function initEffects() {
         
         // Симулировать активность
         simulateActivity();
-        
-        // Добавить эффект печатания в прелоадере
-        typeWriterEffect();
     }
     
     // ========== ПРЕЛОАДЕР ==========
@@ -691,9 +502,8 @@ function initEffects() {
         
         appData.nodes.forEach(node => {
             const nodeElement = document.createElement('div');
-            nodeElement.className = `node-item glass-effect parallax ${state.activeNode === node.id ? 'active' : ''}`;
+            nodeElement.className = `node-item ${state.activeNode === node.id ? 'active' : ''}`;
             nodeElement.dataset.node = node.id;
-            nodeElement.dataset.speed = '0.01';
             
             nodeElement.innerHTML = `
                 <div class="node-icon" style="background: ${node.color}">
@@ -719,7 +529,7 @@ function initEffects() {
         
         appData.contacts.forEach(contact => {
             const contactElement = document.createElement('div');
-            contactElement.className = 'contact-item glass-effect ripple';
+            contactElement.className = 'contact-item';
             contactElement.dataset.contact = contact.id;
             
             contactElement.innerHTML = `
@@ -746,7 +556,7 @@ function initEffects() {
         
         appData.activity.forEach(activity => {
             const activityElement = document.createElement('div');
-            activityElement.className = 'activity-item glass-effect';
+            activityElement.className = 'activity-item';
             
             activityElement.innerHTML = `
                 <div class="activity-icon">
@@ -840,9 +650,8 @@ function initEffects() {
         
         filteredChats.forEach(chat => {
             const chatCard = document.createElement('div');
-            chatCard.className = 'chat-card glass-effect parallax ripple';
+            chatCard.className = 'chat-card';
             chatCard.dataset.chatId = chat.id;
-            chatCard.dataset.speed = '0.02';
             
             // Создание миниатюр участников
             const memberAvatars = Array.from(
@@ -1227,9 +1036,9 @@ function initEffects() {
         
         // Добавить пользователя
         const userParticipant = document.createElement('div');
-        userParticipant.className = 'participant-card glass-effect active-speaker';
+        userParticipant.className = 'participant-card active-speaker';
         userParticipant.innerHTML = `
-            <div class="participant-avatar" style="background: var(--gradient-primary)">
+            <div class="participant-avatar" style="background: linear-gradient(135deg, var(--primary), var(--secondary))">
                 Г
             </div>
             <div class="participant-name">Вы (Ведущий)</div>
@@ -1242,7 +1051,7 @@ function initEffects() {
         // Добавить контактов
         appData.contacts.slice(0, 3).forEach(contact => {
             const participant = document.createElement('div');
-            participant.className = 'participant-card glass-effect';
+            participant.className = 'participant-card';
             participant.innerHTML = `
                 <div class="participant-avatar" style="background: ${contact.color}">
                     ${contact.avatar}
@@ -1339,7 +1148,7 @@ function initEffects() {
                 <h4 class="notification-title">${title}</h4>
                 <p class="notification-message">${message}</p>
             </div>
-            <button class="notification-close glass-effect ripple">
+            <button class="notification-close">
                 <i class="fas fa-times"></i>
             </button>
         `;
@@ -1680,18 +1489,6 @@ function initEffects() {
         console.log('💬 Чатов:', appData.chats.length);
         console.log('🎮 Эмодзи:', Object.values(appData.emojis).flat().length);
         console.log('🔧 Версия:', config.version);
-        
-        // Добавляем эффекты при загрузке
-        setTimeout(() => {
-            document.querySelectorAll('.node-item, .chat-card, .contact-item').forEach(el => {
-                el.classList.add('hover-lift');
-            });
-        }, 1000);
-        
-        // Добавляем ripple эффект ко всем кнопкам
-        document.querySelectorAll('button').forEach(btn => {
-            btn.classList.add('ripple');
-        });
         
         // Показать справку в консоли
         setTimeout(() => {
