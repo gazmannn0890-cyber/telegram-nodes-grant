@@ -1,271 +1,263 @@
+// Telegram Nods - Universal Platform
+// Основной JavaScript файл
+
 document.addEventListener('DOMContentLoaded', function() {
     // Инициализация приложения
     class TelegramNodsApp {
         constructor() {
+            this.initialize();
+        }
+        
+        initialize() {
             this.initElements();
-            this.initData();
             this.initEventListeners();
-            this.setupBackgroundEffects();
+            this.initData();
+            this.initPreloader();
+            this.setupKeyboardShortcuts();
         }
         
         initElements() {
             // Основные элементы
             this.preloader = document.getElementById('preloader');
-            this.loaderPlane = document.getElementById('loaderPlane');
-            this.loginForm = document.getElementById('loginForm');
+            this.planeContainer = document.getElementById('planeContainer');
+            this.telegramPlane = document.getElementById('telegramPlane');
+            this.loginScreen = document.getElementById('loginScreen');
             this.loginBtn = document.getElementById('loginBtn');
             this.loginInput = document.getElementById('loginInput');
             this.passwordInput = document.getElementById('passwordInput');
-            this.mainContainer = document.getElementById('mainContainer');
-            this.chatsContainer = document.getElementById('chatsContainer');
+            this.appContainer = document.getElementById('appContainer');
             
-            // Навигация
-            this.chatTypes = document.querySelectorAll('.chat-type');
-            this.currentChatType = document.getElementById('currentChatType');
-            this.chatCount = document.getElementById('chatCount');
-            this.searchInput = document.getElementById('searchInput');
+            // Профиль и навигация
+            this.profileHeader = document.getElementById('profileHeader');
+            this.profileAvatar = document.getElementById('profileAvatar');
+            this.profileMenuBtn = document.getElementById('profileMenuBtn');
+            this.profileMenu = document.getElementById('profileMenu');
             
-            // Профиль и настройки
-            this.profileBtn = document.getElementById('profileBtn');
-            this.profileModal = document.getElementById('profileModal');
-            this.closeProfile = document.getElementById('closeProfile');
-            this.settingsBtn = document.getElementById('settingsBtn');
-            this.settingsModal = document.getElementById('settingsModal');
+            // Категории и чаты
+            this.categoryBtns = document.querySelectorAll('.category-btn');
+            this.currentCategory = document.getElementById('currentCategory');
+            this.activeCount = document.getElementById('activeCount');
+            this.chatsGrid = document.getElementById('chatsGrid');
+            this.globalSearch = document.getElementById('globalSearch');
             
-            // Непрочитанные сообщения
-            this.unreadSidebar = document.getElementById('unreadSidebar');
-            this.closeUnread = document.getElementById('closeUnread');
-            this.unreadMessagesList = document.getElementById('unreadMessagesList');
-            this.markAllRead = document.getElementById('markAllRead');
-            this.totalUnreadCount = document.getElementById('totalUnreadCount');
-            this.unreadSidebarCount = document.getElementById('unreadSidebarCount');
+            // Коммуникации
+            this.startVoiceCall = document.getElementById('startVoiceCall');
+            this.startVideoCall = document.getElementById('startVideoCall');
+            this.startConference = document.getElementById('startConference');
+            
+            // Модальные окна
+            this.callModal = document.getElementById('callModal');
+            this.callContainer = document.getElementById('callContainer');
+            this.conferenceModal = document.getElementById('conferenceModal');
+            this.conferenceContainer = document.getElementById('conferenceContainer');
+            
+            // Сайдбар непрочитанных
+            this.rightSidebar = document.getElementById('rightSidebar');
+            this.closeSidebar = document.getElementById('closeSidebar');
+            this.unreadMessages = document.getElementById('unreadMessages');
+            this.markAllReadBtn = document.getElementById('markAllReadBtn');
+            
+            // Уведомления
+            this.notificationsBtn = document.getElementById('notificationsBtn');
+            this.notificationCenter = document.getElementById('notificationCenter');
+            this.closeNotifications = document.getElementById('closeNotifications');
+            this.notificationsList = document.getElementById('notificationsList');
+            
+            // Другие элементы
+            this.createGroup = document.getElementById('createGroup');
+            this.createChannel = document.getElementById('createChannel');
             
             // Текущее состояние
             this.currentFilter = 'all';
             this.currentSearch = '';
-            this.activeChatId = null;
             this.isLoggedIn = false;
-            this.unreadMessages = {};
+            this.isInCall = false;
+            this.isInConference = false;
+            this.callTimer = null;
+            this.callStartTime = null;
+            this.unreadMessagesCount = 24;
+            
+            // Анимационные константы
+            this.planeAnimation = null;
         }
         
         initData() {
-            // Данные чатов
-            this.chatsData = [
+            // Данные чатов для разных категорий
+            this.chatsData = {
+                all: this.generateChats(12),
+                professional: this.generateChats(8, 'professional'),
+                development: this.generateChats(5, 'development'),
+                security: this.generateChats(3, 'security'),
+                gaming: this.generateChats(4, 'gaming'),
+                government: this.generateChats(2, 'government'),
+                education: this.generateChats(6, 'education')
+            };
+            
+            // Данные непрочитанных сообщений
+            this.unreadData = this.generateUnreadMessages();
+            
+            // Данные для демо-звонков
+            this.callParticipants = [
+                { id: 1, name: "Security Team", avatar: "ST", status: "online" },
+                { id: 2, name: "Alpha Group", avatar: "AG", status: "online" },
+                { id: 3, name: "Beta Testers", avatar: "BT", status: "away" }
+            ];
+            
+            this.conferenceParticipants = [
+                { id: 1, name: "John Smith", avatar: "JS", status: "speaking", role: "Host" },
+                { id: 2, name: "Sarah Johnson", avatar: "SJ", status: "muted", role: "Participant" },
+                { id: 3, name: "Mike Chen", avatar: "MC", status: "listening", role: "Participant" },
+                { id: 4, name: "Alex Brown", avatar: "AB", status: "speaking", role: "Participant" },
+                { id: 5, name: "Emma Wilson", avatar: "EW", status: "away", role: "Participant" },
+                { id: 6, name: "David Lee", avatar: "DL", status: "listening", role: "Participant" }
+            ];
+            
+            // Уведомления
+            this.notifications = [
                 {
                     id: 1,
-                    title: "Alpha Team",
-                    type: "group",
-                    icon: "fas fa-users",
-                    description: "Основная команда разработки и управления нодами. Обсуждение технических вопросов и координация работы.",
-                    members: 24,
-                    lastActivity: "2 мин назад",
-                    unread: 3,
-                    unreadMessages: [
-                        { 
-                            id: 1,
-                            from: "Alex", 
-                            text: "Обновил конфигурацию нод, проверьте логи. На узлах 3-7 замечена повышенная нагрузка.", 
-                            time: "10:45",
-                            avatarColor: "#0088cc"
-                        },
-                        { 
-                            id: 2,
-                            from: "Maria", 
-                            text: "Новая версия клиента готова к тестированию. Нужны волонтеры для stress-тестов.", 
-                            time: "10:30",
-                            avatarColor: "#ff4757"
-                        },
-                        { 
-                            id: 3,
-                            from: "System", 
-                            text: "Обнаружена повышенная нагрузка на узлы 5-8. Рекомендуется проверить конфигурацию балансировки.", 
-                            time: "09:15",
-                            avatarColor: "#2ed573"
-                        }
-                    ],
-                    isPinned: true,
-                    isMuted: false
+                    title: "Новая версия доступна",
+                    message: "Telegram Nods v2.5.0 с улучшенной безопасностью",
+                    time: "5 минут назад",
+                    read: false,
+                    type: "update"
                 },
                 {
                     id: 2,
-                    title: "Beta Testers",
-                    type: "group",
-                    icon: "fas fa-vial",
-                    description: "Тестирование новых функций и отчеты об ошибках. Только для проверенных тестировщиков.",
-                    members: 156,
-                    lastActivity: "1 час назад",
-                    unread: 0,
-                    isPinned: false,
-                    isMuted: true
+                    title: "Срочное сообщение",
+                    message: "Проверьте безопасность ноды #12",
+                    time: "15 минут назад",
+                    read: false,
+                    type: "security"
                 },
                 {
                     id: 3,
-                    title: "Security Alerts",
-                    type: "channel",
-                    icon: "fas fa-shield-alt",
-                    description: "Обновления безопасности и мониторинг угроз. Экстренные оповещения о vulnerabilities.",
-                    members: 89,
-                    lastActivity: "5 часов назад",
-                    unread: 1,
-                    unreadMessages: [
-                        { 
-                            id: 4,
-                            from: "Security Bot", 
-                            text: "Зафиксирована попытка несанкционированного доступа к ноде #12. IP заблокирован, инцидент расследуется.", 
-                            time: "08:20",
-                            avatarColor: "#ffa502"
-                        }
-                    ],
-                    isPinned: true,
-                    isMuted: false
+                    title: "Новый участник",
+                    message: "Security Team присоединился к конференции",
+                    time: "1 час назад",
+                    read: true,
+                    type: "conference"
+                }
+            ];
+        }
+        
+        generateChats(count, category = 'all') {
+            const categories = {
+                professional: {
+                    icons: ['fa-briefcase', 'fa-chart-line', 'fa-handshake'],
+                    prefixes: ['Корпоративный', 'Бизнес', 'Проект', 'Команда', 'Менеджмент']
+                },
+                development: {
+                    icons: ['fa-code', 'fa-terminal', 'fa-bug'],
+                    prefixes: ['Разработка', 'DevOps', 'API', 'Бэкенд', 'Фронтенд']
+                },
+                security: {
+                    icons: ['fa-shield-alt', 'fa-lock', 'fa-user-shield'],
+                    prefixes: ['Безопасность', 'Крипто', 'Защита', 'Аудит', 'Мониторинг']
+                },
+                gaming: {
+                    icons: ['fa-gamepad', 'fa-trophy', 'fa-users'],
+                    prefixes: ['Гейминг', 'Клан', 'Турнир', 'Стрим', 'Киберспорт']
+                },
+                government: {
+                    icons: ['fa-landmark', 'fa-file-contract', 'fa-scale-balanced'],
+                    prefixes: ['Госструктура', 'Министерство', 'Агентство', 'Департамент', 'Комиссия']
+                },
+                education: {
+                    icons: ['fa-graduation-cap', 'fa-book', 'fa-chalkboard'],
+                    prefixes: ['Образование', 'Курс', 'Лекция', 'Семинар', 'Исследование']
+                }
+            };
+            
+            const chatData = [];
+            const baseNames = [
+                "Security", "Alpha", "Beta", "Gamma", "Delta", "Sigma", "Omega",
+                "Development", "Operations", "Research", "Analysis", "Testing"
+            ];
+            
+            const descriptions = [
+                "Обсуждение проектов и координация работы команды",
+                "Технические вопросы и поддержка инфраструктуры",
+                "Планирование и управление ресурсами проекта",
+                "Мониторинг системы и анализ производительности",
+                "Разработка новых функций и улучшение безопасности",
+                "Координация между отделами и планирование релизов"
+            ];
+            
+            for (let i = 1; i <= count; i++) {
+                const cat = categories[category] || categories.professional;
+                const icon = cat.icons[Math.floor(Math.random() * cat.icons.length)];
+                const prefix = cat.prefixes[Math.floor(Math.random() * cat.prefixes.length)];
+                const baseName = baseNames[Math.floor(Math.random() * baseNames.length)];
+                
+                chatData.push({
+                    id: i,
+                    title: `${prefix} ${baseName} ${i}`,
+                    category: category,
+                    icon: icon,
+                    description: descriptions[Math.floor(Math.random() * descriptions.length)],
+                    members: Math.floor(Math.random() * 100) + 10,
+                    unread: Math.floor(Math.random() * 5),
+                    lastActive: `${Math.floor(Math.random() * 60)} минут назад`,
+                    priority: Math.random() > 0.7 ? 'high' : 'normal'
+                });
+            }
+            
+            return chatData;
+        }
+        
+        generateUnreadMessages() {
+            return [
+                {
+                    id: 1,
+                    sender: "Security Team",
+                    senderInitials: "ST",
+                    message: "Обнаружена попытка несанкционированного доступа. Требуется ваше подтверждение действий.",
+                    time: "10:45",
+                    category: "security",
+                    urgent: true
+                },
+                {
+                    id: 2,
+                    sender: "Project Alpha",
+                    senderInitials: "PA",
+                    message: "Релиз v2.5.0 отложен из-за обнаруженных уязвимостей. Новый дедлайн - завтра.",
+                    time: "09:30",
+                    category: "professional",
+                    urgent: true
+                },
+                {
+                    id: 3,
+                    sender: "DevOps Team",
+                    senderInitials: "DT",
+                    message: "Сервера нод требуют обновления безопасности. Запланируйте время для обслуживания.",
+                    time: "Вчера, 16:20",
+                    category: "development",
+                    urgent: false
                 },
                 {
                     id: 4,
-                    title: "Личные сообщения",
-                    type: "personal",
-                    icon: "fas fa-user",
-                    description: "Приватные обсуждения и конфиденциальные данные. Шифрование end-to-end.",
-                    members: 2,
-                    lastActivity: "Только что",
-                    unread: 5,
-                    unreadMessages: [
-                        { 
-                            id: 5,
-                            from: "Admin", 
-                            text: "Ваш запрос на повышение лимитов одобрен. Новые квоты вступят в силу с завтрашнего дня.", 
-                            time: "11:30",
-                            avatarColor: "#8ab4f8"
-                        },
-                        { 
-                            id: 6,
-                            from: "Support", 
-                            text: "Ответ на ваш тикет #4567: Проблема с синхронизацией нод решена. Перезапустите клиент для применения исправлений.", 
-                            time: "10:15",
-                            avatarColor: "#2ed573"
-                        },
-                        { 
-                            id: 7,
-                            from: "Partner", 
-                            text: "Предложение о сотрудничестве: готовы предоставить дополнительные ресурсы для вашей сети нод.", 
-                            time: "Вчера, 16:45",
-                            avatarColor: "#ff4757"
-                        },
-                        { 
-                            id: 8,
-                            from: "System", 
-                            text: "Ежемесячный отчет по активности нод готов. Ваши ноды обработали 45ТБ данных за последний месяц.", 
-                            time: "Вчера, 14:20",
-                            avatarColor: "#a0a0a0"
-                        },
-                        { 
-                            id: 9,
-                            from: "Notification", 
-                            text: "Запланированное обновление в 03:00. Ожидаются кратковременные перебои в работе некоторых нод.", 
-                            time: "Вчера, 12:10",
-                            avatarColor: "#ffa502"
-                        }
-                    ],
-                    isPinned: true,
-                    isMuted: false
+                    sender: "Gaming Tournament",
+                    senderInitials: "GT",
+                    message: "Регистрация на киберспортивный турнир открыта. Подтвердите участие команды.",
+                    time: "Вчера, 14:45",
+                    category: "gaming",
+                    urgent: false
                 },
                 {
                     id: 5,
-                    title: "Техподдержка",
-                    type: "group",
-                    icon: "fas fa-headset",
-                    description: "Решение технических вопросов и консультации. Среднее время ответа: 15 минут.",
-                    members: 342,
-                    lastActivity: "3 часа назад",
-                    unread: 0,
-                    isPinned: false,
-                    isMuted: false
-                },
-                {
-                    id: 6,
-                    title: "Новости проекта",
-                    type: "channel",
-                    icon: "fas fa-bullhorn",
-                    description: "Официальные анонсы и обновления проекта. Подписка обязательна для всех участников.",
-                    members: 1245,
-                    lastActivity: "Вчера",
-                    unread: 2,
-                    unreadMessages: [
-                        { 
-                            id: 10,
-                            from: "News Bot", 
-                            text: "Выпущено обновление v2.3.1 с исправлениями критических уязвимостей. Обновление обязательно для всех нод.", 
-                            time: "Вчера, 18:30",
-                            avatarColor: "#0088cc"
-                        },
-                        { 
-                            id: 11,
-                            from: "News Bot", 
-                            text: "Запланированы технические работы на 15 декабря с 02:00 до 06:00. В это время возможны перебои в работе.", 
-                            time: "Вчера, 15:45",
-                            avatarColor: "#0088cc"
-                        }
-                    ],
-                    isPinned: false,
-                    isMuted: true
-                },
-                {
-                    id: 7,
-                    title: "Разработчики Core",
-                    type: "group",
-                    icon: "fas fa-code",
-                    description: "Обсуждение архитектуры и разработки ядра системы. Только для core разработчиков.",
-                    members: 12,
-                    lastActivity: "2 дня назад",
-                    unread: 0,
-                    isPinned: true,
-                    isMuted: false
-                },
-                {
-                    id: 8,
-                    title: "Мониторинг сети",
-                    type: "channel",
-                    icon: "fas fa-chart-line",
-                    description: "Графики нагрузки и статистика работы сети в реальном времени.",
-                    members: 67,
-                    lastActivity: "30 мин назад",
-                    unread: 1,
-                    unreadMessages: [
-                        { 
-                            id: 12,
-                            from: "Monitor Bot", 
-                            text: "Пиковая нагрузка на сеть достигла 85%. Рекомендуется добавить дополнительные ноды в кластер 3.", 
-                            time: "11:55",
-                            avatarColor: "#ffa502"
-                        }
-                    ],
-                    isPinned: false,
-                    isMuted: false
+                    sender: "Government Liaison",
+                    senderInitials: "GL",
+                    message: "Требуется ваше присутствие на совещании по вопросам кибербезопасности.",
+                    time: "Вчера, 12:10",
+                    category: "government",
+                    urgent: true
                 }
             ];
-            
-            // Инициализация непрочитанных сообщений
-            this.initializeUnreadMessages();
-        }
-        
-        initializeUnreadMessages() {
-            this.unreadMessages = {};
-            let totalUnread = 0;
-            
-            this.chatsData.forEach(chat => {
-                if (chat.unread > 0 && chat.unreadMessages) {
-                    this.unreadMessages[chat.id] = chat.unreadMessages;
-                    totalUnread += chat.unread;
-                }
-            });
-            
-            this.updateUnreadCount(totalUnread);
         }
         
         initEventListeners() {
-            // Анимация загрузки
-            this.loaderPlane.addEventListener('click', () => this.handlePlaneClick());
-            
-            // Логин
+            // Вход в систему
             this.loginBtn.addEventListener('click', () => this.handleLogin());
             this.loginInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') this.handleLogin();
@@ -274,73 +266,82 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (e.key === 'Enter') this.handleLogin();
             });
             
-            // Фильтрация чатов
-            this.chatTypes.forEach(type => {
-                type.addEventListener('click', (e) => this.handleChatTypeFilter(e));
+            // Профиль
+            this.profileHeader.addEventListener('click', () => this.toggleProfileMenu());
+            this.profileMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleProfileMenu();
+            });
+            
+            // Категории чатов
+            this.categoryBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => this.handleCategoryChange(e));
             });
             
             // Поиск
-            this.searchInput.addEventListener('input', (e) => this.handleSearch(e));
+            this.globalSearch.addEventListener('input', 
+                this.debounce(() => this.handleSearch(), 300)
+            );
             
-            // Профиль
-            this.profileBtn.addEventListener('click', () => this.openProfileModal());
-            this.closeProfile.addEventListener('click', () => this.closeProfileModal());
-            this.profileModal.addEventListener('click', (e) => {
-                if (e.target === this.profileModal) this.closeProfileModal();
-            });
+            // Звонки
+            this.startVoiceCall.addEventListener('click', () => this.startVoiceCallDemo());
+            this.startVideoCall.addEventListener('click', () => this.startVideoCallDemo());
+            this.startConference.addEventListener('click', () => this.startConferenceDemo());
             
-            // Настройки
-            this.settingsBtn.addEventListener('click', () => this.openSettingsModal());
+            // Сайдбар непрочитанных
+            this.closeSidebar.addEventListener('click', () => this.closeUnreadSidebar());
+            this.markAllReadBtn.addEventListener('click', () => this.markAllAsRead());
             
-            // Непрочитанные сообщения
-            this.closeUnread.addEventListener('click', () => this.closeUnreadSidebar());
-            this.markAllRead.addEventListener('click', () => this.markAllAsRead());
+            // Уведомления
+            this.notificationsBtn.addEventListener('click', () => this.toggleNotifications());
+            this.closeNotifications.addEventListener('click', () => this.closeNotificationsPanel());
             
-            // Закрытие модальных окон по ESC
+            // Создание чатов
+            this.createGroup.addEventListener('click', () => this.createNewGroup());
+            this.createChannel.addEventListener('click', () => this.createNewChannel());
+            
+            // Закрытие окон по ESC
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
-                    this.closeProfileModal();
-                    this.closeUnreadSidebar();
-                    if (this.settingsModal.classList.contains('active')) {
-                        this.settingsModal.classList.remove('active');
-                    }
+                    this.closeAllModals();
                 }
             });
             
-            // Автоматический запуск анимации
+            // Клик вне модальных окон
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.call-modal') && this.callModal.classList.contains('active')) {
+                    this.endCall();
+                }
+                if (!e.target.closest('.conference-modal') && this.conferenceModal.classList.contains('active')) {
+                    this.leaveConference();
+                }
+            });
+        }
+        
+        initPreloader() {
+            // Автоматический клик по самолетику через 1.5 секунды
             setTimeout(() => {
                 if (!this.isLoggedIn) {
-                    this.loaderPlane.click();
+                    this.telegramPlane.click();
                 }
-            }, 2000);
-        }
-        
-        setupBackgroundEffects() {
-            // Создаем анимированный фон
-            const bgEffects = document.createElement('div');
-            bgEffects.className = 'background-effects';
-            bgEffects.innerHTML = `
-                <div class="gradient-bg"></div>
-                <div class="floating-shapes">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-            `;
-            document.body.insertBefore(bgEffects, document.body.firstChild);
-        }
-        
-        handlePlaneClick() {
-            // Анимация улетания самолетика
-            this.loaderPlane.style.animation = 'planeTakeoff 1s forwards';
-            this.loaderPlane.style.pointerEvents = 'none';
+            }, 1500);
             
-            // Показ формы входа
-            setTimeout(() => {
-                this.loginForm.classList.add('visible');
-                this.loginForm.style.opacity = '1';
-                this.loginForm.style.transform = 'translateY(0)';
-            }, 800);
+            // Обработчик клика по самолетику
+            this.telegramPlane.addEventListener('click', () => {
+                this.telegramPlane.style.animation = 'none';
+                this.telegramPlane.style.cursor = 'default';
+                
+                // Показываем форму входа
+                setTimeout(() => {
+                    this.loginScreen.style.opacity = '0';
+                    this.loginScreen.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        this.loginScreen.style.transition = 'opacity 0.5s ease';
+                        this.loginScreen.style.opacity = '1';
+                    }, 10);
+                }, 500);
+            });
         }
         
         handleLogin() {
@@ -348,181 +349,193 @@ document.addEventListener('DOMContentLoaded', function() {
             const password = this.passwordInput.value.trim();
             
             if (login === '900123456' && password === '111111') {
-                this.showSuccessLogin();
+                this.showLoginSuccess();
             } else {
-                this.showErrorLogin();
+                this.showLoginError();
             }
         }
         
-        showSuccessLogin() {
-            this.loginForm.innerHTML = `
+        showLoginSuccess() {
+            // Обновляем UI формы входа
+            const loginForm = this.loginScreen.querySelector('.login-form');
+            loginForm.innerHTML = `
                 <div class="login-success">
                     <i class="fas fa-check-circle"></i>
                     <h3>Успешный вход!</h3>
-                    <p>Загрузка Telegram Nods...</p>
+                    <p>Подготовка платформы...</p>
                 </div>
             `;
             
-            // Имитация загрузки
+            // Запускаем анимацию полета самолетика к профилю
             setTimeout(() => {
-                this.preloader.style.opacity = '0';
+                this.animatePlaneToProfile();
+            }, 1000);
+            
+            // Через 2.5 секунды показываем основной интерфейс
+            setTimeout(() => {
+                this.preloader.classList.add('hidden');
+                this.appContainer.classList.add('active');
+                this.isLoggedIn = true;
                 
-                setTimeout(() => {
-                    this.preloader.classList.add('hidden');
-                    this.mainContainer.style.display = 'block';
-                    this.isLoggedIn = true;
-                    
-                    // Рендерим интерфейс
-                    this.renderChats();
-                    this.updateChatCount();
-                    
-                    // Плавное появление
-                    setTimeout(() => {
-                        this.mainContainer.classList.add('active');
-                    }, 50);
-                    
-                    // Обновляем фон
-                    this.setupBackgroundEffects();
-                }, 500);
-            }, 1500);
+                // Инициализируем основной интерфейс
+                this.renderChats();
+                this.renderUnreadMessages();
+                this.renderNotifications();
+                this.updateChatCount();
+                
+                // Показываем приветственное уведомление
+                this.showNotification(
+                    "Добро пожаловать в Telegram Nods!",
+                    "Универсальная платформа для геймеров, разработчиков и профессионалов.",
+                    "success"
+                );
+            }, 3500);
         }
         
-        showErrorLogin() {
-            const originalHTML = this.loginForm.innerHTML;
+        animatePlaneToProfile() {
+            // Останавливаем текущую анимацию
+            this.planeContainer.style.animation = 'none';
+            this.telegramPlane.style.animation = 'none';
             
-            // Эффект ошибки
-            this.loginForm.style.animation = 'none';
-            void this.loginForm.offsetWidth; // Trigger reflow
-            this.loginForm.style.animation = 'shake 0.5s ease';
+            // Запускаем анимацию полета к профилю
+            this.telegramPlane.classList.add('fly-to-profile');
+            
+            // Добавляем мертвую петлю (делаем дополнительный оборот)
+            setTimeout(() => {
+                this.telegramPlane.style.transition = 'all 0.5s ease';
+                this.telegramPlane.style.transform += ' rotate(360deg)';
+            }, 250);
+        }
+        
+        showLoginError() {
+            const originalContent = this.loginScreen.querySelector('.login-form').innerHTML;
+            
+            // Эффект тряски
+            this.loginScreen.style.animation = 'none';
+            setTimeout(() => {
+                this.loginScreen.style.animation = 'shake 0.5s ease';
+            }, 10);
             
             // Сообщение об ошибке
             setTimeout(() => {
-                this.loginForm.innerHTML = `
+                this.loginScreen.querySelector('.login-form').innerHTML = `
                     <div class="login-error">
                         <i class="fas fa-exclamation-triangle"></i>
                         <h3>Ошибка входа</h3>
                         <p>Неверный логин или пароль</p>
-                        <button class="retry-btn" id="retryBtn">Попробовать снова</button>
+                        <div class="demo-credentials">
+                            <p>Для демо используйте:</p>
+                            <p><strong>Логин:</strong> 900123456</p>
+                            <p><strong>Пароль:</strong> 111111</p>
+                        </div>
+                        <button class="retry-btn" id="retryLoginBtn">
+                            <i class="fas fa-redo"></i> Попробовать снова
+                        </button>
                     </div>
                 `;
                 
-                document.getElementById('retryBtn').addEventListener('click', () => {
-                    this.loginForm.innerHTML = originalHTML;
-                    this.initEventListeners(); // Re-attach listeners
+                document.getElementById('retryLoginBtn').addEventListener('click', () => {
+                    this.loginScreen.querySelector('.login-form').innerHTML = originalContent;
+                    this.initEventListeners(); // Переинициализируем обработчики
+                    this.loginInput.value = '900123456';
+                    this.passwordInput.value = '111111';
                 });
             }, 500);
         }
         
-        handleChatTypeFilter(e) {
-            const typeElement = e.currentTarget;
-            const type = typeElement.dataset.type;
+        toggleProfileMenu() {
+            this.profileMenu.classList.toggle('active');
+        }
+        
+        handleCategoryChange(event) {
+            const btn = event.currentTarget;
+            const category = btn.dataset.category;
             
-            // Обновляем активный элемент
-            this.chatTypes.forEach(t => t.classList.remove('active'));
-            typeElement.classList.add('active');
+            // Обновляем активную кнопку
+            this.categoryBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Обновляем заголовок
+            const categoryNames = {
+                'all': 'Все диалоги',
+                'professional': 'Профессиональные',
+                'development': 'Разработка',
+                'security': 'Безопасность',
+                'gaming': 'Гейминг',
+                'government': 'Госструктуры',
+                'education': 'Образование'
+            };
+            
+            this.currentCategory.textContent = categoryNames[category];
+            this.currentFilter = category;
             
             // Анимация перехода
-            this.chatsContainer.classList.add('fade-in');
+            this.chatsGrid.classList.add('fade-in');
             
             setTimeout(() => {
-                this.currentFilter = type;
                 this.renderChats();
                 this.updateChatCount();
-                
-                // Обновляем заголовок
-                const typeNames = {
-                    'all': 'Все чаты',
-                    'unread': 'Непрочитанные',
-                    'personal': 'Личные сообщения',
-                    'groups': 'Группы',
-                    'channels': 'Каналы'
-                };
-                
-                this.currentChatType.textContent = typeNames[type];
-                this.chatsContainer.classList.remove('fade-in');
+                this.chatsGrid.classList.remove('fade-in');
             }, 300);
         }
         
-        handleSearch(e) {
-            this.currentSearch = e.target.value.toLowerCase();
-            
-            // Дебаунс поиска
-            clearTimeout(this.searchTimeout);
-            this.searchTimeout = setTimeout(() => {
-                this.renderChats();
-                this.updateChatCount();
-            }, 300);
+        handleSearch() {
+            this.currentSearch = this.globalSearch.value.toLowerCase();
+            this.renderChats();
+            this.updateChatCount();
         }
         
         renderChats() {
-            // Фильтрация чатов
-            let filteredChats = this.chatsData.filter(chat => {
-                // Фильтр по типу
-                if (this.currentFilter === 'unread' && chat.unread === 0) return false;
-                if (this.currentFilter === 'personal' && chat.type !== 'personal') return false;
-                if (this.currentFilter === 'groups' && chat.type !== 'group') return false;
-                if (this.currentFilter === 'channels' && chat.type !== 'channel') return false;
-                
-                // Фильтр по поиску
-                if (this.currentSearch) {
-                    const searchTerm = this.currentSearch.toLowerCase();
-                    return chat.title.toLowerCase().includes(searchTerm) ||
-                           chat.description.toLowerCase().includes(searchTerm);
-                }
-                
-                return true;
-            });
+            this.chatsGrid.innerHTML = '';
             
-            // Сортировка: закрепленные сверху, затем по непрочитанным, затем по активности
-            filteredChats.sort((a, b) => {
-                if (a.isPinned !== b.isPinned) return b.isPinned - a.isPinned;
-                if (a.unread !== b.unread) return b.unread - a.unread;
-                return b.id - a.id; // Просто для демо, обычно по времени последнего сообщения
-            });
+            const chats = this.chatsData[this.currentFilter] || [];
+            let filteredChats = chats;
             
-            // Очищаем контейнер
-            this.chatsContainer.innerHTML = '';
+            // Применяем поиск если есть
+            if (this.currentSearch) {
+                filteredChats = chats.filter(chat => 
+                    chat.title.toLowerCase().includes(this.currentSearch) ||
+                    chat.description.toLowerCase().includes(this.currentSearch)
+                );
+            }
             
-            // Рендерим чаты
-            filteredChats.forEach(chat => {
+            // Рендерим чаты с анимацией
+            filteredChats.forEach((chat, index) => {
                 const chatElement = this.createChatElement(chat);
-                this.chatsContainer.appendChild(chatElement);
+                
+                // Задержка для анимации появления
+                chatElement.style.animationDelay = `${index * 0.1}s`;
+                chatElement.classList.add('fade-in');
+                
+                this.chatsGrid.appendChild(chatElement);
             });
             
-            // Анимация появления
-            this.animateChatsAppearance();
+            // Если чатов нет
+            if (filteredChats.length === 0) {
+                this.chatsGrid.innerHTML = `
+                    <div class="no-chats">
+                        <i class="fas fa-comment-slash"></i>
+                        <h3>Диалоги не найдены</h3>
+                        <p>Попробуйте изменить поисковый запрос или выберите другую категорию</p>
+                    </div>
+                `;
+            }
         }
         
         createChatElement(chat) {
-            const chatElement = document.createElement('div');
-            chatElement.className = `chat-card ${this.activeChatId === chat.id ? 'active' : ''}`;
-            chatElement.dataset.id = chat.id;
+            const element = document.createElement('div');
+            element.className = `chat-card ${chat.priority === 'high' ? 'highlight' : ''}`;
+            element.dataset.id = chat.id;
             
-            // Определяем иконку типа
-            const typeIcons = {
-                'group': 'fas fa-users',
-                'channel': 'fas fa-bullhorn',
-                'personal': 'fas fa-user'
-            };
-            
-            const typeNames = {
-                'group': 'Группа',
-                'channel': 'Канал',
-                'personal': 'Личные'
-            };
-            
-            chatElement.innerHTML = `
-                ${chat.isPinned ? '<div class="pinned-indicator"><i class="fas fa-thumbtack"></i></div>' : ''}
-                ${chat.isMuted ? '<div class="muted-indicator"><i class="fas fa-volume-mute"></i></div>' : ''}
-                
+            element.innerHTML = `
                 <div class="chat-header">
-                    <div class="chat-type-indicator">
-                        <i class="${typeIcons[chat.type] || 'fas fa-comment'}"></i>
-                        <span>${typeNames[chat.type]}</span>
+                    <div class="chat-category">
+                        <i class="fas ${chat.icon}"></i>
+                        <span>${this.getCategoryName(chat.category)}</span>
                     </div>
                     ${chat.unread > 0 ? `
-                        <div class="unread-badge" data-chat-id="${chat.id}">
-                            ${chat.unread}
+                        <div class="chat-urgency" onclick="app.showUnreadSidebar(event, ${chat.id})">
+                            ${chat.unread} непрочитанных
                         </div>
                     ` : ''}
                 </div>
@@ -530,316 +543,728 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h3 class="chat-title">${chat.title}</h3>
                 <p class="chat-description">${chat.description}</p>
                 
-                <div class="chat-meta">
+                <div class="chat-stats">
                     <div class="chat-members">
                         <i class="fas fa-user-friends"></i>
-                        <span>${chat.members}</span>
+                        <span>${chat.members} участников</span>
                     </div>
-                    <div class="last-activity">
-                        ${chat.lastActivity}
+                    <div class="last-message">
+                        <i class="fas fa-clock"></i>
+                        <span>${chat.lastActive}</span>
                     </div>
                 </div>
             `;
             
-            // Обработчики событий
-            chatElement.addEventListener('click', (e) => this.handleChatClick(e, chat));
-            
-            // Обработчик для бейджа непрочитанных
-            const unreadBadge = chatElement.querySelector('.unread-badge');
-            if (unreadBadge) {
-                unreadBadge.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    this.showUnreadMessages(chat.id);
-                });
-            }
-            
-            return chatElement;
-        }
-        
-        animateChatsAppearance() {
-            const chatCards = this.chatsContainer.querySelectorAll('.chat-card');
-            
-            chatCards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                
-                setTimeout(() => {
-                    card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 100);
-            });
-        }
-        
-        handleChatClick(e, chat) {
-            // Не обрабатываем клик по бейджу
-            if (e.target.closest('.unread-badge')) return;
-            
-            // Снимаем активность с предыдущего чата
-            document.querySelectorAll('.chat-card').forEach(card => {
-                card.classList.remove('active');
-            });
-            
-            // Активируем текущий чат
-            const chatElement = e.currentTarget;
-            chatElement.classList.add('active');
-            this.activeChatId = chat.id;
-            
-            // Анимация активации
-            chatElement.style.boxShadow = '0 0 0 5px rgba(0, 136, 204, 0.3)';
-            setTimeout(() => {
-                chatElement.style.boxShadow = '';
-            }, 500);
-            
-            // Если есть непрочитанные - отмечаем как прочитанные
-            if (chat.unread > 0) {
-                this.markChatAsRead(chat.id);
-            }
-        }
-        
-        showUnreadMessages(chatId) {
-            const chat = this.chatsData.find(c => c.id === chatId);
-            if (!chat || !chat.unreadMessages) return;
-            
-            // Обновляем счетчик в сайдбаре
-            this.unreadSidebarCount.textContent = `${chat.unreadMessages.length} сообщений`;
-            
-            // Очищаем список
-            this.unreadMessagesList.innerHTML = '';
-            
-            // Добавляем сообщения
-            chat.unreadMessages.forEach(msg => {
-                const messageElement = this.createUnreadMessageElement(msg);
-                this.unreadMessagesList.appendChild(messageElement);
-            });
-            
-            // Открываем сайдбар
-            this.unreadSidebar.classList.add('active');
-        }
-        
-        createUnreadMessageElement(message) {
-            const element = document.createElement('div');
-            element.className = 'unread-message';
-            element.dataset.id = message.id;
-            
-            element.innerHTML = `
-                <div class="message-header">
-                    <div class="message-sender">
-                        <div class="sender-avatar" style="background: ${message.avatarColor}">
-                            ${message.from.charAt(0)}
-                        </div>
-                        <span>${message.from}</span>
-                    </div>
-                    <div class="message-time">${message.time}</div>
-                </div>
-                <div class="message-text">${message.text}</div>
-            `;
-            
-            element.addEventListener('click', () => {
-                this.markMessageAsRead(message.id);
-                element.classList.add('read');
-                setTimeout(() => {
-                    element.remove();
-                    this.updateUnreadSidebarCount();
-                }, 300);
+            // Добавляем обработчик клика
+            element.addEventListener('click', (e) => {
+                if (!e.target.closest('.chat-urgency')) {
+                    this.openChat(chat);
+                }
             });
             
             return element;
         }
         
-        markMessageAsRead(messageId) {
-            // Находим чат, содержащий это сообщение
-            for (const chat of this.chatsData) {
-                if (chat.unreadMessages) {
-                    const messageIndex = chat.unreadMessages.findIndex(m => m.id === messageId);
-                    if (messageIndex > -1) {
-                        chat.unreadMessages.splice(messageIndex, 1);
-                        chat.unread = Math.max(0, chat.unread - 1);
+        openChat(chat) {
+            // Анимация выделения чата
+            const chatElement = document.querySelector(`.chat-card[data-id="${chat.id}"]`);
+            chatElement.classList.add('active');
+            
+            // Показываем уведомление
+            this.showNotification(
+                `Открыт чат: ${chat.title}`,
+                `Переход в режим общения с ${chat.members} участниками`,
+                "info"
+            );
+            
+            // Через 2 секунды снимаем выделение
+            setTimeout(() => {
+                chatElement.classList.remove('active');
+            }, 2000);
+        }
+        
+        updateChatCount() {
+            const chats = this.chatsData[this.currentFilter] || [];
+            const count = this.currentSearch ? 
+                chats.filter(c => 
+                    c.title.toLowerCase().includes(this.currentSearch) ||
+                    c.description.toLowerCase().includes(this.currentSearch)
+                ).length : 
+                chats.length;
+            
+            this.activeCount.textContent = `${count} активных диалогов`;
+        }
+        
+        getCategoryName(category) {
+            const names = {
+                'professional': 'Профессиональный',
+                'development': 'Разработка',
+                'security': 'Безопасность',
+                'gaming': 'Гейминг',
+                'government': 'Госструктура',
+                'education': 'Образование',
+                'all': 'Общий'
+            };
+            
+            return names[category] || 'Общий';
+        }
+        
+        startVoiceCallDemo() {
+            if (this.isInCall || this.isInConference) {
+                this.showNotification(
+                    "Уже есть активный вызов",
+                    "Завершите текущий вызов перед началом нового",
+                    "warning"
+                );
+                return;
+            }
+            
+            this.isInCall = true;
+            this.callStartTime = new Date();
+            
+            this.callContainer.innerHTML = `
+                <div class="call-header">
+                    <h2><i class="fas fa-phone"></i> Голосовой звонок</h2>
+                    <div class="call-participants">Security Team • Alpha Group</div>
+                </div>
+                
+                <div class="call-content">
+                    <div class="call-avatar-large">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    
+                    <div class="call-status">Идет голосовой звонок...</div>
+                    <div class="call-timer" id="callTimer">00:00</div>
+                    
+                    <div class="call-controls">
+                        <button class="call-control-btn mute" id="toggleMute">
+                            <i class="fas fa-microphone"></i>
+                        </button>
                         
-                        // Обновляем интерфейс
-                        this.updateUnreadCount();
-                        this.renderChats();
-                        break;
-                    }
+                        <button class="call-control-btn hangup" id="endCallBtn">
+                            <i class="fas fa-phone-slash"></i>
+                        </button>
+                        
+                        <button class="call-control-btn video-toggle" id="toggleVideo">
+                            <i class="fas fa-video-slash"></i>
+                        </button>
+                    </div>
+                    
+                    <button class="leave-call-btn" id="leaveCallBtn">
+                        <i class="fas fa-sign-out-alt"></i> Покинуть звонок
+                    </button>
+                </div>
+            `;
+            
+            this.callModal.classList.add('active');
+            
+            // Запускаем таймер
+            this.startCallTimer();
+            
+            // Добавляем обработчики для кнопок звонка
+            setTimeout(() => {
+                document.getElementById('toggleMute').addEventListener('click', () => {
+                    const icon = document.querySelector('#toggleMute i');
+                    icon.classList.toggle('fa-microphone');
+                    icon.classList.toggle('fa-microphone-slash');
+                    
+                    this.showNotification(
+                        "Микрофон",
+                        icon.classList.contains('fa-microphone-slash') ? 
+                        "Микрофон отключен" : "Микрофон включен",
+                        "info"
+                    );
+                });
+                
+                document.getElementById('toggleVideo').addEventListener('click', () => {
+                    const icon = document.querySelector('#toggleVideo i');
+                    icon.classList.toggle('fa-video');
+                    icon.classList.toggle('fa-video-slash');
+                    
+                    this.showNotification(
+                        "Камера",
+                        icon.classList.contains('fa-video-slash') ? 
+                        "Камера отключена" : "Камера включена",
+                        "info"
+                    );
+                });
+                
+                document.getElementById('endCallBtn').addEventListener('click', () => this.endCall());
+                document.getElementById('leaveCallBtn').addEventListener('click', () => this.endCall());
+            }, 100);
+            
+            this.showNotification(
+                "Голосовой звонок начат",
+                "Вы подключены к конференции с Security Team",
+                "success"
+            );
+        }
+        
+        startVideoCallDemo() {
+            if (this.isInCall || this.isInConference) {
+                this.showNotification(
+                    "Уже есть активный вызов",
+                    "Завершите текущий вызов перед началом нового",
+                    "warning"
+                );
+                return;
+            }
+            
+            this.isInCall = true;
+            this.callStartTime = new Date();
+            
+            this.callContainer.innerHTML = `
+                <div class="call-header">
+                    <h2><i class="fas fa-video"></i> Видеозвонок</h2>
+                    <div class="call-participants">3 участника онлайн</div>
+                </div>
+                
+                <div class="call-content">
+                    <div class="call-avatar-large">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    
+                    <div class="call-status">Идет видеозвонок...</div>
+                    <div class="call-timer" id="callTimer">00:00</div>
+                    
+                    <div class="call-grid" style="
+                        display: grid;
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: 20px;
+                        margin: 30px 0;
+                    ">
+                        <div class="video-feed" style="
+                            background: rgba(0,0,0,0.3);
+                            border-radius: var(--border-radius);
+                            padding: 20px;
+                            text-align: center;
+                        ">
+                            <div style="font-size: 48px; margin-bottom: 10px;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>Security Team</div>
+                        </div>
+                        
+                        <div class="video-feed" style="
+                            background: rgba(0,0,0,0.3);
+                            border-radius: var(--border-radius);
+                            padding: 20px;
+                            text-align: center;
+                        ">
+                            <div style="font-size: 48px; margin-bottom: 10px;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>Вы</div>
+                        </div>
+                    </div>
+                    
+                    <div class="call-controls">
+                        <button class="call-control-btn mute" id="toggleMute">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        
+                        <button class="call-control-btn hangup" id="endCallBtn">
+                            <i class="fas fa-phone-slash"></i>
+                        </button>
+                        
+                        <button class="call-control-btn video-toggle" id="toggleVideo">
+                            <i class="fas fa-video"></i>
+                        </button>
+                    </div>
+                    
+                    <button class="leave-call-btn" id="leaveCallBtn">
+                        <i class="fas fa-sign-out-alt"></i> Покинуть видеозвонок
+                    </button>
+                </div>
+            `;
+            
+            this.callModal.classList.add('active');
+            
+            // Запускаем таймер
+            this.startCallTimer();
+            
+            // Добавляем обработчики
+            setTimeout(() => {
+                document.getElementById('toggleMute').addEventListener('click', () => {
+                    const icon = document.querySelector('#toggleMute i');
+                    icon.classList.toggle('fa-microphone');
+                    icon.classList.toggle('fa-microphone-slash');
+                });
+                
+                document.getElementById('toggleVideo').addEventListener('click', () => {
+                    const icon = document.querySelector('#toggleVideo i');
+                    icon.classList.toggle('fa-video');
+                    icon.classList.toggle('fa-video-slash');
+                });
+                
+                document.getElementById('endCallBtn').addEventListener('click', () => this.endCall());
+                document.getElementById('leaveCallBtn').addEventListener('click', () => this.endCall());
+            }, 100);
+            
+            this.showNotification(
+                "Видеозвонок начат",
+                "Вы подключены к видеоконференции",
+                "success"
+            );
+        }
+        
+        startConferenceDemo() {
+            if (this.isInCall || this.isInConference) {
+                this.showNotification(
+                    "Уже есть активный вызов",
+                    "Завершите текущий вызов перед началом нового",
+                    "warning"
+                );
+                return;
+            }
+            
+            this.isInConference = true;
+            this.callStartTime = new Date();
+            
+            this.conferenceContainer.innerHTML = `
+                <div class="call-header">
+                    <h2><i class="fas fa-users"></i> Видеоконференция</h2>
+                    <div class="call-participants">6 участников • Вы - Host</div>
+                </div>
+                
+                <div class="conference-grid" id="conferenceGrid">
+                    <!-- Участники будут добавлены динамически -->
+                </div>
+                
+                <div class="conference-controls">
+                    <button class="conference-control-btn leave" id="leaveConferenceBtn">
+                        <i class="fas fa-sign-out-alt"></i> Покинуть конференцию
+                    </button>
+                    
+                    <button class="conference-control-btn settings" id="conferenceSettings">
+                        <i class="fas fa-cog"></i> Настройки
+                    </button>
+                </div>
+            `;
+            
+            // Добавляем участников
+            this.renderConferenceParticipants();
+            
+            this.conferenceModal.classList.add('active');
+            
+            // Добавляем обработчики
+            setTimeout(() => {
+                document.getElementById('leaveConferenceBtn').addEventListener('click', () => this.leaveConference());
+                document.getElementById('conferenceSettings').addEventListener('click', () => {
+                    this.showNotification(
+                        "Настройки конференции",
+                        "Расширенные настройки доступны в полной версии",
+                        "info"
+                    );
+                });
+                
+                // Симуляция смены активного говорящего
+                setInterval(() => {
+                    this.simulateActiveSpeaker();
+                }, 3000);
+            }, 100);
+            
+            this.showNotification(
+                "Конференция начата",
+                "Вы создали видеоконференцию с 6 участниками",
+                "success"
+            );
+        }
+        
+        renderConferenceParticipants() {
+            const grid = document.getElementById('conferenceGrid');
+            grid.innerHTML = '';
+            
+            this.conferenceParticipants.forEach(participant => {
+                const participantElement = document.createElement('div');
+                participantElement.className = `conference-participant ${participant.status === 'speaking' ? 'active-speaker' : ''}`;
+                participantElement.dataset.id = participant.id;
+                
+                participantElement.innerHTML = `
+                    <div class="participant-avatar">
+                        ${participant.avatar}
+                    </div>
+                    <div class="participant-name">${participant.name}</div>
+                    <div class="participant-status">
+                        ${participant.status === 'speaking' ? 'Говорит' : 
+                          participant.status === 'muted' ? 'Без звука' :
+                          participant.status === 'listening' ? 'Слушает' : 'Неактивен'}
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 5px;">
+                        ${participant.role}
+                    </div>
+                `;
+                
+                grid.appendChild(participantElement);
+            });
+        }
+        
+        simulateActiveSpeaker() {
+            if (!this.isInConference) return;
+            
+            // Случайным образом выбираем нового говорящего
+            const participants = document.querySelectorAll('.conference-participant');
+            participants.forEach(p => p.classList.remove('active-speaker'));
+            
+            const randomIndex = Math.floor(Math.random() * participants.length);
+            const randomParticipant = participants[randomIndex];
+            
+            // Обновляем статус в данных
+            const participantId = parseInt(randomParticipant.dataset.id);
+            this.conferenceParticipants.forEach(p => {
+                p.status = p.id === participantId ? 'speaking' : 'listening';
+            });
+            
+            randomParticipant.classList.add('active-speaker');
+            randomParticipant.querySelector('.participant-status').textContent = 'Говорит';
+        }
+        
+        startCallTimer() {
+            if (this.callTimer) clearInterval(this.callTimer);
+            
+            this.callTimer = setInterval(() => {
+                if (!this.callStartTime) return;
+                
+                const now = new Date();
+                const diff = Math.floor((now - this.callStartTime) / 1000);
+                const minutes = Math.floor(diff / 60);
+                const seconds = diff % 60;
+                
+                const timerElement = document.getElementById('callTimer');
+                if (timerElement) {
+                    timerElement.textContent = 
+                        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 }
+            }, 1000);
+        }
+        
+        endCall() {
+            this.isInCall = false;
+            this.callModal.classList.remove('active');
+            
+            if (this.callTimer) {
+                clearInterval(this.callTimer);
+                this.callTimer = null;
+            }
+            
+            this.callStartTime = null;
+            
+            this.showNotification(
+                "Звонок завершен",
+                "Вы покинули голосовой/видеозвонок",
+                "info"
+            );
+        }
+        
+        leaveConference() {
+            this.isInConference = false;
+            this.conferenceModal.classList.remove('active');
+            
+            if (this.callTimer) {
+                clearInterval(this.callTimer);
+                this.callTimer = null;
+            }
+            
+            this.callStartTime = null;
+            
+            this.showNotification(
+                "Конференция завершена",
+                "Вы покинули видеоконференцию",
+                "info"
+            );
+        }
+        
+        showUnreadSidebar(event, chatId) {
+            event.stopPropagation();
+            this.rightSidebar.classList.add('active');
+            this.renderUnreadMessages();
+        }
+        
+        closeUnreadSidebar() {
+            this.rightSidebar.classList.remove('active');
+        }
+        
+        renderUnreadMessages() {
+            this.unreadMessages.innerHTML = '';
+            
+            this.unreadData.forEach((message, index) => {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'unread-message-item';
+                messageElement.style.animationDelay = `${index * 0.1}s`;
+                messageElement.classList.add('fade-in');
+                
+                messageElement.innerHTML = `
+                    <div class="message-header">
+                        <div class="message-sender">
+                            <div class="sender-avatar">${message.senderInitials}</div>
+                            <span class="sender-name">${message.sender}</span>
+                        </div>
+                        <div class="message-time">${message.time}</div>
+                    </div>
+                    
+                    <div class="message-content">${message.message}</div>
+                    
+                    <div class="message-actions">
+                        <button class="message-action-btn reply" onclick="app.replyToMessage(${message.id})">
+                            <i class="fas fa-reply"></i> Ответить
+                        </button>
+                        <button class="message-action-btn mark-read" onclick="app.markMessageAsRead(${message.id})">
+                            <i class="fas fa-check"></i> Прочитано
+                        </button>
+                    </div>
+                `;
+                
+                this.unreadMessages.appendChild(messageElement);
+            });
+        }
+        
+        replyToMessage(messageId) {
+            const message = this.unreadData.find(m => m.id === messageId);
+            if (message) {
+                this.showNotification(
+                    "Ответ на сообщение",
+                    `Открыт чат с ${message.sender} для ответа`,
+                    "info"
+                );
+                
+                // Симуляция открытия чата
+                setTimeout(() => {
+                    this.closeUnreadSidebar();
+                }, 1000);
             }
         }
         
-        markChatAsRead(chatId) {
-            const chat = this.chatsData.find(c => c.id === chatId);
-            if (chat && chat.unread > 0) {
-                chat.unread = 0;
-                chat.unreadMessages = [];
+        markMessageAsRead(messageId) {
+            const messageIndex = this.unreadData.findIndex(m => m.id === messageId);
+            if (messageIndex > -1) {
+                this.unreadData.splice(messageIndex, 1);
+                this.unreadMessagesCount--;
                 
-                // Обновляем интерфейс
-                this.updateUnreadCount();
-                this.renderChats();
+                // Обновляем счетчики
+                this.updateUnreadCounters();
                 
-                // Закрываем сайдбар, если он открыт для этого чата
-                if (this.unreadSidebar.classList.contains('active')) {
-                    const currentChatId = parseInt(this.unreadSidebar.dataset.chatId || '0');
-                    if (currentChatId === chatId) {
-                        this.closeUnreadSidebar();
-                    }
-                }
+                // Перерисовываем список
+                this.renderUnreadMessages();
+                
+                this.showNotification(
+                    "Сообщение прочитано",
+                    "Непрочитанное сообщение отмечено как прочитанное",
+                    "success"
+                );
             }
         }
         
         markAllAsRead() {
-            let totalMarked = 0;
+            this.unreadData = [];
+            this.unreadMessagesCount = 0;
             
-            this.chatsData.forEach(chat => {
-                if (chat.unread > 0) {
-                    totalMarked += chat.unread;
-                    chat.unread = 0;
-                    chat.unreadMessages = [];
-                }
+            this.updateUnreadCounters();
+            this.renderUnreadMessages();
+            
+            this.showNotification(
+                "Все сообщения прочитаны",
+                "Все непрочитанные сообщения отмечены как прочитанные",
+                "success"
+            );
+        }
+        
+        updateUnreadCounters() {
+            // Обновляем счетчики на кнопках категорий
+            document.querySelectorAll('.unread-count').forEach(counter => {
+                counter.textContent = this.unreadMessagesCount;
             });
             
-            // Обновляем интерфейс
-            this.updateUnreadCount();
-            this.renderChats();
-            this.closeUnreadSidebar();
-            
-            // Показываем уведомление
-            this.showNotification(`${totalMarked} сообщений отмечены как прочитанные`);
-        }
-        
-        updateUnreadCount(total = null) {
-            if (total === null) {
-                total = this.chatsData.reduce((sum, chat) => sum + chat.unread, 0);
-            }
-            
-            this.totalUnreadCount.textContent = total;
-            
-            // Анимация обновления счетчика
-            if (total > 0) {
-                this.totalUnreadCount.classList.add('pulse');
-            } else {
-                this.totalUnreadCount.classList.remove('pulse');
+            // Обновляем счетчик уведомлений
+            const notificationBadge = document.querySelector('.notification-badge');
+            if (notificationBadge) {
+                notificationBadge.textContent = this.notifications.filter(n => !n.read).length;
             }
         }
         
-        updateUnreadSidebarCount() {
-            const count = this.unreadMessagesList.children.length;
-            this.unreadSidebarCount.textContent = `${count} сообщений`;
+        toggleNotifications() {
+            this.notificationCenter.classList.toggle('active');
+        }
+        
+        closeNotificationsPanel() {
+            this.notificationCenter.classList.remove('active');
+        }
+        
+        renderNotifications() {
+            this.notificationsList.innerHTML = '';
             
-            if (count === 0) {
-                setTimeout(() => this.closeUnreadSidebar(), 1000);
-            }
+            this.notifications.forEach(notification => {
+                const notificationElement = document.createElement('div');
+                notificationElement.className = `notification-item ${notification.read ? '' : 'unread'}`;
+                
+                notificationElement.innerHTML = `
+                    <div class="notification-title">${notification.title}</div>
+                    <div class="notification-message">${notification.message}</div>
+                    <div class="notification-time">${notification.time}</div>
+                `;
+                
+                notificationElement.addEventListener('click', () => {
+                    notification.read = true;
+                    this.renderNotifications();
+                    this.updateUnreadCounters();
+                });
+                
+                this.notificationsList.appendChild(notificationElement);
+            });
         }
         
-        updateChatCount() {
-            const visibleChats = this.chatsContainer.children.length;
-            this.chatCount.textContent = `${visibleChats} чатов`;
+        createNewGroup() {
+            this.showNotification(
+                "Создание группы",
+                "Функционал создания групп доступен в полной версии",
+                "info"
+            );
         }
         
-        openProfileModal() {
-            this.profileModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+        createNewChannel() {
+            this.showNotification(
+                "Создание канала",
+                "Функционал создания каналов доступен в полной версии",
+                "info"
+            );
         }
         
-        closeProfileModal() {
-            this.profileModal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-        
-        openSettingsModal() {
-            this.settingsModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        closeUnreadSidebar() {
-            this.unreadSidebar.classList.remove('active');
-        }
-        
-        showNotification(message) {
-            // Создаем уведомление
+        showNotification(title, message, type = 'info') {
+            // Создаем элемент уведомления
             const notification = document.createElement('div');
-            notification.className = 'notification';
+            notification.className = 'notification-item unread';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                width: 300px;
+                z-index: 4000;
+                animation: slideInRight 0.3s ease;
+            `;
+            
+            const icon = type === 'success' ? 'fa-check-circle' :
+                        type === 'warning' ? 'fa-exclamation-triangle' :
+                        type === 'error' ? 'fa-times-circle' : 'fa-info-circle';
+            
+            const color = type === 'success' ? 'var(--success-color)' :
+                         type === 'warning' ? 'var(--warning-color)' :
+                         type === 'error' ? 'var(--danger-color)' : 'var(--info-color)';
+            
             notification.innerHTML = `
-                <i class="fas fa-check-circle"></i>
-                <span>${message}</span>
+                <div class="notification-title" style="color: ${color};">
+                    <i class="fas ${icon}"></i> ${title}
+                </div>
+                <div class="notification-message">${message}</div>
+                <div class="notification-time">Только что</div>
             `;
             
             document.body.appendChild(notification);
             
-            // Анимация появления
-            setTimeout(() => notification.classList.add('show'), 10);
-            
             // Автоматическое скрытие
             setTimeout(() => {
-                notification.classList.remove('show');
+                notification.style.animation = 'slideOutRight 0.3s ease';
                 setTimeout(() => notification.remove(), 300);
-            }, 3000);
+            }, 4000);
+        }
+        
+        closeAllModals() {
+            this.callModal.classList.remove('active');
+            this.conferenceModal.classList.remove('active');
+            this.notificationCenter.classList.remove('active');
+            this.rightSidebar.classList.remove('active');
+            this.profileMenu.classList.remove('active');
+            
+            if (this.isInCall) this.endCall();
+            if (this.isInConference) this.leaveConference();
+        }
+        
+        setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Ctrl + / - Поиск
+                if (e.ctrlKey && e.key === '/') {
+                    e.preventDefault();
+                    this.globalSearch.focus();
+                }
+                
+                // Ctrl + N - Новый чат
+                if (e.ctrlKey && e.key === 'n') {
+                    e.preventDefault();
+                    this.createNewGroup();
+                }
+                
+                // Ctrl + U - Непрочитанные
+                if (e.ctrlKey && e.key === 'u') {
+                    e.preventDefault();
+                    this.rightSidebar.classList.toggle('active');
+                }
+                
+                // Ctrl + B - Уведомления
+                if (e.ctrlKey && e.key === 'b') {
+                    e.preventDefault();
+                    this.toggleNotifications();
+                }
+                
+                // F1 - Помощь
+                if (e.key === 'F1') {
+                    e.preventDefault();
+                    this.showNotification(
+                        "Горячие клавиши",
+                        "Ctrl+/ - Поиск | Ctrl+N - Новый чат | Ctrl+U - Непрочитанные | Ctrl+B - Уведомления | ESC - Закрыть всё",
+                        "info"
+                    );
+                }
+            });
+        }
+        
+        debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
         }
     }
     
-    // Запуск приложения
-    const app = new TelegramNodsApp();
+    // Инициализация приложения
+    window.app = new TelegramNodsApp();
     
-    // Добавляем стили для уведомлений
-    const notificationStyles = document.createElement('style');
-    notificationStyles.textContent = `
-        .notification {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(135deg, var(--success-color), #32d489);
-            color: white;
-            padding: 16px 24px;
-            border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 3000;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    // Добавляем недостающие стили анимаций
+    const additionalStyles = document.createElement('style');
+    additionalStyles.textContent = `
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
         
-        .notification.show {
-            transform: translateY(0);
-            opacity: 1;
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
         
-        .notification i {
-            font-size: 20px;
-        }
-        
-        .pinned-indicator {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: var(--warning-color);
-            font-size: 14px;
-        }
-        
-        .muted-indicator {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-        
-        .sender-avatar {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            margin-right: 8px;
-            font-size: 12px;
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
         }
         
         .login-success, .login-error {
             text-align: center;
-            animation: formAppear 0.5s ease;
+            padding: 20px;
         }
         
         .login-success i {
@@ -854,30 +1279,78 @@ document.addEventListener('DOMContentLoaded', function() {
             margin-bottom: 20px;
         }
         
-        .login-success h3, .login-error h3 {
-            margin-bottom: 10px;
-            color: var(--text-primary);
+        .demo-credentials {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
         }
         
-        .login-success p, .login-error p {
-            color: var(--text-secondary);
-            margin-bottom: 20px;
+        .demo-credentials p {
+            margin: 5px 0;
+            font-size: 14px;
         }
         
         .retry-btn {
-            padding: 12px 24px;
+            width: 100%;
+            padding: 12px;
             background: var(--primary-color);
             border: none;
-            border-radius: var(--radius);
+            border-radius: var(--border-radius);
             color: white;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
         .retry-btn:hover {
             background: var(--primary-dark);
         }
+        
+        .no-chats {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .no-chats i {
+            font-size: 64px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        
+        .no-chats h3 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+        
+        .no-chats p {
+            color: var(--text-secondary);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        /* Анимация для непрочитанных сообщений */
+        .unread-message-item {
+            animation: messageAppear 0.5s ease;
+        }
+        
+        @keyframes messageAppear {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     `;
-    document.head.appendChild(notificationStyles);
+    document.head.appendChild(additionalStyles);
 });
