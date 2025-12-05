@@ -1,3 +1,42 @@
+.context-menu {
+  /* Добавить безопасные зоны для мобильных */
+  max-height: 80vh;
+  overflow-y: auto;
+  /* Улучшить тактильную обратную связь */
+  touch-action: manipulation;
+}
+
+/* Добавить в style.css */
+.messages-container,
+.chats-container,
+.contacts-list {
+  -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+  scroll-behavior: smooth;
+}
+
+/* Убрать задержку на мобильных */
+@media (hover: none) and (pointer: coarse) {
+  .contact-actions,
+  .message-actions,
+  .call-actions,
+  .file-actions {
+    opacity: 1 !important; /* Всегда показываем действия на мобильных */
+  }
+}
+
+/* Сделать инпуты больше на мобильных */
+@media (max-width: 480px) {
+  .form-control {
+    font-size: 16px; /* Предотвращает масштабирование в iOS */
+    padding: 1rem;
+  }
+  
+  .btn {
+    padding: 1rem;
+    min-height: 50px;
+  }
+}
+
 /* login.css - Стили для системы входа */
 
 :root {
