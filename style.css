@@ -3789,3 +3789,29 @@ body {
     border-top-color: var(--border-color);
     z-index: 1000;
 }
+
+/* Добавьте в style.css */
+* {
+  will-change: transform, opacity; /* Для GPU-ускорения */
+}
+
+.chat-card, .node-item {
+  contain: content; /* Улучшает производительность прокрутки */
+}
+
+.messages-container {
+  overscroll-behavior: contain; /* Предотвращает скачки */
+}
+
+/* Медиа-запрос для уменьшения анимаций на мобильных */
+@media (max-width: 768px) {
+  .chat-card:hover,
+  .node-item:hover {
+    transform: none; /* Отключаем трансформации при ховере */
+  }
+  
+  /* Уменьшаем сложные анимации */
+  .logo-animated {
+    animation: none;
+  }
+}
