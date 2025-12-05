@@ -1,4 +1,50 @@
 // Telegram Nodes - Полная версия с системой входа (3000+ строк)
+
+// ЗАЩИТА ОТ ОШИБОК - добавьте в самое начало файла
+(function() {
+    'use strict';
+    
+    // Проверяем что DOM загружен
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        setTimeout(init, 100);
+    }
+    
+    function init() {
+        console.log('🚀 Telegram Nodes запускается...');
+        
+        try {
+            // Ваш существующий код здесь...
+            // ========== КОНФИГУРАЦИЯ ==========
+            const config = {
+                // ... ваш конфиг
+            };
+            
+            // ... весь остальной код ...
+            
+        } catch (error) {
+            console.error('💥 Критическая ошибка при инициализации:', error);
+            
+            // Экстренный показ формы входа
+            const preloader = document.getElementById('preloader');
+            const loginForm = document.getElementById('login-form');
+            
+            if (preloader) {
+                preloader.style.opacity = '0';
+                setTimeout(() => preloader.style.display = 'none', 300);
+            }
+            
+            if (loginForm) {
+                loginForm.style.display = 'block';
+                setTimeout(() => loginForm.style.opacity = '1', 50);
+            }
+            
+            // Показываем сообщение об ошибке
+            alert('Произошла ошибка при загрузке приложения. Пожалуйста, проверьте консоль (F12).');
+        }
+    }
+})();
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Telegram Nodes запускается...');
     
