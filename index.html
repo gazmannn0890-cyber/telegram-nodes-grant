@@ -1,470 +1,244 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="dark">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Nodes • Современный мессенджер</title>
-    
-    <!-- Font Awesome -->
+    <title>Telegram Nods</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
 </head>
 <body>
-    <!-- Частицы фона -->
-    <div class="particles"></div>
-    
     <!-- Прелоадер -->
     <div class="preloader" id="preloader">
-        <div class="preloader-content">
-            <div class="logo-animated">
-                <div class="logo-circle"></div>
-                <div class="logo-circle"></div>
-                <div class="logo-circle"></div>
-                <span class="logo-text">TN</span>
+        <div class="loader-container">
+            <div class="loader-circle"></div>
+            <div class="loader-plane" id="loaderPlane">
+                <i class="fas fa-paper-plane"></i>
             </div>
-            <h1 class="preloader-title">Telegram Nodes</h1>
-            <p class="preloader-subtitle">Загрузка будущего общения...</p>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress-fill"></div>
-            </div>
-            <div class="preloader-stats">
-                <div class="stat">
-                    <span class="stat-value" id="stat-chats">0</span>
-                    <span class="stat-label">чатов</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-value" id="stat-nodes">0</span>
-                    <span class="stat-label">узлов</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-value" id="stat-online">1</span>
-                    <span class="stat-label">онлайн</span>
-                </div>
-            </div>
+        </div>
+        
+        <div class="login-form" id="loginForm">
+            <h3>Войти через Telegram</h3>
+            <input type="text" class="login-input" id="loginInput" placeholder="Логин" value="900123456">
+            <input type="password" class="login-input" id="passwordInput" placeholder="Пароль" value="111111">
+            <button class="login-btn" id="loginBtn">Войти</button>
         </div>
     </div>
 
     <!-- Основной контейнер -->
-    <div class="app-container" id="app-container">
-        <!-- Боковая панель -->
+    <div class="container" id="mainContainer">
+        <!-- Навигационная панель -->
         <nav class="sidebar" id="sidebar">
-            <!-- Профиль -->
-            <div class="profile-card glass-effect ripple" id="profile-card">
-                <div class="profile-avatar">
-                    <div class="avatar">Г</div>
-                    <div class="online-status active"></div>
-                </div>
-                <div class="profile-info">
-                    <h3 class="profile-name">Газман</h3>
-                    <p class="profile-status">@gazman • Основатель</p>
-                </div>
-                <button class="profile-menu-btn glass-effect ripple" id="profile-menu-btn">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-            </div>
-
-            <!-- Поиск -->
-            <div class="search-container">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Поиск..." id="global-search">
-                    <button class="search-clear" id="search-clear">
-                        <i class="fas fa-times"></i>
-                    </button>
+            <div class="logo-area">
+                <div class="logo">
+                    <i class="fab fa-telegram"></i>
+                    <span>Telegram Nods</span>
                 </div>
             </div>
-
-            <!-- Узлы -->
-            <div class="section">
-                <div class="section-header">
-                    <h3><i class="fas fa-sitemap"></i> Узлы</h3>
-                    <button class="icon-btn glass-effect ripple" id="add-node-btn" title="Добавить узел">
-                        <i class="fas fa-plus"></i>
-                    </button>
+            
+            <div class="chat-types">
+                <div class="chat-type active" data-type="all">
+                    <i class="fas fa-comments"></i>
+                    <span>Все чаты</span>
                 </div>
-                <div class="nodes-list scrollable" id="nodes-list">
-                    <!-- Узлы загружаются через JS -->
+                <div class="chat-type" data-type="unread">
+                    <i class="fas fa-envelope"></i>
+                    <span>Непрочитанные</span>
+                    <span class="unread-count-badge" id="totalUnreadCount">0</span>
                 </div>
-            </div>
-
-            <!-- Контакты -->
-            <div class="section">
-                <div class="section-header">
-                    <h3><i class="fas fa-users"></i> Контакты</h3>
-                    <button class="icon-btn glass-effect ripple" id="add-contact-btn" title="Добавить контакт">
-                        <i class="fas fa-user-plus"></i>
-                    </button>
+                <div class="chat-type" data-type="personal">
+                    <i class="fas fa-user"></i>
+                    <span>Личные</span>
                 </div>
-                <div class="contacts-list scrollable" id="contacts-list">
-                    <!-- Контакты загружаются через JS -->
+                <div class="chat-type" data-type="groups">
+                    <i class="fas fa-users"></i>
+                    <span>Группы</span>
+                </div>
+                <div class="chat-type" data-type="channels">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Каналы</span>
                 </div>
             </div>
-
-            <!-- Активность -->
-            <div class="section">
-                <div class="section-header">
-                    <h3><i class="fas fa-bolt"></i> Активность</h3>
-                    <button class="icon-btn glass-effect ripple" id="refresh-activity-btn" title="Обновить">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </div>
-                <div class="activity-list scrollable" id="activity-list">
-                    <!-- Активность загружается через JS -->
-                </div>
-            </div>
-
-            <!-- Игры -->
-            <div class="section">
-                <div class="section-header">
-                    <h3><i class="fas fa-gamepad"></i> Игры</h3>
-                    <button class="icon-btn glass-effect ripple" id="games-btn" title="Все игры">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                </div>
-                <div class="games-list">
-                    <div class="game-item glass-effect ripple" data-game="cs2">
-                        <div class="game-icon cs2">
-                            <i class="fas fa-crosshairs"></i>
-                        </div>
-                        <div class="game-info">
-                            <span class="game-name">CS2</span>
-                            <span class="game-status">3 онлайн</span>
-                        </div>
+            
+            <div class="user-profile">
+                <button class="profile-btn" id="profileBtn">
+                    <div class="avatar">
+                        <i class="fas fa-user"></i>
                     </div>
-                    <div class="game-item glass-effect ripple" data-game="dota">
-                        <div class="game-icon dota">
-                            <i class="fas fa-tower"></i>
-                        </div>
-                        <div class="game-info">
-                            <span class="game-name">Dota 2</span>
-                            <span class="game-status">2 онлайн</span>
-                        </div>
+                    <div class="user-info">
+                        <span class="username">Telegram Nods User</span>
+                        <span class="status online">online</span>
                     </div>
-                </div>
-            </div>
-
-            <!-- Кнопка видеоконференции -->
-            <div class="conference-btn-container">
-                <button class="conference-btn ripple" id="start-conference-btn">
-                    <i class="fas fa-video"></i>
-                    Начать конференцию
+                    <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
         </nav>
 
         <!-- Основной контент -->
-        <main class="main-content" id="main-content">
-            <!-- Хедер -->
+        <main class="main-content">
+            <!-- Заголовок -->
             <header class="main-header">
-                <div class="header-left">
-                    <button class="back-btn glass-effect ripple" id="back-btn">
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
-                    <div class="current-node" id="current-node">
-                        <div class="node-icon">
-                            <i class="fas fa-rocket"></i>
-                        </div>
-                        <div class="node-info">
-                            <h2 class="node-name">AlphaTeam</h2>
-                            <p class="node-description">24 участника • 12 онлайн</p>
-                        </div>
-                    </div>
+                <div class="header-title">
+                    <h1 id="currentChatType">Все чаты</h1>
+                    <p id="chatCount">12 чатов</p>
                 </div>
-                <div class="header-right">
-                    <div class="header-actions">
-                        <button class="header-btn glass-effect ripple" id="notifications-btn" title="Уведомления">
-                            <i class="fas fa-bell"></i>
-                            <span class="badge">3</span>
-                        </button>
-                        <button class="header-btn glass-effect ripple" id="theme-toggle" title="Сменить тему">
-                            <i class="fas fa-moon"></i>
-                        </button>
-                        <button class="header-btn primary ripple" id="new-chat-btn">
-                            <i class="fas fa-plus"></i>
-                            Новый чат
-                        </button>
+                
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Поиск чатов..." id="searchInput">
                     </div>
+                    <button class="settings-btn" id="settingsBtn">
+                        <i class="fas fa-cog"></i>
+                    </button>
                 </div>
             </header>
 
-            <!-- Фильтры -->
-            <div class="filters-container">
-                <div class="filters-scroll">
-                    <button class="filter-btn glass-effect ripple active" data-filter="all">Все чаты</button>
-                    <button class="filter-btn glass-effect ripple" data-filter="unread">Непрочитанные</button>
-                    <button class="filter-btn glass-effect ripple" data-filter="personal">Личные</button>
-                    <button class="filter-btn glass-effect ripple" data-filter="group">Группы</button>
-                    <button class="filter-btn glass-effect ripple" data-filter="channel">Каналы</button>
-                    <button class="filter-btn glass-effect ripple" data-filter="pinned">Закреплённые</button>
-                </div>
-                <div class="sort-controls">
-                    <button class="sort-btn glass-effect ripple active" data-sort="time">
-                        <i class="fas fa-clock"></i>
-                        По времени
-                    </button>
-                    <button class="sort-btn glass-effect ripple" data-sort="unread">
-                        <i class="fas fa-envelope"></i>
-                        По непрочитанным
-                    </button>
-                </div>
-            </div>
-
-            <!-- Список чатов -->
-            <div class="chats-container" id="chats-container">
-                <!-- Чаты загружаются через JS -->
-            </div>
-
-            <!-- Пустое состояние -->
-            <div class="empty-state" id="empty-state">
-                <div class="empty-icon">
-                    <i class="fas fa-comments"></i>
-                </div>
-                <h3>Нет активных чатов</h3>
-                <p>Начните новый разговор или выберите другой узел</p>
-                <button class="btn primary ripple" id="start-chat-btn">
-                    <i class="fas fa-plus"></i>
-                    Начать чат
-                </button>
+            <!-- Контейнер с чатами -->
+            <div class="chats-container" id="chatsContainer">
+                <!-- Чат плашки будут вставлены через JS -->
             </div>
         </main>
 
-        <!-- Панель чата -->
-        <div class="chat-panel" id="chat-panel">
-            <div class="chat-header">
-                <div class="chat-header-left">
-                    <button class="back-btn glass-effect ripple" id="close-chat-btn">
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
-                    <div class="chat-info">
-                        <div class="chat-avatar" id="chat-avatar">Д</div>
-                        <div class="chat-details">
-                            <h3 class="chat-title" id="chat-title">Дизайн-команда</h3>
-                            <p class="chat-status" id="chat-status">8 участников • 5 онлайн</p>
+        <!-- Сайдбар непрочитанных сообщений -->
+        <aside class="unread-sidebar" id="unreadSidebar">
+            <div class="unread-header">
+                <div class="unread-title">
+                    <h3><i class="fas fa-envelope"></i> Непрочитанные</h3>
+                    <p id="unreadSidebarCount">0 сообщений</p>
+                </div>
+                <button class="close-unread" id="closeUnread">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="unread-list" id="unreadMessagesList">
+                <!-- Непрочитанные сообщения будут вставлены через JS -->
+            </div>
+            <div class="unread-actions">
+                <button class="mark-all-read" id="markAllRead">
+                    <i class="fas fa-check-double"></i> Отметить все как прочитанные
+                </button>
+            </div>
+        </aside>
+
+        <!-- Окно профиля -->
+        <div class="profile-modal" id="profileModal">
+            <div class="profile-content">
+                <button class="close-profile" id="closeProfile">
+                    <i class="fas fa-times"></i>
+                </button>
+                
+                <div class="profile-header">
+                    <div class="profile-avatar-large">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-info">
+                        <h2>Telegram Nods User</h2>
+                        <p class="profile-id">ID: 900123456</p>
+                        <p class="profile-username">@telegram_nods</p>
+                        <span class="status-badge online">online</span>
+                    </div>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value">12</span>
+                            <span class="stat-label">Активных нод</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value">156</span>
+                            <span class="stat-label">Сообщений</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value">45</span>
+                            <span class="stat-label">Дней активности</span>
                         </div>
                     </div>
                 </div>
-                <div class="chat-actions">
-                    <button class="chat-action-btn glass-effect ripple" id="voice-call-btn" title="Аудиозвонок">
-                        <i class="fas fa-phone"></i>
-                    </button>
-                    <button class="chat-action-btn glass-effect ripple" id="video-call-btn" title="Видеозвонок">
-                        <i class="fas fa-video"></i>
-                    </button>
-                    <button class="chat-action-btn glass-effect ripple" title="Информация">
-                        <i class="fas fa-info-circle"></i>
-                    </button>
+                
+                <div class="profile-details">
+                    <h3><i class="fas fa-info-circle"></i> Информация</h3>
+                    <div class="detail-item">
+                        <span class="detail-label">Дата регистрации</span>
+                        <span class="detail-value">15.11.2023</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Уровень доступа</span>
+                        <span class="detail-value premium">Premium</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Статус верификации</span>
+                        <span class="detail-value verified">Верифицирован</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Последняя активность</span>
+                        <span class="detail-value">Только что</span>
+                    </div>
                 </div>
-            </div>
-
-            <div class="messages-container" id="messages-container">
-                <!-- Сообщения загружаются через JS -->
-            </div>
-
-            <!-- Эмодзи панель -->
-            <div class="emoji-panel" id="emoji-panel">
-                <div class="emoji-categories">
-                    <button class="emoji-category glass-effect ripple active" data-category="smileys">
-                        <i class="fas fa-smile"></i>
+                
+                <div class="profile-actions">
+                    <button class="profile-action-btn primary">
+                        <i class="fas fa-edit"></i> Редактировать профиль
                     </button>
-                    <button class="emoji-category glass-effect ripple" data-category="people">
-                        <i class="fas fa-user"></i>
-                    </button>
-                    <button class="emoji-category glass-effect ripple" data-category="nature">
-                        <i class="fas fa-leaf"></i>
-                    </button>
-                    <button class="emoji-category glass-effect ripple" data-category="objects">
-                        <i class="fas fa-lightbulb"></i>
-                    </button>
-                </div>
-                <div class="emoji-grid" id="emoji-grid">
-                    <!-- Эмодзи загружаются через JS -->
-                </div>
-            </div>
-
-            <div class="message-input-container">
-                <div class="input-actions">
-                    <button class="input-btn glass-effect ripple" title="Прикрепить файл">
-                        <i class="fas fa-paperclip"></i>
-                    </button>
-                    <button class="input-btn glass-effect ripple" title="Фото/Видео">
-                        <i class="fas fa-image"></i>
-                    </button>
-                    <button class="input-btn glass-effect ripple" id="emoji-toggle-btn" title="Эмодзи">
-                        <i class="fas fa-smile"></i>
-                    </button>
-                    <button class="input-btn glass-effect ripple" title="Стикеры">
-                        <i class="fas fa-sticky-note"></i>
-                    </button>
-                </div>
-                <div class="message-input-wrapper">
-                    <textarea 
-                        class="message-input" 
-                        id="message-input" 
-                        placeholder="Сообщение..."
-                        rows="1"
-                    ></textarea>
-                    <button class="send-btn ripple" id="send-btn">
-                        <i class="fas fa-paper-plane"></i>
+                    <button class="profile-action-btn secondary">
+                        <i class="fas fa-sign-out-alt"></i> Выйти
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Панель видеоконференции -->
-        <div class="conference-panel" id="conference-panel">
-            <div class="conference-header">
-                <div class="conference-info">
-                    <h3><i class="fas fa-video"></i> Конференция</h3>
-                    <div class="conference-timer" id="conference-timer">00:00</div>
+        <!-- Настройки -->
+        <div class="settings-modal" id="settingsModal">
+            <div class="settings-content">
+                <h2><i class="fas fa-cog"></i> Настройки</h2>
+                <div class="settings-section">
+                    <h3>Уведомления</h3>
+                    <div class="setting-item">
+                        <span>Звук уведомлений</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <span>Вибросигнал</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
                 </div>
-                <div class="conference-actions">
-                    <button class="conference-action-btn glass-effect ripple" id="add-participant-btn">
-                        <i class="fas fa-user-plus"></i>
-                    </button>
-                    <button class="conference-action-btn glass-effect ripple" id="fullscreen-btn">
-                        <i class="fas fa-expand"></i>
-                    </button>
-                    <button class="conference-action-btn close glass-effect ripple" id="close-conference-btn">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="conference-grid" id="conference-grid">
-                <!-- Участники конференции -->
-            </div>
-            <div class="conference-controls">
-                <button class="conference-control-btn glass-effect ripple" id="conf-mute-btn">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <button class="conference-control-btn glass-effect ripple" id="conf-video-btn">
-                    <i class="fas fa-video"></i>
-                </button>
-                <button class="conference-control-btn glass-effect ripple" id="conf-screen-btn">
-                    <i class="fas fa-desktop"></i>
-                </button>
-                <button class="conference-control-btn danger ripple" id="conf-end-btn">
-                    <i class="fas fa-phone-slash"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Модальное окно профиля -->
-        <div class="modal-overlay" id="profile-modal-overlay"></div>
-        <div class="modal" id="profile-modal">
-            <div class="modal-content glass-effect">
-                <div class="modal-header">
-                    <h3>Профиль пользователя</h3>
-                    <button class="modal-close glass-effect ripple" id="close-profile-modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="profile-modal-content">
-                        <div class="profile-modal-avatar">
-                            <div class="avatar-large">Г</div>
-                            <button class="avatar-change-btn glass-effect ripple">
-                                <i class="fas fa-camera"></i>
-                            </button>
-                        </div>
-                        <div class="profile-modal-info">
-                            <h2>Газман</h2>
-                            <p class="profile-modal-username">@gazman</p>
-                            <p class="profile-modal-bio">Основатель Telegram Nodes • Любитель кофе и технологий</p>
-                            
-                            <div class="profile-modal-stats">
-                                <div class="profile-stat">
-                                    <span class="stat-number">156</span>
-                                    <span class="stat-label">Чатов</span>
-                                </div>
-                                <div class="profile-stat">
-                                    <span class="stat-number">48</span>
-                                    <span class="stat-label">Контактов</span>
-                                </div>
-                                <div class="profile-stat">
-                                    <span class="stat-number">7</span>
-                                    <span class="stat-label">Узлов</span>
-                                </div>
-                            </div>
-                            
-                            <div class="profile-modal-actions">
-                                <button class="btn secondary glass-effect ripple">Редактировать профиль</button>
-                                <button class="btn primary ripple">Поделиться профилем</button>
-                            </div>
-                        </div>
+                <div class="settings-section">
+                    <h3>Внешний вид</h3>
+                    <div class="theme-selector">
+                        <button class="theme-option active" data-theme="dark">
+                            Темная тема
+                        </button>
+                        <button class="theme-option" data-theme="light">
+                            Светлая тема
+                        </button>
+                        <button class="theme-option" data-theme="auto">
+                            Авто
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Уведомления -->
-    <div class="notifications-container" id="notifications-container"></div>
-
-    <!-- Шаблоны -->
-    <template id="chat-card-template">
-        <div class="chat-card glass-effect parallax ripple" data-chat-id="" data-speed="0.02">
-            <div class="chat-card-header">
-                <div class="chat-avatar"></div>
-                <div class="chat-info">
-                    <div class="chat-title-row">
-                        <h4 class="chat-name"></h4>
-                        <span class="chat-time"></span>
-                    </div>
-                    <p class="chat-preview"></p>
-                </div>
-            </div>
-            <div class="chat-card-footer">
-                <div class="chat-members">
-                    <div class="member-avatars"></div>
-                    <span class="member-count"></span>
-                </div>
-                <div class="chat-badges">
-                    <span class="unread-badge"></span>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="message-template">
-        <div class="message">
-            <div class="message-avatar"></div>
-            <div class="message-content">
-                <div class="message-header">
-                    <span class="message-sender"></span>
-                    <span class="message-time"></span>
-                </div>
-                <div class="message-text"></div>
-            </div>
-        </div>
-    </template>
-
-    <template id="notification-template">
-        <div class="notification">
-            <div class="notification-icon">
-                <i class="fas fa-bell"></i>
-            </div>
-            <div class="notification-content">
-                <h4 class="notification-title"></h4>
-                <p class="notification-message"></p>
-            </div>
-            <button class="notification-close glass-effect ripple">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    </template>
-
-    <template id="conference-participant-template">
-        <div class="participant-card glass-effect">
-            <div class="participant-avatar"></div>
-            <div class="participant-name"></div>
-            <div class="participant-status">
-                <i class="fas fa-microphone-slash"></i>
-            </div>
-        </div>
-    </template>
 
     <script src="script.js"></script>
 </body>
