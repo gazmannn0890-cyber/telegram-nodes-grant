@@ -1097,6 +1097,16 @@ self.addEventListener('install', e => {
             theme: 'auto'
         }
     };
+
+function setupOfflineSupport() {
+    window.addEventListener('online', () => {
+        showNotification('Соединение восстановлено', 'Вы снова онлайн', 'success');
+    });
+    
+    window.addEventListener('offline', () => {
+        showNotification('Нет соединения', 'Проверьте подключение к интернету', 'error');
+    });
+}
     
     // ========== DOM ЭЛЕМЕНТЫ ==========
     const elements = {
