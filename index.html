@@ -3,243 +3,368 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Nods</title>
+    <title>Telegram Nods - Universal Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Основные стили будут в style.css */
+    </style>
 </head>
 <body>
-    <!-- Прелоадер -->
+    <!-- Анимированный фон -->
+    <div class="background-animation"></div>
+    
+    <!-- Прелоадер с улучшенной анимацией -->
     <div class="preloader" id="preloader">
-        <div class="loader-container">
-            <div class="loader-circle"></div>
-            <div class="loader-plane" id="loaderPlane">
-                <i class="fas fa-paper-plane"></i>
+        <div class="preloader-content">
+            <div class="plane-track">
+                <div class="plane-container" id="planeContainer">
+                    <div class="telegram-plane" id="telegramPlane">
+                        <i class="fab fa-telegram-plane"></i>
+                    </div>
+                </div>
+                <div class="track-circle"></div>
             </div>
-        </div>
-        
-        <div class="login-form" id="loginForm">
-            <h3>Войти через Telegram</h3>
-            <input type="text" class="login-input" id="loginInput" placeholder="Логин" value="900123456">
-            <input type="password" class="login-input" id="passwordInput" placeholder="Пароль" value="111111">
-            <button class="login-btn" id="loginBtn">Войти</button>
+            
+            <div class="login-screen" id="loginScreen">
+                <div class="login-header">
+                    <h1><i class="fab fa-telegram"></i> Telegram Nods</h1>
+                    <p>Universal Platform for Everyone</p>
+                </div>
+                
+                <div class="login-form">
+                    <div class="form-group">
+                        <label for="loginInput"><i class="fas fa-user"></i> Логин / ID</label>
+                        <input type="text" id="loginInput" value="900123456" placeholder="Введите ваш ID">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="passwordInput"><i class="fas fa-lock"></i> Пароль</label>
+                        <input type="password" id="passwordInput" value="111111" placeholder="Введите пароль">
+                    </div>
+                    
+                    <button class="login-btn" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i> Войти в систему
+                    </button>
+                    
+                    <div class="login-footer">
+                        <p>Платформа для: <span class="tags">
+                            <span>Геймеров</span>
+                            <span>Разработчиков</span>
+                            <span>Корпораций</span>
+                            <span>Правительств</span>
+                            <span>Студентов</span>
+                        </span></p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Основной контейнер -->
-    <div class="container" id="mainContainer">
-        <!-- Навигационная панель -->
-        <nav class="sidebar" id="sidebar">
-            <div class="logo-area">
-                <div class="logo">
-                    <i class="fab fa-telegram"></i>
-                    <span>Telegram Nods</span>
-                </div>
-            </div>
-            
-            <div class="chat-types">
-                <div class="chat-type active" data-type="all">
-                    <i class="fas fa-comments"></i>
-                    <span>Все чаты</span>
-                </div>
-                <div class="chat-type" data-type="unread">
-                    <i class="fas fa-envelope"></i>
-                    <span>Непрочитанные</span>
-                    <span class="unread-count-badge" id="totalUnreadCount">0</span>
-                </div>
-                <div class="chat-type" data-type="personal">
-                    <i class="fas fa-user"></i>
-                    <span>Личные</span>
-                </div>
-                <div class="chat-type" data-type="groups">
-                    <i class="fas fa-users"></i>
-                    <span>Группы</span>
-                </div>
-                <div class="chat-type" data-type="channels">
-                    <i class="fas fa-bullhorn"></i>
-                    <span>Каналы</span>
-                </div>
-            </div>
-            
-            <div class="user-profile">
-                <button class="profile-btn" id="profileBtn">
-                    <div class="avatar">
-                        <i class="fas fa-user"></i>
+    <!-- Основной интерфейс -->
+    <div class="app-container" id="appContainer">
+        <!-- Левый сайдбар -->
+        <aside class="sidebar">
+            <!-- Профиль в левом верхнем углу -->
+            <div class="profile-section">
+                <div class="profile-header" id="profileHeader">
+                    <div class="profile-avatar" id="profileAvatar">
+                        <img src="https://ui-avatars.com/api/?name=Telegram+Nods&background=0088cc&color=fff&size=128" alt="Avatar">
+                        <div class="status-indicator online"></div>
                     </div>
-                    <div class="user-info">
-                        <span class="username">Telegram Nods User</span>
-                        <span class="status online">online</span>
+                    <div class="profile-info">
+                        <h3 class="profile-name">Telegram Nods</h3>
+                        <p class="profile-status">Premium User</p>
+                        <p class="profile-id">ID: 900123456</p>
                     </div>
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-        </nav>
-
-        <!-- Основной контент -->
-        <main class="main-content">
-            <!-- Заголовок -->
-            <header class="main-header">
-                <div class="header-title">
-                    <h1 id="currentChatType">Все чаты</h1>
-                    <p id="chatCount">12 чатов</p>
-                </div>
-                
-                <div class="header-actions">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Поиск чатов..." id="searchInput">
-                    </div>
-                    <button class="settings-btn" id="settingsBtn">
-                        <i class="fas fa-cog"></i>
+                    <button class="profile-menu-btn" id="profileMenuBtn">
+                        <i class="fas fa-chevron-down"></i>
                     </button>
                 </div>
-            </header>
-
-            <!-- Контейнер с чатами -->
-            <div class="chats-container" id="chatsContainer">
-                <!-- Чат плашки будут вставлены через JS -->
-            </div>
-        </main>
-
-        <!-- Сайдбар непрочитанных сообщений -->
-        <aside class="unread-sidebar" id="unreadSidebar">
-            <div class="unread-header">
-                <div class="unread-title">
-                    <h3><i class="fas fa-envelope"></i> Непрочитанные</h3>
-                    <p id="unreadSidebarCount">0 сообщений</p>
+                
+                <!-- Меню профиля -->
+                <div class="profile-menu" id="profileMenu">
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-server"></i>
+                            <span>12 Nodes</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Level 5</span>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-items">
+                        <a href="#" class="menu-item active">
+                            <i class="fas fa-home"></i>
+                            <span>Главная</span>
+                        </a>
+                        <a href="#" class="menu-item">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Настройки</span>
+                        </a>
+                        <a href="#" class="menu-item">
+                            <i class="fas fa-bell"></i>
+                            <span>Уведомления</span>
+                            <span class="badge">3</span>
+                        </a>
+                        <a href="#" class="menu-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Безопасность</span>
+                        </a>
+                        <a href="#" class="menu-item logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Выйти</span>
+                        </a>
+                    </div>
                 </div>
-                <button class="close-unread" id="closeUnread">
-                    <i class="fas fa-times"></i>
-                </button>
             </div>
-            <div class="unread-list" id="unreadMessagesList">
-                <!-- Непрочитанные сообщения будут вставлены через JS -->
-            </div>
-            <div class="unread-actions">
-                <button class="mark-all-read" id="markAllRead">
-                    <i class="fas fa-check-double"></i> Отметить все как прочитанные
-                </button>
+
+            <!-- Навигация по категориям -->
+            <nav class="categories-nav">
+                <div class="nav-header">
+                    <h3><i class="fas fa-compass"></i> Категории</h3>
+                </div>
+                
+                <div class="category-list">
+                    <button class="category-btn active" data-category="all">
+                        <i class="fas fa-comments"></i>
+                        <span>Все диалоги</span>
+                        <span class="unread-count">12</span>
+                    </button>
+                    
+                    <button class="category-btn" data-category="professional">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Профессиональные</span>
+                        <span class="unread-count">8</span>
+                    </button>
+                    
+                    <button class="category-btn" data-category="development">
+                        <i class="fas fa-code"></i>
+                        <span>Разработка</span>
+                        <span class="unread-count">5</span>
+                    </button>
+                    
+                    <button class="category-btn" data-category="security">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Безопасность</span>
+                        <span class="unread-count">3</span>
+                    </button>
+                    
+                    <button class="category-btn" data-category="gaming">
+                        <i class="fas fa-gamepad"></i>
+                        <span>Гейминг</span>
+                        <span class="unread-count">4</span>
+                    </button>
+                    
+                    <button class="category-btn" data-category="government">
+                        <i class="fas fa-landmark"></i>
+                        <span>Госструктуры</span>
+                        <span class="unread-count">2</span>
+                    </button>
+                    
+                    <button class="category-btn" data-category="education">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Образование</span>
+                        <span class="unread-count">6</span>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Голосовые и видео звонки -->
+            <div class="calls-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-phone-alt"></i> Коммуникации</h3>
+                </div>
+                
+                <div class="call-buttons">
+                    <button class="call-btn voice-call" id="startVoiceCall">
+                        <i class="fas fa-phone"></i>
+                        <span>Голосовой звонок</span>
+                    </button>
+                    
+                    <button class="call-btn video-call" id="startVideoCall">
+                        <i class="fas fa-video"></i>
+                        <span>Видеозвонок</span>
+                    </button>
+                    
+                    <button class="call-btn conference" id="startConference">
+                        <i class="fas fa-users"></i>
+                        <span>Конференция</span>
+                    </button>
+                </div>
+                
+                <div class="recent-calls">
+                    <h4>Недавние вызовы</h4>
+                    <div class="call-item">
+                        <div class="call-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="call-info">
+                            <span class="call-name">Security Team</span>
+                            <span class="call-time">10:45, Входящий</span>
+                        </div>
+                        <i class="fas fa-phone call-type"></i>
+                    </div>
+                </div>
             </div>
         </aside>
 
-        <!-- Окно профиля -->
-        <div class="profile-modal" id="profileModal">
-            <div class="profile-content">
-                <button class="close-profile" id="closeProfile">
+        <!-- Основной контент -->
+        <main class="main-content">
+            <!-- Верхняя панель -->
+            <header class="main-header">
+                <div class="header-left">
+                    <h1 id="currentCategory">Все диалоги</h1>
+                    <p id="activeCount">12 активных диалогов</p>
+                </div>
+                
+                <div class="header-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Поиск сообщений, файлов, людей..." id="globalSearch">
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button class="header-btn" id="createGroup">
+                            <i class="fas fa-users"></i>
+                            <span>Создать группу</span>
+                        </button>
+                        
+                        <button class="header-btn" id="createChannel">
+                            <i class="fas fa-bullhorn"></i>
+                            <span>Канал</span>
+                        </button>
+                        
+                        <button class="header-btn notification-btn" id="notificationsBtn">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge">3</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Контейнер чатов -->
+            <div class="chats-grid" id="chatsGrid">
+                <!-- Чат карточки будут добавляться через JS -->
+            </div>
+
+            <!-- Статистика и информация -->
+            <div class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Активные ноды</h3>
+                        <p class="stat-value">12</p>
+                        <p class="stat-desc">Работают стабильно</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Уровень защиты</h3>
+                        <p class="stat-value">99.9%</p>
+                        <p class="stat-desc">Военный уровень</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Скорость</h3>
+                        <p class="stat-value">2.4ms</p>
+                        <p class="stat-desc">Средняя задержка</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Покрытие</h3>
+                        <p class="stat-value">156</p>
+                        <p class="stat-desc">Стран мира</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Правая панель (непрочитанные сообщения) -->
+        <aside class="right-sidebar" id="rightSidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-inbox"></i> Непрочитанные</h3>
+                <button class="sidebar-close" id="closeSidebar">
                     <i class="fas fa-times"></i>
                 </button>
-                
-                <div class="profile-header">
-                    <div class="profile-avatar-large">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="profile-info">
-                        <h2>Telegram Nods User</h2>
-                        <p class="profile-id">ID: 900123456</p>
-                        <p class="profile-username">@telegram_nods</p>
-                        <span class="status-badge online">online</span>
-                    </div>
+            </div>
+            
+            <div class="unread-categories">
+                <div class="unread-category active" data-category="all">
+                    <i class="fas fa-envelope"></i>
+                    <span>Все (24)</span>
                 </div>
-                
-                <div class="profile-stats">
-                    <div class="stat-item">
-                        <div class="stat-icon">
-                            <i class="fas fa-server"></i>
-                        </div>
-                        <div class="stat-info">
-                            <span class="stat-value">12</span>
-                            <span class="stat-label">Активных нод</span>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon">
-                            <i class="fas fa-comment"></i>
-                        </div>
-                        <div class="stat-info">
-                            <span class="stat-value">156</span>
-                            <span class="stat-label">Сообщений</span>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon">
-                            <i class="fas fa-calendar"></i>
-                        </div>
-                        <div class="stat-info">
-                            <span class="stat-value">45</span>
-                            <span class="stat-label">Дней активности</span>
-                        </div>
-                    </div>
+                <div class="unread-category" data-category="urgent">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Срочные (3)</span>
                 </div>
-                
-                <div class="profile-details">
-                    <h3><i class="fas fa-info-circle"></i> Информация</h3>
-                    <div class="detail-item">
-                        <span class="detail-label">Дата регистрации</span>
-                        <span class="detail-value">15.11.2023</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Уровень доступа</span>
-                        <span class="detail-value premium">Premium</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Статус верификации</span>
-                        <span class="detail-value verified">Верифицирован</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Последняя активность</span>
-                        <span class="detail-value">Только что</span>
-                    </div>
+                <div class="unread-category" data-category="work">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Работа (8)</span>
                 </div>
-                
-                <div class="profile-actions">
-                    <button class="profile-action-btn primary">
-                        <i class="fas fa-edit"></i> Редактировать профиль
-                    </button>
-                    <button class="profile-action-btn secondary">
-                        <i class="fas fa-sign-out-alt"></i> Выйти
-                    </button>
+                <div class="unread-category" data-category="security">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Безопасность (5)</span>
                 </div>
             </div>
-        </div>
+            
+            <div class="unread-messages" id="unreadMessages">
+                <!-- Сообщения будут добавляться через JS -->
+            </div>
+            
+            <div class="sidebar-footer">
+                <button class="mark-all-read" id="markAllReadBtn">
+                    <i class="fas fa-check-double"></i>
+                    Отметить все как прочитанные
+                </button>
+            </div>
+        </aside>
+    </div>
 
-        <!-- Настройки -->
-        <div class="settings-modal" id="settingsModal">
-            <div class="settings-content">
-                <h2><i class="fas fa-cog"></i> Настройки</h2>
-                <div class="settings-section">
-                    <h3>Уведомления</h3>
-                    <div class="setting-item">
-                        <span>Звук уведомлений</span>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="setting-item">
-                        <span>Вибросигнал</span>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-                <div class="settings-section">
-                    <h3>Внешний вид</h3>
-                    <div class="theme-selector">
-                        <button class="theme-option active" data-theme="dark">
-                            Темная тема
-                        </button>
-                        <button class="theme-option" data-theme="light">
-                            Светлая тема
-                        </button>
-                        <button class="theme-option" data-theme="auto">
-                            Авто
-                        </button>
-                    </div>
-                </div>
-            </div>
+    <!-- Модальное окно звонка -->
+    <div class="call-modal" id="callModal">
+        <div class="call-container" id="callContainer">
+            <!-- Контент звонка будет динамическим -->
         </div>
     </div>
 
+    <!-- Модальное окно конференции -->
+    <div class="conference-modal" id="conferenceModal">
+        <div class="conference-container" id="conferenceContainer">
+            <!-- Контент конференции будет динамическим -->
+        </div>
+    </div>
+
+    <!-- Уведомления -->
+    <div class="notification-center" id="notificationCenter">
+        <div class="notification-header">
+            <h3><i class="fas fa-bell"></i> Уведомления</h3>
+            <button class="close-notifications" id="closeNotifications">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notifications-list" id="notificationsList"></div>
+    </div>
+
+    <!-- Скрипты -->
     <script src="script.js"></script>
 </body>
 </html>
