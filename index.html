@@ -234,6 +234,11 @@
                             <span>Канал</span>
                         </button>
                         
+                        <button class="header-btn" id="openContactsBtn">
+                            <i class="fas fa-users"></i>
+                            <span>Контакты</span>
+                        </button>
+                        
                         <button class="header-btn notification-btn" id="notificationsBtn">
                             <i class="fas fa-bell"></i>
                             <span class="notification-badge">3</span>
@@ -361,114 +366,74 @@
         <div class="notifications-list" id="notificationsList"></div>
     </div>
 
-<!-- Модальное окно выбора контактов для звонка -->
-<div id="contactsModal" class="contacts-modal">
-    <div class="contacts-modal-content">
-        <div class="contacts-modal-header">
-            <h2><i class="fas fa-phone"></i> Выберите контакты</h2>
-            <div class="call-type-info">Выберите контакты для звонка</div>
-        </div>
-        <div class="contacts-list" id="contactsList">
-            <!-- Контакты будут добавлены динамически -->
-        </div>
-        <div class="contacts-modal-footer">
-            <button class="cancel-call-btn" id="cancelCallBtn">Отмена</button>
-            <button class="confirm-call-btn" id="confirmCallBtn" disabled>Начать звонок</button>
+    <!-- Модальное окно выбора контактов для звонка -->
+    <div id="contactsModal" class="contacts-modal">
+        <div class="contacts-modal-content">
+            <div class="contacts-modal-header">
+                <h2><i class="fas fa-phone"></i> Выберите контакты</h2>
+                <div class="call-type-info">Выберите контакты для звонка</div>
+            </div>
+            <div class="contacts-list" id="contactsList">
+                <!-- Контакты будут добавлены динамически -->
+            </div>
+            <div class="contacts-modal-footer">
+                <button class="cancel-call-btn" id="cancelCallBtn">Отмена</button>
+                <button class="confirm-call-btn" id="confirmCallBtn" disabled>Начать звонок</button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Модальное окно создания группы -->
-<div id="groupModal" class="group-modal">
-    <div class="group-modal-content">
-        <div class="group-modal-header">
-            <h2><i class="fas fa-users"></i> Создание группы</h2>
-            <div class="call-type-info">Выберите участников и назовите группу</div>
-        </div>
-        <div class="group-name-input">
-            <input type="text" id="groupNameInput" placeholder="Название группы" maxlength="50">
-        </div>
-        <div class="group-contacts-list" id="groupContactsList">
-            <!-- Контакты будут добавлены динамически -->
-        </div>
-        <div class="group-modal-footer">
-            <button class="cancel-group-btn" id="cancelGroupBtn">Отмена</button>
-            <button class="confirm-group-btn" id="confirmGroupBtn" disabled>Создать группу</button>
+    <!-- Модальное окно создания группы -->
+    <div id="groupModal" class="group-modal">
+        <div class="group-modal-content">
+            <div class="group-modal-header">
+                <h2><i class="fas fa-users"></i> Создание группы</h2>
+                <div class="call-type-info">Выберите участников и назовите группу</div>
+            </div>
+            <div class="group-name-input">
+                <input type="text" id="groupNameInput" placeholder="Название группы" maxlength="50">
+            </div>
+            <div class="group-contacts-list" id="groupContactsList">
+                <!-- Контакты будут добавлены динамически -->
+            </div>
+            <div class="group-modal-footer">
+                <button class="cancel-group-btn" id="cancelGroupBtn">Отмена</button>
+                <button class="confirm-group-btn" id="confirmGroupBtn" disabled>Создать группу</button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Сайдбар контактов -->
-<div id="contactsSidebar" class="contacts-sidebar">
-    <div class="contacts-sidebar-header">
-        <h3>Контакты</h3>
-        <button class="close-contacts-sidebar" id="closeContactsSidebar">&times;</button>
-    </div>
-    <div class="contacts-list-sidebar" id="contactsListSidebar">
-        <!-- Контакты будут добавлены динамически -->
-    </div>
-</div>
-
-<!-- Модальное окно создания канала -->
-<div id="channelModal" class="channel-modal">
-    <div class="channel-modal-content">
-        <div class="channel-modal-header">
-            <h2><i class="fas fa-bullhorn"></i> Создание канала</h2>
-        </div>
-        <div class="channel-name-input">
-            <input type="text" id="channelNameInput" placeholder="Название канала" maxlength="50">
-        </div>
-        <div class="channel-modal-footer">
-            <button class="cancel-channel-btn" id="cancelChannelBtn">Отмена</button>
-            <button class="confirm-channel-btn" id="confirmChannelBtn">Создать канал</button>
+    <!-- Модальное окно создания канала -->
+    <div id="channelModal" class="channel-modal">
+        <div class="channel-modal-content">
+            <div class="channel-modal-header">
+                <h2><i class="fas fa-bullhorn"></i> Создание канала</h2>
+            </div>
+            <div class="channel-name-input">
+                <input type="text" id="channelNameInput" placeholder="Название канала" maxlength="50">
+            </div>
+            <div class="channel-modal-footer">
+                <button class="cancel-channel-btn" id="cancelChannelBtn">Отмена</button>
+                <button class="confirm-channel-btn" id="confirmChannelBtn">Создать канал</button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Сайдбар контактов справа -->
-<div id="contactsSidebar" class="contacts-sidebar">
-    <div class="contacts-sidebar-header">
-        <h3><i class="fas fa-users"></i> Контакты</h3>
-        <button class="close-contacts-sidebar" id="closeContactsSidebar">
-            <i class="fas fa-times"></i>
-        </button>
+    <!-- Сайдбар контактов справа -->
+    <div id="contactsSidebar" class="contacts-sidebar">
+        <div class="contacts-sidebar-header">
+            <h3><i class="fas fa-users"></i> Контакты</h3>
+            <button class="close-contacts-sidebar" id="closeContactsSidebar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="contacts-sidebar-search">
+            <input type="text" placeholder="Поиск контактов..." id="contactsSearch">
+        </div>
+        <div class="contacts-list-sidebar" id="contactsListSidebar">
+            <!-- Контакты будут добавляться через JS -->
+        </div>
     </div>
-    <div class="contacts-sidebar-search">
-        <input type="text" placeholder="Поиск контактов..." id="contactsSearch">
-    </div>
-    <div class="contacts-list-sidebar" id="contactsListSidebar">
-        <!-- Контакты будут добавляться через JS -->
-    </div>
-</div>
-
-<!-- Кнопка открытия сайдбара контактов (добавить в header) -->
-<button class="header-btn" id="openContactsBtn" style="display: none;">
-    <i class="fas fa-users"></i>
-    <span>Контакты</span>
-</button>
-
-<div class="header-actions">
-    <button class="header-btn" id="createGroup">
-        <i class="fas fa-users"></i>
-        <span>Создать группу</span>
-    </button>
-    
-    <button class="header-btn" id="createChannel">
-        <i class="fas fa-bullhorn"></i>
-        <span>Канал</span>
-    </button>
-    
-    <!-- ДОБАВИТЬ ЭТУ КНОПКУ -->
-    <button class="header-btn" id="openContactsBtn">
-        <i class="fas fa-users"></i>
-        <span>Контакты</span>
-    </button>
-    
-    <button class="header-btn notification-btn" id="notificationsBtn">
-        <i class="fas fa-bell"></i>
-        <span class="notification-badge">3</span>
-    </button>
-</div>
     
     <!-- Скрипты -->
     <script src="script.js"></script>
