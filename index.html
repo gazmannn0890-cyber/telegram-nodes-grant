@@ -424,6 +424,51 @@
         </div>
     </div>
 </div>
+
+<!-- Сайдбар контактов справа -->
+<div id="contactsSidebar" class="contacts-sidebar">
+    <div class="contacts-sidebar-header">
+        <h3><i class="fas fa-users"></i> Контакты</h3>
+        <button class="close-contacts-sidebar" id="closeContactsSidebar">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="contacts-sidebar-search">
+        <input type="text" placeholder="Поиск контактов..." id="contactsSearch">
+    </div>
+    <div class="contacts-list-sidebar" id="contactsListSidebar">
+        <!-- Контакты будут добавляться через JS -->
+    </div>
+</div>
+
+<!-- Кнопка открытия сайдбара контактов (добавить в header) -->
+<button class="header-btn" id="openContactsBtn" style="display: none;">
+    <i class="fas fa-users"></i>
+    <span>Контакты</span>
+</button>
+
+<div class="header-actions">
+    <button class="header-btn" id="createGroup">
+        <i class="fas fa-users"></i>
+        <span>Создать группу</span>
+    </button>
+    
+    <button class="header-btn" id="createChannel">
+        <i class="fas fa-bullhorn"></i>
+        <span>Канал</span>
+    </button>
+    
+    <!-- ДОБАВИТЬ ЭТУ КНОПКУ -->
+    <button class="header-btn" id="openContactsBtn">
+        <i class="fas fa-users"></i>
+        <span>Контакты</span>
+    </button>
+    
+    <button class="header-btn notification-btn" id="notificationsBtn">
+        <i class="fas fa-bell"></i>
+        <span class="notification-badge">3</span>
+    </button>
+</div>
     
     <!-- Скрипты -->
     <script src="script.js"></script>
