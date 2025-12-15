@@ -104,7 +104,14 @@ document.addEventListener('DOMContentLoaded', function() {
             this.closeSidebar = document.getElementById('closeSidebar');
             this.unreadMessages = document.getElementById('unreadMessages');
             this.markAllReadBtn = document.getElementById('markAllReadBtn');
-            
+
+// Сайдбар контактов
+    this.contactsSidebar = document.getElementById('contactsSidebar');
+    this.contactsListSidebar = document.getElementById('contactsListSidebar');
+    this.openContactsBtn = document.getElementById('openContactsBtn');
+    this.closeContactsSidebar = document.getElementById('closeContactsSidebar');
+    this.contactsSearch = document.getElementById('contactsSearch');
+                
             // Уведомления
             this.notificationsBtn = document.getElementById('notificationsBtn');
             this.notificationCenter = document.getElementById('notificationCenter');
@@ -474,7 +481,116 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (this.cancelCallBtn) {
                 this.cancelCallBtn.addEventListener('click', () => this.closeContactsModal());
-            }
+            // Сайдбар контактов
+    if (this.openContactsBtn) {
+        this.openContactsBtn.addEventListener('click', () => this.openContactsSidebar());
+    }
+    
+    if (this.closeContactsSidebar) {
+        this.closeContactsSidebar.addEventListener('click', () => this.closeContactsSidebarFunc());
+    }
+    
+    if (this.contactsSearch) {
+        this.contactsSearch.addEventListener('input', 
+            this.debounce(() => this.filterContacts(), 300)
+        );
+    // Добавить новый метод для открытия сайдбара контактов
+openContactsSidebar() {
+    if (this.contactsSidebar) {
+        this.contactsSidebar.classList.add('active');
+        this.renderContactsSidebar();
+    }
+// Обновить метод renderContactsSidebar
+renderContactsSidebar() {
+    if (!this.contactsListSidebar) return;
+    
+    const searchTerm = this.contactsSearch ? this.contactsSearch.value.toLowerCase() : '';
+    
+    this.contactsListSidebar.innerHTML = '';
+    
+    const filteredContacts = this.contacts.filter(contact => 
+        !searchTerm || 
+        contact.name.toLowerCase().includes(searchTerm) ||
+        contact.username.toLowerCase().includes(searchTerm) ||
+        contact.phone.toLowerCase().includes(searchTerm)
+    );
+    
+    filteredContacts.forEach(contact => {
+        const contactElement = document.createElement('div');
+        contactElement.className = 'contact-sidebar-item';
+        contactElement.dataset.id = contact.id;
+        
+        contactElement.innerHTML = `
+            <div class="contact-sidebar-avatar ${contact.status}">
+                ${contact.avatar}
+            </div>
+            <div class="contact-sidebar-info">
+                <div class="contact-sidebar-name">${contact.name}</div>
+                <div class="contact-sidebar-status">${this.getStatusText(contact.status)} • ${contact.username}</div>
+            </div>
+        `;
+        
+        // Обработчик клика для открытия карточки контакта
+        contactElement.addEventListener('click', () => {
+            this.openContactCard(contact);
+        });
+        
+        this.contactsListSidebar.appendChild(contactElement);
+    });
+    
+    // Если контактов нет
+    if (filteredContacts.length === 0) {
+        this.contactsListSidebar.innerHTML = `
+            <div class="no-contacts">
+                <i class="fas fa-user-slash"></i>
+                <p>Контакты не найдены</p>
+            </div>
+        `;
+    }
+}
+
+// Добавить метод фильтрации контактов
+filterContacts() {
+    this.renderContactsSidebar();
+}
+
+// Добавить метод для открытия модального окна создания группы (исправленный)
+openGroupModal() {
+    console.log('Opening group modal'); // Для отладки
+    this.selectedGroupContacts = [];
+    
+    if (this.groupModal) {
+        // Рендерим список контактов для группы
+        this.renderGroupContactsList();
+        
+        // Сбрасываем имя группы
+        if (this.groupNameInput) {
+            this.groupNameInput.value = '';
+        }
+        
+        // Показываем модальное окно
+        this.groupModal.classList.add('active');
+        
+        // Активируем кнопку подтверждения
+        this.updateConfirmGroupButton();
+    } else {
+        console.error('Group modal not found');
+    }
+}
+
+// Добавить метод для открытия модального окна создания канала (исправленный)
+openChannelModal() {
+    console.log('Opening channel modal'); // Для отладки
+    
+    if (this.channelModal) {
+        if (this.channelNameInput) {
+            this.channelNameInput.value = '';
+        }
+        this.channelModal.classList.add('active');
+    } else {
+        console.error('Channel modal not found');
+    }
+}
             
             // Модальное окно создания группы
             if (this.confirmGroupBtn) {
@@ -576,6 +692,20 @@ document.addEventListener('DOMContentLoaded', function() {
         this.startConference.addEventListener('click', () => {
             console.log('Conference clicked'); // Для отладки
             this.openContactsModal('conference');
+      // Создание группы и канала
+    if (this.createGroup) {
+        this.createGroup.addEventListener('click', (e) => {
+            console.log('Create group clicked'); // Для отладки
+            e.stopPropagation();
+            this.openGroupModal();
+        });
+    }
+    
+    if (this.createChannel) {
+        this.createChannel.addEventListener('click', (e) => {
+            console.log('Create channel clicked'); // Для отладки
+            e.stopPropagation();
+            this.openChannelModal();
         });
     }
         
