@@ -361,6 +361,43 @@
         <div class="notifications-list" id="notificationsList"></div>
     </div>
 
+<!-- Модальное окно выбора контактов для звонка -->
+<div id="contactsModal" class="contacts-modal">
+    <div class="contacts-modal-content">
+        <div class="contacts-modal-header">
+            <h2><i class="fas fa-phone"></i> Выберите контакты</h2>
+            <div class="call-type-info">Выберите контакты для звонка</div>
+        </div>
+        <div class="contacts-list" id="contactsList">
+            <!-- Контакты будут добавлены динамически -->
+        </div>
+        <div class="contacts-modal-footer">
+            <button class="cancel-call-btn" id="cancelCallBtn">Отмена</button>
+            <button class="confirm-call-btn" id="confirmCallBtn" disabled>Начать звонок</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно создания группы -->
+<div id="groupModal" class="group-modal">
+    <div class="group-modal-content">
+        <div class="group-modal-header">
+            <h2><i class="fas fa-users"></i> Создание группы</h2>
+            <div class="call-type-info">Выберите участников и назовите группу</div>
+        </div>
+        <div class="group-name-input">
+            <input type="text" id="groupNameInput" placeholder="Название группы" maxlength="50">
+        </div>
+        <div class="group-contacts-list" id="groupContactsList">
+            <!-- Контакты будут добавлены динамически -->
+        </div>
+        <div class="group-modal-footer">
+            <button class="cancel-group-btn" id="cancelGroupBtn">Отмена</button>
+            <button class="confirm-group-btn" id="confirmGroupBtn" disabled>Создать группу</button>
+        </div>
+    </div>
+</div>
+    
     <!-- Скрипты -->
     <script src="script.js"></script>
 </body>
