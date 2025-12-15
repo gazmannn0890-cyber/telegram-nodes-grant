@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.initData();
             this.initPreloader();
             this.setupKeyboardShortcuts();
+            this.setupDemoAvatar();
         }
         
         initElements() {
@@ -51,6 +52,19 @@ document.addEventListener('DOMContentLoaded', function() {
             this.conferenceModal = document.getElementById('conferenceModal');
             this.conferenceContainer = document.getElementById('conferenceContainer');
             
+            // Модальное окно выбора контактов для звонка
+            this.contactsModal = document.getElementById('contactsModal');
+            this.contactsList = document.getElementById('contactsList');
+            this.confirmCallBtn = document.getElementById('confirmCallBtn');
+            this.cancelCallBtn = document.getElementById('cancelCallBtn');
+            
+            // Модальное окно создания группы
+            this.groupModal = document.getElementById('groupModal');
+            this.groupContactsList = document.getElementById('groupContactsList');
+            this.confirmGroupBtn = document.getElementById('confirmGroupBtn');
+            this.cancelGroupBtn = document.getElementById('cancelGroupBtn');
+            this.groupNameInput = document.getElementById('groupNameInput');
+            
             // Сайдбар непрочитанных
             this.rightSidebar = document.getElementById('rightSidebar');
             this.closeSidebar = document.getElementById('closeSidebar');
@@ -76,9 +90,23 @@ document.addEventListener('DOMContentLoaded', function() {
             this.callTimer = null;
             this.callStartTime = null;
             this.unreadMessagesCount = 24;
+            this.selectedContacts = [];
+            this.selectedGroupContacts = [];
+            this.currentCallType = ''; // 'voice', 'video', 'conference'
             
             // Анимационные константы
             this.planeAnimation = null;
+        }
+        
+        setupDemoAvatar() {
+            // Устанавливаем демо-аватар для профиля
+            this.profileAvatar.textContent = 'TN';
+            this.profileAvatar.style.background = 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))';
+            this.profileAvatar.style.color = 'white';
+            this.profileAvatar.style.fontWeight = 'bold';
+            this.profileAvatar.style.display = 'flex';
+            this.profileAvatar.style.alignItems = 'center';
+            this.profileAvatar.style.justifyContent = 'center';
         }
         
         initData() {
@@ -95,6 +123,20 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Данные непрочитанных сообщений
             this.unreadData = this.generateUnreadMessages();
+            
+            // Данные контактов для звонков и создания групп
+            this.contacts = [
+                { id: 1, name: "Security Team", avatar: "ST", status: "online", category: "security" },
+                { id: 2, name: "Alpha Group", avatar: "AG", status: "online", category: "professional" },
+                { id: 3, name: "Beta Testers", avatar: "BT", status: "away", category: "development" },
+                { id: 4, name: "John Smith", avatar: "JS", status: "online", category: "professional" },
+                { id: 5, name: "Sarah Johnson", avatar: "SJ", status: "online", category: "government" },
+                { id: 6, name: "Mike Chen", avatar: "MC", status: "away", category: "development" },
+                { id: 7, name: "Alex Brown", avatar: "AB", status: "online", category: "gaming" },
+                { id: 8, name: "Emma Wilson", avatar: "EW", status: "offline", category: "education" },
+                { id: 9, name: "David Lee", avatar: "DL", status: "online", category: "security" },
+                { id: 10, name: "Lisa Wang", avatar: "LW", status: "online", category: "professional" }
+            ];
             
             // Данные для демо-звонков
             this.callParticipants = [
@@ -199,7 +241,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     members: Math.floor(Math.random() * 100) + 10,
                     unread: Math.floor(Math.random() * 5),
                     lastActive: `${Math.floor(Math.random() * 60)} минут назад`,
-                    priority: Math.random() > 0.7 ? 'high' : 'normal'
+                    priority: Math.random() > 0.7 ? 'high' : 'normal',
+                    active: true
                 });
             }
             
@@ -283,10 +326,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.debounce(() => this.handleSearch(), 300)
             );
             
-            // Звонки
-            this.startVoiceCall.addEventListener('click', () => this.startVoiceCallDemo());
-            this.startVideoCall.addEventListener('click', () => this.startVideoCallDemo());
-            this.startConference.addEventListener('click', () => this.startConferenceDemo());
+            // Звонки - теперь открывают модальное окно выбора контактов
+            this.startVoiceCall.addEventListener('click', () => this.openContactsModal('voice'));
+            this.startVideoCall.addEventListener('click', () => this.openContactsModal('video'));
+            this.startConference.addEventListener('click', () => this.openContactsModal('conference'));
+            
+            // Модальное окно выбора контактов для звонка
+            this.confirmCallBtn.addEventListener('click', () => this.startSelectedCall());
+            this.cancelCallBtn.addEventListener('click', () => this.closeContactsModal());
+            
+            // Модальное окно создания группы
+            this.confirmGroupBtn.addEventListener('click', () => this.createGroupWithContacts());
+            this.cancelGroupBtn.addEventListener('click', () => this.closeGroupModal());
+            
+            // Создание группы - теперь открывает модальное окно
+            this.createGroup.addEventListener('click', () => this.openGroupModal());
+            this.createChannel.addEventListener('click', () => this.createNewChannel());
             
             // Сайдбар непрочитанных
             this.closeSidebar.addEventListener('click', () => this.closeUnreadSidebar());
@@ -295,10 +350,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Уведомления
             this.notificationsBtn.addEventListener('click', () => this.toggleNotifications());
             this.closeNotifications.addEventListener('click', () => this.closeNotificationsPanel());
-            
-            // Создание чатов
-            this.createGroup.addEventListener('click', () => this.createNewGroup());
-            this.createChannel.addEventListener('click', () => this.createNewChannel());
             
             // Закрытие окон по ESC
             document.addEventListener('keydown', (e) => {
@@ -318,6 +369,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     !e.target.closest('.conference-container') && 
                     !e.target.closest('.conference-control-btn')) {
                     this.leaveConference();
+                }
+                if (this.contactsModal.classList.contains('active') && 
+                    !e.target.closest('.contacts-modal-content')) {
+                    this.closeContactsModal();
+                }
+                if (this.groupModal.classList.contains('active') && 
+                    !e.target.closest('.group-modal-content')) {
+                    this.closeGroupModal();
                 }
             });
         }
@@ -386,6 +445,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.renderUnreadMessages();
                 this.renderNotifications();
                 this.updateChatCount();
+                this.setupDemoAvatar();
+                
+                // Убираем нижние иконки (статус нод)
+                this.hideBottomIcons();
                 
                 // Показываем приветственное уведомление
                 this.showNotification(
@@ -394,6 +457,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     "success"
                 );
             }, 3500);
+        }
+        
+        hideBottomIcons() {
+            // Ищем и скрываем нижние иконки статуса нод
+            const bottomIcons = document.querySelector('.node-status-container');
+            if (bottomIcons) {
+                bottomIcons.style.display = 'none';
+            }
+            
+            // Также скрываем секцию коммуникации если нужно
+            const commSection = document.querySelector('.communications-section');
+            if (commSection) {
+                const title = commSection.querySelector('h3');
+                if (title && title.textContent.includes('Коммуникация')) {
+                    title.textContent = '';
+                }
+            }
         }
         
         animatePlaneToProfile() {
@@ -530,6 +610,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const element = document.createElement('div');
             element.className = `chat-card ${chat.priority === 'high' ? 'highlight' : ''}`;
             element.dataset.id = chat.id;
+            element.dataset.chatId = chat.id;
             
             element.innerHTML = `
                 <div class="chat-header">
@@ -539,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     ${chat.unread > 0 ? `
                         <div class="chat-urgency">
-                            ${chat.unread} непрочитанных
+                            <span class="unread-count-badge">${chat.unread}</span> непрочитанных
                         </div>
                     ` : ''}
                 </div>
@@ -557,32 +638,236 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span>${chat.lastActive}</span>
                     </div>
                 </div>
+                
+                <div class="chat-actions">
+                    <button class="chat-action-btn open-chat" data-chat-id="${chat.id}">
+                        <i class="fas fa-comment-alt"></i> Открыть чат
+                    </button>
+                    <button class="chat-action-btn mark-read" data-chat-id="${chat.id}">
+                        <i class="fas fa-check"></i> Прочитать
+                    </button>
+                </div>
             `;
             
-            // Добавляем обработчик клика
-            element.addEventListener('click', () => {
+            // Добавляем обработчики клика
+            element.addEventListener('click', (e) => {
+                if (!e.target.closest('.chat-actions')) {
+                    this.openChat(chat);
+                }
+            });
+            
+            // Обработчики для кнопок в чате
+            const openChatBtn = element.querySelector('.open-chat');
+            const markReadBtn = element.querySelector('.mark-read');
+            
+            openChatBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 this.openChat(chat);
+            });
+            
+            markReadBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.markChatAsRead(chat.id);
             });
             
             return element;
         }
         
         openChat(chat) {
-            // Анимация выделения чата
-            const chatElement = document.querySelector(`.chat-card[data-id="${chat.id}"]`);
-            chatElement.classList.add('active');
+            // Уменьшаем счетчик непрочитанных
+            if (chat.unread > 0) {
+                chat.unread = 0;
+                this.updateChatUnreadCount(chat.id);
+                this.updateUnreadCounters();
+            }
             
-            // Показываем уведомление
+            // Создаем и показываем модальное окно чата
+            const chatModal = document.createElement('div');
+            chatModal.className = 'chat-modal';
+            chatModal.innerHTML = `
+                <div class="chat-modal-content">
+                    <div class="chat-modal-header">
+                        <div class="chat-modal-title">
+                            <i class="fas ${chat.icon}"></i>
+                            <h3>${chat.title}</h3>
+                        </div>
+                        <button class="close-chat-modal">&times;</button>
+                    </div>
+                    
+                    <div class="chat-modal-body">
+                        <div class="chat-info">
+                            <p><strong>Категория:</strong> ${this.getCategoryName(chat.category)}</p>
+                            <p><strong>Описание:</strong> ${chat.description}</p>
+                            <p><strong>Участников:</strong> ${chat.members}</p>
+                            <p><strong>Активность:</strong> ${chat.lastActive}</p>
+                        </div>
+                        
+                        <div class="chat-messages">
+                            <div class="message incoming">
+                                <div class="message-avatar">${chat.title.substring(0, 2)}</div>
+                                <div class="message-content">
+                                    <div class="message-sender">${chat.title}</div>
+                                    <div class="message-text">Добро пожаловать в чат! Этот чат активен и готов к общению.</div>
+                                    <div class="message-time">Только что</div>
+                                </div>
+                            </div>
+                            
+                            <div class="message outgoing">
+                                <div class="message-avatar">TN</div>
+                                <div class="message-content">
+                                    <div class="message-sender">Вы</div>
+                                    <div class="message-text">Привет! Я подключился к чату.</div>
+                                    <div class="message-time">Только что</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input">
+                            <input type="text" placeholder="Введите сообщение..." id="chatMessageInput">
+                            <button id="sendMessageBtn"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(chatModal);
+            
+            // Анимация появления
+            setTimeout(() => {
+                chatModal.classList.add('active');
+            }, 10);
+            
+            // Обработчики для модального окна чата
+            const closeBtn = chatModal.querySelector('.close-chat-modal');
+            const sendBtn = chatModal.querySelector('#sendMessageBtn');
+            const messageInput = chatModal.querySelector('#chatMessageInput');
+            
+            closeBtn.addEventListener('click', () => {
+                chatModal.classList.remove('active');
+                setTimeout(() => {
+                    if (chatModal.parentNode) {
+                        chatModal.parentNode.removeChild(chatModal);
+                    }
+                }, 300);
+            });
+            
+            sendBtn.addEventListener('click', () => {
+                const message = messageInput.value.trim();
+                if (message) {
+                    this.sendChatMessage(chatModal, message);
+                    messageInput.value = '';
+                }
+            });
+            
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const message = messageInput.value.trim();
+                    if (message) {
+                        this.sendChatMessage(chatModal, message);
+                        messageInput.value = '';
+                    }
+                }
+            });
+            
+            // Клик вне окна для закрытия
+            chatModal.addEventListener('click', (e) => {
+                if (e.target === chatModal) {
+                    chatModal.classList.remove('active');
+                    setTimeout(() => {
+                        if (chatModal.parentNode) {
+                            chatModal.parentNode.removeChild(chatModal);
+                        }
+                    }, 300);
+                }
+            });
+            
             this.showNotification(
                 `Открыт чат: ${chat.title}`,
-                `Переход в режим общения с ${chat.members} участниками`,
-                "info"
+                `Вы перешли в режим общения с ${chat.members} участниками`,
+                "success"
             );
+        }
+        
+        sendChatMessage(chatModal, message) {
+            const messagesContainer = chatModal.querySelector('.chat-messages');
             
-            // Через 2 секунды снимаем выделение
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message outgoing';
+            messageElement.innerHTML = `
+                <div class="message-avatar">TN</div>
+                <div class="message-content">
+                    <div class="message-sender">Вы</div>
+                    <div class="message-text">${message}</div>
+                    <div class="message-time">Только что</div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageElement);
+            
+            // Прокручиваем вниз
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Симуляция ответа через 1 секунду
             setTimeout(() => {
-                chatElement.classList.remove('active');
-            }, 2000);
+                const replyElement = document.createElement('div');
+                replyElement.className = 'message incoming';
+                replyElement.innerHTML = `
+                    <div class="message-avatar">${messagesContainer.previousElementSibling.querySelector('h3').textContent.substring(0, 2)}</div>
+                    <div class="message-content">
+                        <div class="message-sender">${messagesContainer.previousElementSibling.querySelector('h3').textContent}</div>
+                        <div class="message-text">Сообщение получено. Спасибо за ваше сообщение!</div>
+                        <div class="message-time">Только что</div>
+                    </div>
+                `;
+                
+                messagesContainer.appendChild(replyElement);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 1000);
+        }
+        
+        markChatAsRead(chatId) {
+            // Находим чат во всех категориях
+            for (const category in this.chatsData) {
+                const chatIndex = this.chatsData[category].findIndex(chat => chat.id === chatId);
+                if (chatIndex > -1 && this.chatsData[category][chatIndex].unread > 0) {
+                    this.chatsData[category][chatIndex].unread = 0;
+                    
+                    // Обновляем отображение
+                    const chatElement = document.querySelector(`.chat-card[data-chat-id="${chatId}"]`);
+                    if (chatElement) {
+                        const urgencyDiv = chatElement.querySelector('.chat-urgency');
+                        if (urgencyDiv) {
+                            urgencyDiv.remove();
+                        }
+                    }
+                    
+                    this.showNotification(
+                        "Чат прочитан",
+                        "Все сообщения в чате отмечены как прочитанные",
+                        "success"
+                    );
+                    break;
+                }
+            }
+        }
+        
+        updateChatUnreadCount(chatId) {
+            // Обновляем счетчик в данных
+            for (const category in this.chatsData) {
+                const chat = this.chatsData[category].find(c => c.id === chatId);
+                if (chat && chat.unread > 0) {
+                    chat.unread = 0;
+                }
+            }
+            
+            // Обновляем отображение
+            const chatElement = document.querySelector(`.chat-card[data-chat-id="${chatId}"]`);
+            if (chatElement) {
+                const urgencyDiv = chatElement.querySelector('.chat-urgency');
+                if (urgencyDiv) {
+                    urgencyDiv.remove();
+                }
+            }
         }
         
         updateChatCount() {
@@ -611,7 +896,125 @@ document.addEventListener('DOMContentLoaded', function() {
             return names[category] || 'Общий';
         }
         
-        startVoiceCallDemo() {
+        openContactsModal(callType) {
+            this.currentCallType = callType;
+            this.selectedContacts = [];
+            
+            // Заголовок в зависимости от типа звонка
+            const titles = {
+                'voice': 'Голосовой звонок',
+                'video': 'Видеозвонок',
+                'conference': 'Конференция'
+            };
+            
+            this.contactsModal.querySelector('h2').innerHTML = 
+                `<i class="fas ${callType === 'voice' ? 'fa-phone' : callType === 'video' ? 'fa-video' : 'fa-users'}"></i> ${titles[callType]}`;
+            
+            this.contactsModal.querySelector('.call-type-info').textContent = 
+                `Выберите контакты для ${titles[callType].toLowerCase()}`;
+            
+            // Рендерим список контактов
+            this.renderContactsList();
+            
+            // Показываем модальное окно
+            this.contactsModal.classList.add('active');
+        }
+        
+        renderContactsList() {
+            this.contactsList.innerHTML = '';
+            
+            this.contacts.forEach(contact => {
+                const contactElement = document.createElement('div');
+                contactElement.className = 'contact-item';
+                contactElement.dataset.id = contact.id;
+                
+                contactElement.innerHTML = `
+                    <div class="contact-select">
+                        <input type="${this.currentCallType === 'conference' ? 'checkbox' : 'radio'}" 
+                               name="contactSelect" 
+                               id="contact_${contact.id}"
+                               value="${contact.id}">
+                    </div>
+                    
+                    <div class="contact-avatar ${contact.status}">
+                        ${contact.avatar}
+                    </div>
+                    
+                    <div class="contact-info">
+                        <div class="contact-name">${contact.name}</div>
+                        <div class="contact-status">${this.getStatusText(contact.status)} • ${this.getCategoryName(contact.category)}</div>
+                    </div>
+                `;
+                
+                // Обработчик выбора контакта
+                const input = contactElement.querySelector('input');
+                input.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        if (this.currentCallType === 'conference') {
+                            this.selectedContacts.push(contact.id);
+                        } else {
+                            this.selectedContacts = [contact.id];
+                        }
+                    } else {
+                        const index = this.selectedContacts.indexOf(contact.id);
+                        if (index > -1) {
+                            this.selectedContacts.splice(index, 1);
+                        }
+                    }
+                    
+                    // Активируем кнопку подтверждения если выбран хотя бы один контакт
+                    this.confirmCallBtn.disabled = this.selectedContacts.length === 0;
+                });
+                
+                this.contactsList.appendChild(contactElement);
+            });
+            
+            // Сбрасываем состояние кнопки
+            this.confirmCallBtn.disabled = true;
+        }
+        
+        getStatusText(status) {
+            const statuses = {
+                'online': 'В сети',
+                'away': 'Отошел',
+                'offline': 'Не в сети',
+                'busy': 'Занят'
+            };
+            return statuses[status] || status;
+        }
+        
+        startSelectedCall() {
+            if (this.selectedContacts.length === 0) {
+                this.showNotification(
+                    "Ошибка",
+                    "Выберите хотя бы один контакт для звонка",
+                    "error"
+                );
+                return;
+            }
+            
+            this.closeContactsModal();
+            
+            // Получаем информацию о выбранных контактах
+            const selectedContactsInfo = this.contacts.filter(contact => 
+                this.selectedContacts.includes(contact.id)
+            );
+            
+            // Запускаем соответствующий тип звонка
+            switch (this.currentCallType) {
+                case 'voice':
+                    this.startVoiceCallWithContacts(selectedContactsInfo);
+                    break;
+                case 'video':
+                    this.startVideoCallWithContacts(selectedContactsInfo);
+                    break;
+                case 'conference':
+                    this.startConferenceWithContacts(selectedContactsInfo);
+                    break;
+            }
+        }
+        
+        startVoiceCallWithContacts(contacts) {
             if (this.isInCall || this.isInConference) {
                 this.showNotification(
                     "Уже есть активный вызов",
@@ -624,10 +1027,12 @@ document.addEventListener('DOMContentLoaded', function() {
             this.isInCall = true;
             this.callStartTime = new Date();
             
+            const participantsNames = contacts.map(c => c.name).join(' • ');
+            
             this.callContainer.innerHTML = `
                 <div class="call-header">
                     <h2><i class="fas fa-phone"></i> Голосовой звонок</h2>
-                    <div class="call-participants">Security Team • Alpha Group</div>
+                    <div class="call-participants">${participantsNames}</div>
                 </div>
                 
                 <div class="call-content">
@@ -697,12 +1102,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             this.showNotification(
                 "Голосовой звонок начат",
-                "Вы подключены к конференции с Security Team",
+                `Вы подключены к звонку с ${contacts.length} участником(ами)`,
                 "success"
             );
         }
         
-        startVideoCallDemo() {
+        startVideoCallWithContacts(contacts) {
             if (this.isInCall || this.isInConference) {
                 this.showNotification(
                     "Уже есть активный вызов",
@@ -715,10 +1120,12 @@ document.addEventListener('DOMContentLoaded', function() {
             this.isInCall = true;
             this.callStartTime = new Date();
             
+            const participantsNames = contacts.map(c => c.name).join(' • ');
+            
             this.callContainer.innerHTML = `
                 <div class="call-header">
                     <h2><i class="fas fa-video"></i> Видеозвонок</h2>
-                    <div class="call-participants">3 участника онлайн</div>
+                    <div class="call-participants">${contacts.length} участника онлайн</div>
                 </div>
                 
                 <div class="call-content">
@@ -730,14 +1137,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="call-timer" id="callTimer">00:00</div>
                     
                     <div class="call-grid">
-                        <div class="video-feed">
-                            <div style="font-size: 48px; margin-bottom: 10px;">
-                                <i class="fas fa-user"></i>
+                        ${contacts.map(contact => `
+                            <div class="video-feed">
+                                <div style="font-size: 48px; margin-bottom: 10px;">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>${contact.name}</div>
                             </div>
-                            <div>Security Team</div>
-                        </div>
+                        `).join('')}
                         
-                        <div class="video-feed">
+                        <div class="video-feed you">
                             <div style="font-size: 48px; margin-bottom: 10px;">
                                 <i class="fas fa-user"></i>
                             </div>
@@ -790,12 +1199,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             this.showNotification(
                 "Видеозвонок начат",
-                "Вы подключены к видеоконференции",
+                `Вы подключены к видеозвонку с ${contacts.length} участником(ами)`,
                 "success"
             );
         }
         
-        startConferenceDemo() {
+        startConferenceWithContacts(contacts) {
             if (this.isInCall || this.isInConference) {
                 this.showNotification(
                     "Уже есть активный вызов",
@@ -808,10 +1217,20 @@ document.addEventListener('DOMContentLoaded', function() {
             this.isInConference = true;
             this.callStartTime = new Date();
             
+            // Добавляем себя в участники
+            const allParticipants = [
+                { id: 0, name: "Вы", avatar: "TN", status: "speaking", role: "Host" },
+                ...contacts.map((contact, index) => ({
+                    ...contact,
+                    status: ['listening', 'muted', 'away'][index % 3],
+                    role: 'Participant'
+                }))
+            ];
+            
             this.conferenceContainer.innerHTML = `
                 <div class="call-header">
                     <h2><i class="fas fa-users"></i> Видеоконференция</h2>
-                    <div class="call-participants">6 участников • Вы - Host</div>
+                    <div class="call-participants">${allParticipants.length} участников • Вы - Host</div>
                 </div>
                 
                 <div class="conference-grid" id="conferenceGrid">
@@ -829,7 +1248,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             
-            // Добавляем участников
+            // Устанавливаем участников и рендерим
+            this.conferenceParticipants = allParticipants;
             this.renderConferenceParticipants();
             
             this.conferenceModal.classList.add('active');
@@ -855,9 +1275,151 @@ document.addEventListener('DOMContentLoaded', function() {
             
             this.showNotification(
                 "Конференция начата",
-                "Вы создали видеоконференцию с 6 участниками",
+                `Вы создали видеоконференцию с ${contacts.length + 1} участниками`,
                 "success"
             );
+        }
+        
+        closeContactsModal() {
+            this.contactsModal.classList.remove('active');
+            this.selectedContacts = [];
+            this.currentCallType = '';
+        }
+        
+        openGroupModal() {
+            this.selectedGroupContacts = [];
+            this.groupNameInput.value = '';
+            
+            // Рендерим список контактов для группы
+            this.renderGroupContactsList();
+            
+            // Показываем модальное окно
+            this.groupModal.classList.add('active');
+        }
+        
+        renderGroupContactsList() {
+            this.groupContactsList.innerHTML = '';
+            
+            this.contacts.forEach(contact => {
+                const contactElement = document.createElement('div');
+                contactElement.className = 'contact-item';
+                contactElement.dataset.id = contact.id;
+                
+                contactElement.innerHTML = `
+                    <div class="contact-select">
+                        <input type="checkbox" 
+                               name="groupContactSelect" 
+                               id="group_contact_${contact.id}"
+                               value="${contact.id}">
+                    </div>
+                    
+                    <div class="contact-avatar ${contact.status}">
+                        ${contact.avatar}
+                    </div>
+                    
+                    <div class="contact-info">
+                        <div class="contact-name">${contact.name}</div>
+                        <div class="contact-status">${this.getStatusText(contact.status)} • ${this.getCategoryName(contact.category)}</div>
+                    </div>
+                `;
+                
+                // Обработчик выбора контакта
+                const input = contactElement.querySelector('input');
+                input.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        this.selectedGroupContacts.push(contact.id);
+                    } else {
+                        const index = this.selectedGroupContacts.indexOf(contact.id);
+                        if (index > -1) {
+                            this.selectedGroupContacts.splice(index, 1);
+                        }
+                    }
+                    
+                    // Активируем кнопку подтверждения если выбраны контакты и введено имя
+                    this.updateConfirmGroupButton();
+                });
+                
+                this.groupContactsList.appendChild(contactElement);
+            });
+            
+            // Обработчик ввода имени группы
+            this.groupNameInput.addEventListener('input', () => {
+                this.updateConfirmGroupButton();
+            });
+            
+            // Сбрасываем состояние кнопки
+            this.confirmGroupBtn.disabled = true;
+        }
+        
+        updateConfirmGroupButton() {
+            const hasName = this.groupNameInput.value.trim().length > 0;
+            const hasContacts = this.selectedGroupContacts.length > 0;
+            this.confirmGroupBtn.disabled = !(hasName && hasContacts);
+        }
+        
+        createGroupWithContacts() {
+            const groupName = this.groupNameInput.value.trim();
+            
+            if (!groupName) {
+                this.showNotification(
+                    "Ошибка",
+                    "Введите название группы",
+                    "error"
+                );
+                return;
+            }
+            
+            if (this.selectedGroupContacts.length === 0) {
+                this.showNotification(
+                    "Ошибка",
+                    "Выберите хотя бы одного участника для группы",
+                    "error"
+                );
+                return;
+            }
+            
+            // Получаем информацию о выбранных контактах
+            const selectedContactsInfo = this.contacts.filter(contact => 
+                this.selectedGroupContacts.includes(contact.id)
+            );
+            
+            // Закрываем модальное окно
+            this.closeGroupModal();
+            
+            // Создаем новую группу
+            const newGroupId = Date.now(); // Используем timestamp как ID
+            const newGroup = {
+                id: newGroupId,
+                title: groupName,
+                category: 'professional',
+                icon: 'fa-users',
+                description: `Группа создана с ${selectedContactsInfo.length} участниками`,
+                members: selectedContactsInfo.length + 1, // +1 для себя
+                unread: 1,
+                lastActive: 'Только что',
+                priority: 'high',
+                active: true
+            };
+            
+            // Добавляем группу во все категории и в профессиональные
+            this.chatsData.all.unshift(newGroup);
+            this.chatsData.professional.unshift(newGroup);
+            
+            // Обновляем отображение
+            this.currentFilter = 'all';
+            this.renderChats();
+            this.updateChatCount();
+            
+            this.showNotification(
+                "Группа создана",
+                `Группа "${groupName}" успешно создана с ${selectedContactsInfo.length} участниками`,
+                "success"
+            );
+        }
+        
+        closeGroupModal() {
+            this.groupModal.classList.remove('active');
+            this.selectedGroupContacts = [];
         }
         
         renderConferenceParticipants() {
@@ -893,8 +1455,10 @@ document.addEventListener('DOMContentLoaded', function() {
         simulateActiveSpeaker() {
             if (!this.isInConference) return;
             
-            // Случайным образом выбираем нового говорящего
-            const participants = document.querySelectorAll('.conference-participant');
+            // Случайным образом выбираем нового говорящего (кроме себя)
+            const participants = document.querySelectorAll('.conference-participant:not([data-id="0"])');
+            if (participants.length === 0) return;
+            
             participants.forEach(p => p.classList.remove('active-speaker'));
             
             const randomIndex = Math.floor(Math.random() * participants.length);
@@ -903,6 +1467,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Обновляем статус в данных
             const participantId = parseInt(randomParticipant.dataset.id);
             this.conferenceParticipants.forEach(p => {
+                if (p.id === 0) return; // Не меняем статус себе
                 p.status = p.id === participantId ? 'speaking' : 'listening';
             });
             
@@ -1118,14 +1683,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        createNewGroup() {
-            this.showNotification(
-                "Создание группы",
-                "Функционал создания групп доступен в полной версии",
-                "info"
-            );
-        }
-        
         createNewChannel() {
             this.showNotification(
                 "Создание канала",
@@ -1182,6 +1739,18 @@ document.addEventListener('DOMContentLoaded', function() {
             this.notificationCenter.classList.remove('active');
             this.rightSidebar.classList.remove('active');
             this.profileMenu.classList.remove('active');
+            this.contactsModal.classList.remove('active');
+            this.groupModal.classList.remove('active');
+            
+            // Закрываем все модальные окна чатов
+            document.querySelectorAll('.chat-modal').forEach(modal => {
+                modal.classList.remove('active');
+                setTimeout(() => {
+                    if (modal.parentNode) {
+                        modal.parentNode.removeChild(modal);
+                    }
+                }, 300);
+            });
             
             if (this.isInCall) this.endCall();
             if (this.isInConference) this.leaveConference();
@@ -1198,7 +1767,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Ctrl + N - Новый чат
                 if (e.ctrlKey && e.key === 'n') {
                     e.preventDefault();
-                    this.createNewGroup();
+                    this.openGroupModal();
                 }
                 
                 // Ctrl + U - Непрочитанные
@@ -1218,7 +1787,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
                     this.showNotification(
                         "Горячие клавиши",
-                        "Ctrl+/ - Поиск | Ctrl+N - Новый чат | Ctrl+U - Непрочитанные | Ctrl+B - Уведомления | ESC - Закрыть всё",
+                        "Ctrl+/ - Поиск | Ctrl+N - Новая группа | Ctrl+U - Непрочитанные | Ctrl+B - Уведомления | ESC - Закрыть всё",
                         "info"
                     );
                 }
