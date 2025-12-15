@@ -53,7 +53,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (title) {
                     title.style.display = 'none';
                 }
+            // Коммуникации - исправленные обработчики (ОБНОВЛЕНО)
+    this.startVoiceCall = document.getElementById('startVoiceCall');
+    this.startVideoCall = document.getElementById('startVideoCall');
+    this.startConference = document.getElementById('startConference');
+    
+    // Исправляем метод removeCommunicationTitle
+    this.removeCommunicationTitle = function() {
+        const commSection = document.querySelector('.calls-section');
+        if (commSection) {
+            const title = commSection.querySelector('h3');
+            if (title) {
+                title.style.display = 'none';
             }
+        }
+    };
             
             // Модальные окна
             this.callModal = document.getElementById('callModal');
@@ -543,8 +557,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     !e.target.closest('.channel-modal-content')) {
                     this.closeChannelModal();
                 }
-            });
-        }
+         // Коммуникации - УБЕДИТЕСЬ что этот код есть:
+    if (this.startVoiceCall) {
+        this.startVoiceCall.addEventListener('click', () => {
+            console.log('Voice call clicked'); // Для отладки
+            this.openContactsModal('voice');
+        });
+    }
+    
+    if (this.startVideoCall) {
+        this.startVideoCall.addEventListener('click', () => {
+            console.log('Video call clicked'); // Для отладки
+            this.openContactsModal('video');
+        });
+    }
+    
+    if (this.startConference) {
+        this.startConference.addEventListener('click', () => {
+            console.log('Conference clicked'); // Для отладки
+            this.openContactsModal('conference');
+        });
+    }
         
         initPreloader() {
             // Автоматический клик по самолетику через 1.5 секунды
