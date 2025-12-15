@@ -397,6 +397,33 @@
         </div>
     </div>
 </div>
+
+<!-- Сайдбар контактов -->
+<div id="contactsSidebar" class="contacts-sidebar">
+    <div class="contacts-sidebar-header">
+        <h3>Контакты</h3>
+        <button class="close-contacts-sidebar" id="closeContactsSidebar">&times;</button>
+    </div>
+    <div class="contacts-list-sidebar" id="contactsListSidebar">
+        <!-- Контакты будут добавлены динамически -->
+    </div>
+</div>
+
+<!-- Модальное окно создания канала -->
+<div id="channelModal" class="channel-modal">
+    <div class="channel-modal-content">
+        <div class="channel-modal-header">
+            <h2><i class="fas fa-bullhorn"></i> Создание канала</h2>
+        </div>
+        <div class="channel-name-input">
+            <input type="text" id="channelNameInput" placeholder="Название канала" maxlength="50">
+        </div>
+        <div class="channel-modal-footer">
+            <button class="cancel-channel-btn" id="cancelChannelBtn">Отмена</button>
+            <button class="confirm-channel-btn" id="confirmChannelBtn">Создать канал</button>
+        </div>
+    </div>
+</div>
     
     <!-- Скрипты -->
     <script src="script.js"></script>
